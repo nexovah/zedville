@@ -1,0 +1,25 @@
+<?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class LoginQuizAttempt extends Model
+{
+    protected $table = 'login_quiz_attempts';
+    protected $fillable = ['user_id', 'question_id', 'option_id', 'is_correct'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function question()
+    {
+        return $this->belongsTo(LoginQuestion::class, 'question_id');
+    }
+
+    public function option()
+    {
+        return $this->belongsTo(LoginOption::class, 'option_id');
+    }
+}

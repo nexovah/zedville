@@ -1,0 +1,163 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\LoginQuizController;
+use App\Http\Controllers\Admin\FinheroAdminController;
+use App\Http\Controllers\Student\FinheroStudentController;
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+/*Route::get('/citizen-activation', function () {
+    $user = auth()->user();
+
+    return view('citizen-activation', compact('user'));
+})->middleware(['auth', 'verified'])->name('citizen-activation');*/
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/update-avatar', [ProfileController::class, 'updateAvatar'])->name('profile.updateAvatar');
+    Route::post('/profile/save-mood', [ProfileController::class, 'saveMode'])->name('profile.saveMode');
+    Route::get('/profile/mailbox', [ProfileController::class, 'mailbox'])->name('profile.mailbox');
+    // Mailbox routes
+    Route::get('/profile/mailbox', [ProfileController::class, 'mailbox'])->name('profile.mailbox');
+    Route::get('/profile/mailbox/show/{encryptedId}', [ProfileController::class, 'showMail'])->name('profile.showMail');
+    Route::post('/profile/mailbox/update-status', [ProfileController::class, 'updateMailStatus'])->name('profile.mailbox.updateStatus');
+
+     // ✅ ADD THESE LINES HERE (BEFORE THIS CLOSING BRACE)
+    Route::post('/cart/save', [CartController::class, 'save'])->name('cart.save');
+    Route::get('/cart/get', [CartController::class, 'get'])->name('cart.get');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
+    Route::post('/order/placeActivity', [OrderController::class, 'placeOrder'])->name('order.place');
+
+
+});
+// URL when mail is clicked
+/*Route::get('/profile/mailbox/{tab}/{encryptedId}', function ($tab, $encryptedId) {
+    return view('mailbox.index', compact('tab', 'encryptedId'));
+});*/
+// AJAX route to fetch mail content
+//Route::get('/profile/mailbox/show/{encryptedId}', [ProfileController::class, 'showMail'])->name('profile.showMail');
+require __DIR__.'/auth.php';
+Route::get('/profile/consumer-profile-survey', [ProfileController::class, 'consumerProfileSurvey'])->name('consumer-profile-survey');
+Route::post('/profile/storesurvey', [ProfileController::class, 'storesurvey'])->name('storesurvey');
+
+//Cms Routes
+Route::get('/how-it-work', [\App\Http\Controllers\CMSController::class, 'howItWork'])->name('how-it-work');
+Route::get('/faq', [\App\Http\Controllers\CMSController::class, 'faq'])->name('faq');
+Route::get('/contact', [\App\Http\Controllers\CMSController::class, 'contact'])->name('contact');
+Route::get('/privacy-policy', [\App\Http\Controllers\CMSController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms-conditions', [\App\Http\Controllers\CMSController::class, 'termsConditions'])->name('terms-conditions');
+Route::get('/thank-you', [\App\Http\Controllers\CMSController::class, 'thankYou'])->name('thank-you');
+//Consumer Profile Survey
+/*Route::get('/api/groceries/{diet}', function ($diet) {
+    switch($diet) {
+        case 'omnivore':
+            return \DB::table('GroceriesOmnivore')->get();
+        case 'vegetarian':
+            return \DB::table('GroceriesVegetarian')->get();
+        case 'pescatarian':
+            return \DB::table('GroceriesPecastarian')->get();
+        case 'vegan':
+            return \DB::table('GroceriesVegan')->get();
+        default:
+            return response()->json([]);
+    }
+});*/
+Route::get('/api/groceries/{diet}', function ($diet) {
+
+    return \DB::table('supermarkets')
+        ->whereRaw('LOWER(type) = ?', [strtolower($diet)])
+        ->get();
+
+});
+
+
+//Consumer Profile Survey
+//Calender Api Admin
+Route::get('/api/admin/calendar-events', [\App\Http\Controllers\Admin\CalendarEventController::class, 'getEvents'])->name('admin.calendar-events');
+Route::post('/api/admin/calendar-events', [\App\Http\Controllers\Admin\CalendarEventController::class, 'storeEvent'])->name('admin.calendar-events.store');
+Route::put('/api/admin/calendar-events/{id}', [\App\Http\Controllers\Admin\CalendarEventController::class, 'updateEvent'])->name('admin.calendar-events.update');
+Route::delete('/api/admin/calendar-events/{id}', [\App\Http\Controllers\Admin\CalendarEventController::class, 'deleteEvent'])->name('admin.calendar-events.delete');
+//For Login Quiz
+Route::get('/login-quiz/today',   [LoginQuizController::class, 'getTodayQuestion'])->name('login.quiz.today');
+Route::post('/login-quiz/submit', [LoginQuizController::class, 'submit'])->name('login.quiz.submit');
+
+//City Mood & Profile Mood
+Route::get('/city-mood',   [ProfileController::class, 'city_mood'])->name('city-mood');
+Route::get('/my-mood',   [ProfileController::class, 'my_mood'])->name('my-mood');
+Route::post('/award-poster-room', function () {
+    app(\App\Services\ParticipationService::class)
+        ->award(auth()->id(), 'poster_room_enter');
+
+    return response()->json(['success' => true]);
+})->middleware('auth');
+
+//Finhero route
+Route::middleware(['auth'])->group(function () {
+    Route::get('/finhero-badge',       [FinheroStudentController::class, 'index'])->name('finhero.index');
+    Route::get('/finhero-badge/data',  [FinheroStudentController::class, 'data'])->name('finhero.data');
+
+    // Called by IT when a student earns activity points
+    // e.g. after Task 1 completion: POST /finhero/award-points { activity_key: 'task_1', points: 1 }
+    Route::post('/finhero/award-points', [FinheroStudentController::class, 'awardPoints'])->name('finhero.award');
+     // Dynamic task page route
+    Route::get('/finhero/{task}', [FinheroStudentController::class, 'taskPage'])
+        ->where('task', 'task-[0-9]+')
+        ->name('task.page');
+        // Save task points
+    Route::post('/finhero/save-points', [FinheroStudentController::class, 'savePoints'])
+        ->name('finhero.save-points');
+
+});
+
+// ── Admin / Tutor routes ───────────────────────────────────
+// TODO: replace 'admin' with your actual admin/tutor middleware
+Route::middleware(['auth', 'admin'])->prefix('admin/finhero')->group(function () {
+
+    // Activity Manager
+    Route::get   ('/activities',       [FinheroAdminController::class, 'listActivities']);
+    Route::get   ('/task-activities',       [FinheroAdminController::class, 'taskActivities']);
+    Route::post  ('/activities',       [FinheroAdminController::class, 'addActivity']);
+    Route::put   ('/activities/{id}',  [FinheroAdminController::class, 'updateActivity']);
+    Route::delete('/activities/{id}',  [FinheroAdminController::class, 'deleteActivity']);
+
+    // Badge Settings
+    Route::get ('/settings',           [FinheroAdminController::class, 'getSettings']);
+    Route::post('/settings',           [FinheroAdminController::class, 'saveSettings']);
+
+    // Reports
+    Route::get ('/student/{studentId}',[FinheroAdminController::class, 'studentBadgeHistory']);
+    Route::get ('/class-summary',      [FinheroAdminController::class, 'classSummary']);
+
+    // Override
+    Route::post('/override',           [FinheroAdminController::class, 'override']);
+    Route::post('/override/remove',    [FinheroAdminController::class, 'removeOverride']);
+
+    // Tools
+    Route::post('/recalculate',        [FinheroAdminController::class, 'recalculate']);
+    Route::post('/reset-year',         [FinheroAdminController::class, 'resetAcademicYear']);
+});

@@ -1,0 +1,65 @@
+@extends('layouts.profile')
+
+@section('title', 'Consumer Profile')
+
+@section('content')
+
+<div class="grid grid-cols-1 gap-5">
+
+    <div class="page-shell">
+
+        {{-- Progress Bar --}}
+        @include('citizen-activation.layouts.progress',['step'=>5])
+
+        <div class="step-header">
+
+            <div class="step-eyebrow">
+                Step 5 of 6 — Consumer Profile
+            </div>
+
+            <div class="step-title">
+                What kind of spender are you?
+            </div>
+
+            <div class="step-subtitle">
+                Answer a short <span class="term">consumer profile</span> survey — your answers
+                will set your personal monthly expenses inside Zedville.
+            </div>
+
+        </div>
+
+        <div class="step-body">
+
+            <div class="narrative">
+                In real life, your <strong>consumer profile</strong> is shaped by your lifestyle
+                choices—what you eat, how you travel and what you do for fun.
+
+                Your answers here will generate your personal monthly expenses inside Zedville.
+
+                Choose honestly—this becomes your financial reality in the city.
+            </div>
+            <div class="survey-options">
+             <!-- Consumer profile code -->
+              @include('citizen-activation.layouts.surveys')
+             <!-- Consumer profile code -->
+            </div>
+            <div class="btn-row">
+
+                <a href="{{ route('CitizenActivation.autoDebit') }}"
+                    class="btn-secondary">
+                    ← Back
+                </a>
+
+                <button type="submit"
+                        class="btn-primary">
+                    Complete & See My Profile →
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@endsection
