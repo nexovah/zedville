@@ -67,7 +67,10 @@ class Kernel extends ConsoleKernel
         // the same month, so running this daily (or re-running after a login-triggered
         // call) is safe and will not double-credit.
         $schedule->call(function () {
-            $now = now();
+            // App timezone is UTC; business/client timezone is Europe/Berlin.
+            // Evaluate "which day is it" in Berlin local time so day>=6 / day>=7
+            // gates line up with the actual German calendar day.
+            $now = \Carbon\Carbon::now('Europe/Berlin');
 
             \App\Models\User::where('role', 4)
                 ->chunkById(100, function ($students) use ($now) {
@@ -106,6 +109,7 @@ class Kernel extends ConsoleKernel
                     }
                 });
         })->dailyAt('00:15')
+            ->timezone('Europe/Berlin')
             ->withoutOverlapping()
             ->name('monthly-finance-backfill');
     }
