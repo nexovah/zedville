@@ -180,7 +180,7 @@ class AuthenticatedSessionController extends Controller
 }
 
 
-private function ensureMonthlyBills(\App\Models\User $user)
+public function ensureMonthlyBills(\App\Models\User $user)
 {
     $fixedTransactions = [
         ['day' => 7, 'description' => 'Utility - Electricity', 'amount' => rand(60, 90)],
