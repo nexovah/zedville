@@ -224,15 +224,14 @@ class BadgeCalculatorService
     /**
      * Get all active students who should receive badge calculations.
      *
-     * TODO: Replace with your actual query.
-     *       - Change 'users' to your students table name if different
-     *       - Change 'role' and 'student' to match your role system
-     *       - Add any other filters (e.g. active, enrolled in a class)
+     * Role 4 = student (see AdminStudentController::add_student, ProfileController,
+     * AuthenticatedSessionController — role is stored as a string/numeric code,
+     * never the literal string 'student').
      */
     private function getAllActiveStudents()
     {
         return DB::table('users')
-            ->where('role', 'student')
+            ->where('role', 4)
             ->select('id')
             ->get();
     }

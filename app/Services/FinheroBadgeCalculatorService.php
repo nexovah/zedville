@@ -170,12 +170,14 @@ class FinheroBadgeCalculatorService
 
     /**
      * Get all active students.
-     * TODO: change 'users', 'role', 'student' to match your schema.
+     * Role 4 = student (see AdminStudentController::add_student, ProfileController,
+     * AuthenticatedSessionController — role is stored as a string/numeric code,
+     * never the literal string 'student').
      */
     private function getAllActiveStudents()
     {
         return DB::table('users')
-            ->where('role', 'student')
+            ->where('role', 4)
             ->select('id')
             ->get();
     }
