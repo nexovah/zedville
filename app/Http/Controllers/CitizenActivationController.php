@@ -12,6 +12,7 @@ use App\Models\ManagePayeeBiller;
 use App\Models\AutoDebitRequest;
 use App\Models\Transaction;
 use App\Models\Transaction1;
+use App\Models\Mailbox;
 class CitizenActivationController extends Controller
 {
     /**
