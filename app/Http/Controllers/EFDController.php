@@ -26,35 +26,6 @@ use App\Models\PetitionSignature;
 
 class EFDController extends Controller
 {
-       /*public function index()
-    {
-        $user = auth()->user();
-        // Fetch all transactions
-        $transactions = Transaction1::where('user_id', $user->id)
-        ->whereMonth('created_at', date('m'))
-        ->whereYear('created_at', date('Y'))
-        ->orderBy('id')
-        ->get();
-
-        // Convert DB fields → your JSON template format
-        $template = $transactions->map(function($t) {
-           return [
-                    'id'       => (string) $t->id,
-                    'name'     => $t->description,
-                    'amount'   => $t->type === 'debit'
-                    ? - (float) $t->amount
-                    : (float) $t->amount,
-                    'category' => strtolower($t->category),
-                    'type'     => $t->type === 'credit' ? 'income' : 'expense'
-                ];
-        });
-        $templateJson = $template->toJson(JSON_PRETTY_PRINT);
-        //return view('education.index', compact('user', 'templateJson'));
-        return view('education.index', [
-            'user' => $user,
-            'template' => $template   // SEND ARRAY, NOT JSON STRING
-        ]);
-    }*/
     public function index()
 {
     $user = auth()->user();
@@ -601,10 +572,6 @@ public function high_spending_activities()
 {
     $user = Auth::user();
 
-    /*$activitys = DB::table('calendar_events')
-        ->where('classId', $user->grade)
-        ->select('activityType') // only ID
-        ->first();*/
 $activitys = DB::table('calendar_events')
     ->where('classId', $user->grade)
     //->orderBy('id', 'desc') // latest ID first

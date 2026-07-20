@@ -232,22 +232,6 @@ class ClosetController extends Controller
             ])
             ->get();
     }
-    /*private function fetchCloset($studentId)
-{
-    return DB::table('orders')
-        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
-        ->join('products', 'products.product_name', '=', 'order_items.name')
-        ->where('orders.user_id', $studentId)
-        ->where('products.goods_type', 'Durable Goods')
-        ->select(
-            'products.product_name as name',
-            'products.category',
-            'products.icon',
-            'orders.created_at as purchase_date',
-            'order_items.price as price_paid_zeds'
-        )
-        ->get();
-} */
     private function formatClosetItem(object $row): array
     {
         $ageYears      = (float) $row->age_years;

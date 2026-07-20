@@ -262,10 +262,6 @@ public function poster(Request $request)
 {
     $sid = session('selected_school');
 
-    /*$posters = $sid
-        ? DB::table('room_poster')->where('sid', $sid)->orderByDesc('id')->get()
-        : DB::table('room_poster')->orderByDesc('id')->get();*/
-
     $posters = DB::table('room_poster')->orderByDesc('id')->get();
 
     return view('admin.education.poster.index', compact('posters'));
@@ -354,10 +350,6 @@ public function spandBudget()
     // Get SID from session (null if not selected)
     $sid = session('selected_school');
 
-    // Apply SID condition only if session exists
-    /*$stores = $sid
-        ? Store::where('sid', $sid)->orderBy('id', 'ASC')->get()
-        : Store::orderBy('id', 'ASC')->get();*/
     $stores = Store::orderBy('id', 'ASC')->get();
 
     return view('admin.education.spand-budget', compact('stores'));
@@ -422,9 +414,6 @@ public function productList()
 {
     $sid = session('selected_school');
 
-    /*$products = $sid
-        ? Product::where('sid', $sid)->latest()->get()
-        : Product::latest()->get();*/
     $products = Product::latest()->get();
 
     return response()->json($products);
@@ -467,21 +456,10 @@ public function cityMallStore()
 {
     return view('admin.education.city-mall-store');
 }
-/*public function storeList()
-{
-    //return response()->json(Store::latest()->get());
-    return response()->json(
-    Store::orderBy('id', 'ASC')->get()
-);
-
-}*/
 public function storeList()
 {
     $sid = session('selected_school');
 
-    /*$stores = $sid
-        ? Store::where('sid', $sid)->orderBy('id', 'ASC')->get()
-        : Store::orderBy('id', 'ASC')->get();*/
     $stores = Store::orderBy('id', 'ASC')->get();
 
     return response()->json($stores);
@@ -583,10 +561,6 @@ public function supermarket()
     //$stores = Supermarketname::orderBy('id', 'ASC')->get();
     $sid = session('selected_school');
 
-    /*$stores = $sid
-        ? Supermarketname::where('sid', $sid)->orderBy('id', 'ASC')->get()
-        : Supermarketname::orderBy('id', 'ASC')->get();*/
-
     $stores = Supermarketname::orderBy('id', 'ASC')->get();
 
     return view('admin.supermarket.supermarket', compact('stores'));
@@ -651,9 +625,6 @@ public function supermarketList()
     //return response()->json(Supermarket::latest()->get());
     $sid = session('selected_school');
 
-    /*$products = $sid
-        ? Supermarket::where('sid', $sid)->latest()->get()
-        : Supermarket::latest()->get();*/
     $products = Supermarket::latest()->get();
 
     return response()->json($products);
@@ -699,9 +670,6 @@ public function wantsIteam()
     //$stores = Supermarketname::orderBy('id', 'ASC')->get();
     $sid = session('selected_school');
 
-    /*$stores = $sid
-        ? Supermarketname::where('sid', $sid)->orderBy('id', 'ASC')->get()
-        : Supermarketname::orderBy('id', 'ASC')->get();*/
     $stores = Supermarketname::orderBy('id', 'ASC')->get();
 
     return view('admin.supermarket.wants-iteams', compact('stores'));
@@ -759,17 +727,8 @@ public function wantsIteamStore(Request $request)
 
 public function wantsIteamList()
 {
-    //return response()->json(Supermarket::latest()->get());
-    /*return response()->json(
-    DB::table('penalty_wants_items')
-        ->orderBy('id', 'ASC')
-        ->get()
-);*/
 $sid = session('selected_school');
 
-    /*$items = $sid
-        ? DB::table('penalty_wants_items')->where('sid', $sid)->orderBy('id','ASC')->get()
-        : DB::table('penalty_wants_items')->orderBy('id','ASC')->get();*/
     $items =DB::table('penalty_wants_items')->orderBy('id','ASC')->get();
 
     return response()->json($items);
@@ -1042,9 +1001,6 @@ public function low_budget_activity()
     $position = DB::table('mba_position')
         ->where('user_id', $userId)
         ->where('id', 4)
-        /*->when($sid, function ($q) use ($sid) {
-            $q->where('sid', $sid);
-        })*/
         ->first();
 
     return view('admin.education.low-budget-activity', compact('position'));
@@ -1069,7 +1025,6 @@ public function lba_position(Request $request)
             'activity_key' => 'lba_position',
             'required'   => $required,
             'optional'   => $optional,
-            //'sid'        => $sid,
             'updated_at' => now(),
             'created_at' => now()
         ]
