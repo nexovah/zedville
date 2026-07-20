@@ -1501,6 +1501,11 @@ public function store_auto_debit(Request $request)
 
 protected function creditMonthlySalary($userId)
 {
+    // ✅ Salary is only credited on/after the 6th of each month
+    if (now()->day < 6) {
+        return;
+    }
+
     // ✅ Find user's bank account (only for linking, not for balance)
     $account = BankAccount::where('student_id', $userId)->first();
     if (!$account) {
