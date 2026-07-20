@@ -66,7 +66,7 @@ class CitizenActivationController extends Controller
         }
     $data = [
         'student_id' => $user->id,
-        'sid' => session('sid'),
+        'sid' => $user->sid,
         'student_name' => $validated['fullName'],
         //'student_dob' => Carbon::parse($validated['dob'])->format('Y-m-d'),
         'student_email' => $validated['email'],
@@ -130,7 +130,7 @@ class CitizenActivationController extends Controller
     $bankAccount = BankAccount::where('student_id', $user->id)->first();
 
     if ($bankAccount) {
-        $salary = 3952.40; // or dynamic amount
+        $salary = config('zedville.monthly_salary', 3952.40); // or dynamic amount
 
         $bankAccount->update([
             'primary_savings_account_amount' => $salary
@@ -206,7 +206,7 @@ class CitizenActivationController extends Controller
 
         AutoDebitRequest::create([
             'user_id'           => $user->id,
-            'sid'               => session()->get('sid'),
+            'sid'               => $user->sid,
             'type'              => $meta['name'],
             'accountno'         => $meta['account'],
             'fullname'          => $user->name,
@@ -229,7 +229,7 @@ class CitizenActivationController extends Controller
     if (!$rentExists) {
         AutoDebitRequest::create([
             'user_id'           => $user->id,
-            'sid'               => session()->get('sid'),
+            'sid'               => $user->sid,
             'type'              => 'Rent',
             'accountno'         => 'RENT-AUTO', // static / dummy
             'fullname'          => $user->name,
@@ -251,7 +251,7 @@ class CitizenActivationController extends Controller
     if (!$schoolExists) {
         AutoDebitRequest::create([
             'user_id'           => $user->id,
-            'sid'               => session()->get('sid'),
+            'sid'               => $user->sid,
             'type'              => 'City School',
             'accountno'         => $billers[3]->account_number ?? 'SCHOOL-AUTO',
             'fullname'          => $user->name,
@@ -337,7 +337,7 @@ class CitizenActivationController extends Controller
 
         Transaction1::create([
             'user_id'          => $user->id,
-            'sid'               => session()->get('sid'),
+            'sid'               => $user->sid,
             'bank_account_id'  => $bankAccount->id ?? null,
             'transaction_date' => $salaryDate,
             'description'      => $description,

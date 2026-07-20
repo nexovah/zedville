@@ -28,14 +28,11 @@ class LoginQuizController extends Controller
     $answeredIds = LoginQuizAttempt::where('user_id', $userId)
         ->pluck('question_id');
 
-    // Get ONE random question with its options
-    //$question = LoginQuestion::with('options')
-        //->whereNotIn('id', $answeredIds)
-        //->inRandomOrder()
-        //->first();
+    // Get ONE random question with its options, excluding ones already answered
     $question = LoginQuestion::with('options')
-    ->inRandomOrder()
-    ->first();
+        ->whereNotIn('id', $answeredIds)
+        ->inRandomOrder()
+        ->first();
 
     if (!$question) {
         return response()->json(['show' => false]);

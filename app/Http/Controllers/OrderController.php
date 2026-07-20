@@ -113,7 +113,7 @@ class OrderController extends Controller
                 }
                 DB::table('order_items')->insert([
                     'order_id'  => $orderId,
-                    'sid'  => session()->get('sid'),
+                    'sid'  => $user->sid,
                     'name'      => $item['name'],
                     'price'     => $item['price'],
                     'qty'       => $item['quantity'],
@@ -126,7 +126,7 @@ class OrderController extends Controller
 
                  Transaction1::create([
                     'user_id'          => $user->id,
-                    'sid'              => session()->get('sid'),
+                    'sid'              => $user->sid,
                     'bank_account_id'  => $bankAccount->id,
                     'transaction_date' => now(),
                     'description'      => "Purchase: {$item['name']} (Order #{$orderId})",
@@ -267,7 +267,7 @@ class OrderController extends Controller
                 }
                 DB::table('order_items')->insert([
                     'order_id'  => $orderId,
-                    'sid'  => session()->get('sid'),
+                    'sid'  => $user->sid,
                     'name'      => $item['name'],
                     'price'     => $item['price'],
                     'qty'       => $item['quantity'],
@@ -281,7 +281,7 @@ class OrderController extends Controller
 
                  Transaction1::create([
                     'user_id'          => $user->id,
-                    'sid'              => session()->get('sid'),
+                    'sid'              => $user->sid,
                     'bank_account_id'  => $bankAccount->id,
                     'transaction_date' => now(),
                     'description'      => "Purchase: {$item['name']} (Order #{$orderId})",

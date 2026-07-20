@@ -67,7 +67,7 @@ class StatementGenerator
 
         //Monthaly Gurd
         $config = $this->getActiveBudgetConfig();
-        $monthlySalary = $config->monthly_salary ?? 3952.40;
+        $monthlySalary = $config->monthly_salary ?? config('zedville.monthly_salary', 3952.40);
 
         // get grocery cost based on diet type
         /*$dietType = $user->diet_type ?? (['vegetarian','vegan','omnivore','pescatarian'][array_rand(range(0,3))]);
@@ -121,7 +121,7 @@ class StatementGenerator
 
         Transaction1::create([
             'user_id' => $user->id,
-            'sid' => session()->get('sid'),
+            'sid' => $user->sid,
             'bank_account_id' => $bankAccount->id ?? null,
             'transaction_date' => $salaryDate->toDateTimeString(),
             'description' => 'Monthly Salary',
@@ -161,7 +161,7 @@ class StatementGenerator
             // ✅ DB insert AFTER salary
             Transaction1::create([
                 'user_id' => $user->id,
-                'sid' => session()->get('sid'),
+                'sid' => $user->sid,
                 'bank_account_id' => $bankAccount->id ?? null,
                 'transaction_date' => $salaryDate->toDateTimeString(),
                 'description' => 'Auto Transfer to Emergency Fund',
@@ -190,7 +190,7 @@ class StatementGenerator
 
             Transaction1::create([
                 'user_id' => $user->id,
-                'sid' => session()->get('sid'),
+                'sid' => $user->sid,
                 'bank_account_id' => $bankAccount->id ?? null,
                 'transaction_date' => $date->toDateTimeString(),
                 'description' => $need->bank_statement_tag ?? $need->item_name,
@@ -237,7 +237,7 @@ class StatementGenerator
         // Store bank statement JSON **without any penalty**
         $bs = BankStatement::create([
             'user_id' => $user->id,
-            'sid' => session()->get('sid'),
+            'sid' => $user->sid,
             'month' => $now->month,
             'year' => $now->year,
             'statement_data' => json_encode($statement),

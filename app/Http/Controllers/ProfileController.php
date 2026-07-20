@@ -239,7 +239,7 @@ class ProfileController extends Controller
         // Save mood in DB (assuming user is logged in)
         $moodlog=MoodLog::create([
             'user_id' => auth()->id(),
-            'sid' => session()->get('sid'),
+            'sid' => auth()->user()->sid,
             'mood' => $request->mood,
             'energy' => $data['energy'],                // Add this
             'pleasantness' => $data['pleasantness'],    // Add this
@@ -699,6 +699,7 @@ public function updateMailStatus(Request $request)
 public function storesurvey(Request $request)
 {
     $userId = Auth::id();
+    $user = Auth::user();
 
     /* ============================
        1️⃣ Find first free survey month
@@ -784,7 +785,7 @@ public function storesurvey(Request $request)
         ============================ */
         $survey = ConsumerSurvey::create([
             'user_id'      => $userId,
-            'sid'          => session()->get('sid'),
+            'sid'          => $user->sid,
             'diet'         => $request->diet,
             'groceries'    => $request->groceries,
             'basket_cost'  => $request->basketCost,
@@ -847,7 +848,7 @@ public function storesurvey(Request $request)
 
             Transaction1::create([
                 'user_id'          => $userId,
-                'sid'              => session()->get('sid'),
+                'sid'              => $user->sid,
                 'bank_account_id'  => $bankAccount->id ?? null,
                 'transaction_date' => $now,
                 'description'      => 'Grocery – ' . ucfirst($request->diet),
@@ -879,7 +880,7 @@ public function storesurvey(Request $request)
 
                 Transaction1::create([
                     'user_id'          => $userId,
-                    'sid'              => session()->get('sid'),
+                    'sid'              => $user->sid,
                     'bank_account_id'  => $bankAccount->id ?? null,
                     'transaction_date' => $now,
                     'description'      => $description,

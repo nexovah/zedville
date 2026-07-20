@@ -160,7 +160,7 @@ class EFDController extends Controller
             $bankAccount =BankAccount::where('student_id', $user->id)->first();
             $isBankAccountOpen = $bankAccount !== null;
             //Emmargency Fund
-        $salaryamount=3952.40;
+        $salaryamount=config('zedville.monthly_salary', 3952.40);
         $emmsavingsPct=20;
         $emmsavingsAmount = round($salaryamount * ($emmsavingsPct/100), 2);
         $emmengercyfundintrest = $this->emmengercyfundintrest($user->id);

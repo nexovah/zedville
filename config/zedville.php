@@ -19,4 +19,17 @@ return [
     */
     'academic_year_start_month' => 4,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Monthly Salary
+    |--------------------------------------------------------------------------
+    |
+    | The default virtual monthly salary credited to students. Previously
+    | hardcoded independently across multiple files with inconsistent values
+    | (3952.40 in most places, 4250 in BankController::creditMonthlySalary).
+    | Confirmed canonical value: 3952.40.
+    |
+    */
+    'monthly_salary' => 3952.40,
+
 ];

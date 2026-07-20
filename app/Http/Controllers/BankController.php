@@ -66,7 +66,7 @@ class BankController extends Controller
         ->latest('id') // or latest('created_at') if you track timestamps
         ->first();
         $lastBalance = $latestTxn ? $latestTxn->balance : 0;
-        $salaryamount=3952.40;
+        $salaryamount=config('zedville.monthly_salary', 3952.40);
         $emmsavingsPct=20;
         $emmsavingsAmount = round($salaryamount * ($emmsavingsPct/100), 2);
         $emmengercyfundintrest = $this->emmengercyfundintrest($user->id);
@@ -185,7 +185,7 @@ public function my_account(){
                     //->orderBy('transaction_date', 'desc') // latest first
                     ->get();
         //Emmargency Fund
-        $salaryamount=3952.40;
+        $salaryamount=config('zedville.monthly_salary', 3952.40);
         $emmsavingsPct=20;
         $emmsavingsAmount = round($salaryamount * ($emmsavingsPct/100), 2);
         
@@ -487,7 +487,7 @@ public function transfer_store(Request $request)
             // Get user's total monthly spending
             //$generator = app(\App\Services\StatementGenerator::class);
             //$monthlySalary = $generator->getActiveBudgetConfig()->monthly_salary ?? 3952.40;
-            $monthlySalary =  3952.40;
+            $monthlySalary = config('zedville.monthly_salary', 3952.40);
 
             $totalExpenses = Transaction1::where('user_id', $sender->id)
                 ->where('type', 'debit')
@@ -986,7 +986,7 @@ public function authorize_direct_deposit(Request $request, StatementGenerator $g
     $bankAccount = BankAccount::where('student_id', $user->id)->first();
 
     if ($bankAccount) {
-        $salary = 3952.40; // or dynamic amount
+        $salary = config('zedville.monthly_salary', 3952.40); // or dynamic amount
 
         $bankAccount->update([
             'primary_savings_account_amount' => $salary
@@ -1523,7 +1523,7 @@ protected function creditMonthlySalary($userId)
         return;
     }
 
-    $amount = 4250;
+    $amount = config('zedville.monthly_salary', 3952.40);
 
     // ✅ Get last balance from transactions
     $lastBalance = Transaction1::where('user_id', $userId)
@@ -1944,7 +1944,7 @@ public function emengercyfundaccount(){
     //$newAmount = $request->input('amount', 0); // default 0 if not provided
 
     
-    $salaryamount=3952.40;
+    $salaryamount=config('zedville.monthly_salary', 3952.40);
     $savingsPct=20;
     $savingsAmount = round($salaryamount * ($savingsPct/100), 2);
     $lastBalance = Transaction1::where('user_id', $user->id)
@@ -2255,7 +2255,7 @@ public function banks_penalty(StatementGenerator $generator, $user = null)
     // STEP 1: GATHER INPUTS
     //$monthlySalary = $generator->getActiveBudgetConfig()->monthly_salary ?? 3952.40;
     $monthlySalary1 = $aviableblance->balance;
-    $monthlySalary = $generator->getActiveBudgetConfig()->monthly_salary ?? 3952.40;
+    $monthlySalary = $generator->getActiveBudgetConfig()->monthly_salary ?? config('zedville.monthly_salary', 3952.40);
     //dd($monthlySalary);
     $minThreshold  = $monthlySalary * 0.91; // 91%
     $targetAmount  = $monthlySalary * 0.99; // 99%
