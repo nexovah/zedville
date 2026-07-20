@@ -1508,10 +1508,10 @@ protected function creditMonthlySalary($userId)
     }
 
     // ✅ Prevent duplicate credit for the same month
-    $alreadyCredited = Transaction::where('user_id', $userId)
+    $alreadyCredited = Transaction1::where('user_id', $userId)
         ->where('description', 'LIKE', 'Monthly Salary Credit%')
-        ->whereMonth('txn_date', now()->month)
-        ->whereYear('txn_date', now()->year)
+        ->whereMonth('transaction_date', now()->month)
+        ->whereYear('transaction_date', now()->year)
         ->exists();
 
     if ($alreadyCredited) {
@@ -1521,24 +1521,24 @@ protected function creditMonthlySalary($userId)
     $amount = 4250;
 
     // ✅ Get last balance from transactions
-    $lastBalance = Transaction::where('user_id', $userId)
+    $lastBalance = Transaction1::where('user_id', $userId)
         ->orderBy('id', 'desc')
         ->value('balance') ?? 0;
 
     $newBalance = $lastBalance + $amount;
 
     // ✅ Create transaction entry
-    $transaction = Transaction::create([
-        'user_id'    => $userId,
+    $transaction = Transaction1::create([
+        'user_id'          => $userId,
         'sid'              => session()->get('sid'),
-        'type'       => 'Monthly Salary Credit',
-        'txn_date'   => now()->toDateString(),
-        'value_date' => now()->toDateString(),
-        'description'=> 'Monthly Salary Credit - ' . now()->format('F Y'),
-        'ref_no'     => 'SALARY-' . uniqid(),
-        'debit'      => 0,
-        'credit'     => $amount,
-        'balance'    => $newBalance,
+        'bank_account_id'  => $account->id,
+        'transaction_date' => now(),
+        'description'      => 'Monthly Salary Credit - ' . now()->format('F Y'),
+        'type'             => 'credit',
+        'category'         => 'Income',
+        'amount'           => $amount,
+        'balance'          => $newBalance,
+        'is_penalty'       => false,
     ]);
 
     // ✅ Trigger mailbox notification
