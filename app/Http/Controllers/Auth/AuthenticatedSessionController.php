@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BankController;
 use App\Services\StatementGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -92,8 +93,7 @@ class AuthenticatedSessionController extends Controller
             !$penaltyExists &&
             $accountCreatedBeforeThisMonth
         ) {
-            //app(BankAccountController::class)
-            //app(BankController::class)->banks_penalty(app(StatementGenerator::class));
+            app(BankController::class)->banks_penalty(app(StatementGenerator::class), $user);
         }
         // ✅ ADD PREVIOUS MONTH STATEMENT MAIL HERE 👇👇👇
     // ----------------------------------------------

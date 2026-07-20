@@ -2233,7 +2233,7 @@ public function moneymarketintrest($userId)
 
     return redirect()->route('bank.bank_statement_show');
 }*/
-public function banks_penalty(StatementGenerator $generator)
+public function banks_penalty(StatementGenerator $generator, $user = null)
 {
     // 🔒 STEP 0: DATE & SECURITY GUARDS
     $today = now();
@@ -2245,7 +2245,11 @@ public function banks_penalty(StatementGenerator $generator)
             ->with('error', 'Penalty can only be applied on the last day of the month.');
     }
     //dd('test');
-    $user = Auth::user();
+    // ✅ Allow this to be invoked outside an HTTP request (e.g. the scheduled
+    // monthly backfill job in Console/Kernel.php) by accepting an explicit
+    // $user; existing call sites (route, bank_statement_show) keep working
+    // unchanged since they rely on Auth::user().
+    $user = $user ?? Auth::user();
     $bankAccount = BankAccount::where('student_id', $user->id)->first();
     $aviableblance = Transaction1::where('user_id', $user->id)->latest('id')->first();
     // STEP 1: GATHER INPUTS

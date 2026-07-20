@@ -72,10 +72,13 @@ class Kernel extends ConsoleKernel
             // gates line up with the actual German calendar day.
             $now = \Carbon\Carbon::now('Europe/Berlin');
 
+            $isLastDayOfMonth = $now->isSameDay($now->copy()->endOfMonth());
+
             \App\Models\User::where('role', 4)
-                ->chunkById(100, function ($students) use ($now) {
+                ->chunkById(100, function ($students) use ($now, $isLastDayOfMonth) {
                     $statementGenerator = app(\App\Services\StatementGenerator::class);
                     $sessionController = app(\App\Http\Controllers\Auth\AuthenticatedSessionController::class);
+                    $bankController = app(\App\Http\Controllers\BankController::class);
 
                     foreach ($students as $student) {
                         $accountCreatedAt = \Carbon\Carbon::parse($student->created_at);
@@ -99,6 +102,22 @@ class Kernel extends ConsoleKernel
 
                             if ($now->day >= 7) {
                                 $sessionController->ensureMonthlyBills($student);
+                            }
+
+                            // ----- Last-day-of-month penalty (mirrors login-flow guard) -----
+                            if ($isLastDayOfMonth) {
+                                $accountCreatedBeforeThisMonth = $accountCreatedAt
+                                    ->lessThan($now->copy()->startOfMonth());
+
+                                $penaltyExists = \App\Models\Transaction1::where('user_id', $student->id)
+                                    ->where('category', 'Penalty')
+                                    ->whereYear('transaction_date', $now->year)
+                                    ->whereMonth('transaction_date', $now->month)
+                                    ->exists();
+
+                                if ($accountCreatedBeforeThisMonth && !$penaltyExists) {
+                                    $bankController->banks_penalty($statementGenerator, $student);
+                                }
                             }
                         } catch (\Throwable $e) {
                             \Illuminate\Support\Facades\Log::error('Monthly finance backfill failed for user', [
