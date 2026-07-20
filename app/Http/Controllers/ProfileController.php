@@ -1141,9 +1141,10 @@ private function getEngagementData($studentId)
 {
     $now = now();
 
-    // Academic year starts in September
-    $academicStartMonth = 8; // JS style (0-based)
-    $academicStartYear = $now->month >= 9 ? $now->year : $now->year - 1;
+    // Academic year start month centralized in config('zedville.academic_year_start_month')
+    $academicYearStartMonth1Based = config('zedville.academic_year_start_month', 4);
+    $academicStartMonth = $academicYearStartMonth1Based - 1; // JS style (0-based)
+    $academicStartYear = $now->month >= $academicYearStartMonth1Based ? $now->year : $now->year - 1;
 
     $pointsMap = [
         'PLATINUM' => 4,
@@ -1281,9 +1282,10 @@ private function getFinHeroData($studentId)
 {
     $now = now();
 
-    // Academic year starts September
-    $academicStartMonth = 8; // JS style (0-based)
-    $academicStartYear = $now->month >= 9 ? $now->year : $now->year - 1;
+    // Academic year start month centralized in config('zedville.academic_year_start_month')
+    $academicYearStartMonth1Based = config('zedville.academic_year_start_month', 4);
+    $academicStartMonth = $academicYearStartMonth1Based - 1; // JS style (0-based)
+    $academicStartYear = $now->month >= $academicYearStartMonth1Based ? $now->year : $now->year - 1;
 
     $pointsMap = [
         'LEGEND'   => 4,

@@ -158,7 +158,7 @@ class FinheroBadgeCalculatorService
 
     public function getAcademicYear(int $month, int $year): string
     {
-        $startMonth = 9; // September — TODO: adjust if needed
+        $startMonth = config('zedville.academic_year_start_month', 4);
         return $month >= $startMonth
             ? "{$year}-" . ($year + 1)
             : ($year - 1) . "-{$year}";

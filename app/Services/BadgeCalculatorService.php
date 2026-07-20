@@ -200,15 +200,13 @@ class BadgeCalculatorService
 
     /**
      * Determine academic year string from month/year.
-     * Academic year runs September to August.
-     * e.g. Month 5 (May) 2026 → "2025-2026"
-     *      Month 10 (Oct) 2025 → "2025-2026"
-     *
-     * TODO: Adjust the start month if your academic year starts differently.
+     * Academic year start month is centralized in config('zedville.academic_year_start_month').
+     * e.g. with start month 4 (April): Month 5 (May) 2026 → "2026-2027"
+     *      Month 3 (Mar) 2026 → "2025-2026"
      */
     public function getAcademicYear(int $month, int $year): string
     {
-        $academicStartMonth = 9; // September — change if needed
+        $academicStartMonth = config('zedville.academic_year_start_month', 4);
 
         if ($month >= $academicStartMonth) {
             return $year . '-' . ($year + 1);

@@ -119,7 +119,8 @@ class ParticipationService
 
     private function academicYear(int $month, int $year): string
     {
-        return $month >= 9 ? "{$year}-" . ($year+1) : ($year-1) . "-{$year}";
+        $startMonth = config('zedville.academic_year_start_month', 4);
+        return $month >= $startMonth ? "{$year}-" . ($year+1) : ($year-1) . "-{$year}";
     }
     /*public function handleActivity($studentId, $activityKey, $refId = null)
 {

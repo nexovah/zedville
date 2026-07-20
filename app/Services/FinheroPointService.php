@@ -18,7 +18,8 @@ class FinheroPointService
         // Auto academic year if not passed
         if (!$academicYear) {
             $year = $now->year;
-            $academicYear = ($now->month >= 4)
+            $startMonth = config('zedville.academic_year_start_month', 4);
+            $academicYear = ($now->month >= $startMonth)
                 ? $year . '-' . ($year + 1)
                 : ($year - 1) . '-' . $year;
         }
