@@ -76,6 +76,16 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+            // ✅ Authoritative balance re-check under row lock — the check
+            // above happened before the transaction opened, so it can't
+            // prevent two concurrent orders from racing. This re-read with
+            // lockForUpdate() is the one that actually protects the balance.
+            $runningBalance = \App\Services\BalanceService::lockedBalance($user->id);
+
+            if ($runningBalance < $request->total) {
+                throw new \Exception('Insufficient balance');
+            }
+
             // 4. Deduct balance
             /*DB::table('bank_accounts')
                 ->where('id', $bankAccount->id)
@@ -92,7 +102,6 @@ class OrderController extends Controller
                 'created_at'=> now(),
                 'updated_at'=> now(),
             ]);
-            $runningBalance = $latestTxn->balance;
             // 6. Order items
             foreach ($request->cart as $item) {
                  $itemSubtotal = $item['price'] * $item['quantity'];
@@ -221,6 +230,16 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+            // ✅ Authoritative balance re-check under row lock — the check
+            // above happened before the transaction opened, so it can't
+            // prevent two concurrent orders from racing. This re-read with
+            // lockForUpdate() is the one that actually protects the balance.
+            $runningBalance = \App\Services\BalanceService::lockedBalance($user->id);
+
+            if ($runningBalance < $request->total) {
+                throw new \Exception('Insufficient balance');
+            }
+
             // 4. Deduct balance
             /*DB::table('bank_accounts')
                 ->where('id', $bankAccount->id)
@@ -237,7 +256,6 @@ class OrderController extends Controller
                 'created_at'=> now(),
                 'updated_at'=> now(),
             ]);
-            $runningBalance = $latestTxn->balance;
             // 6. Order items
             foreach ($request->cart as $item) {
                  $itemSubtotal = $item['price'] * $item['quantity'];

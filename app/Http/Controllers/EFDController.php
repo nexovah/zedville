@@ -535,47 +535,63 @@ public function storeDonation(Request $request)
             'status' => false
         ]);
     }
-    // Optional: Check if user has enough balance
-    $latestTxn = Transaction1::where('user_id', $user->id)
-        ->latest('id')
-        ->first();
-    $lastBalance = $latestTxn ? $latestTxn->balance : 0;
 
-    if ($request->amount > $lastBalance) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Insufficient balance.'
-        ]);
+    try {
+        [$txn, $newBalance] = DB::transaction(function () use ($user, $bank, $request) {
+            // ✅ Authoritative balance check under row lock — prevents two
+            // concurrent donation requests from both reading the same stale
+            // balance and both passing the insufficient-funds check.
+            $lastBalance = \App\Services\BalanceService::lockedBalance($user->id);
+
+            if ($request->amount > $lastBalance) {
+                throw new \RuntimeException('INSUFFICIENT_BALANCE');
+            }
+
+            // First store donation
+            $donation = Donation::create([
+                'user_id' => $user->id,
+                'npo_name' => $request->npo_name,
+                'account_no' => $request->account_no,
+                'amount' => $request->amount
+            ]);
+
+            // Generate transaction ID
+            $txn = 'TXN-'.date('Y').'-'.str_pad($donation->id,6,'0',STR_PAD_LEFT);
+
+            // Update record with transaction id
+            $donation->transaction_ref = $txn;
+            $donation->save();
+
+            $newBalance = $lastBalance - $request->amount;
+
+            //Store Trasection
+             // Optionally, create a transaction record
+            Transaction1::create([
+                'user_id' => $user->id,
+                'bank_account_id' => $bank->id,
+                'transaction_date' => now(), // ✅ current timestamp
+                'description' => 'Donation to ' . $request->npo_name, // optional descriptive text
+                'type' => 'debit',
+                'category' => 'Donation',
+                'amount' => $request->amount,
+                'balance' => $newBalance,
+            ]);
+
+            return [$txn, $newBalance];
+        });
+    } catch (\RuntimeException $e) {
+        if ($e->getMessage() === 'INSUFFICIENT_BALANCE') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Insufficient balance.'
+            ]);
+        }
+        throw $e;
     }
-    // First store donation
-    $donation = Donation::create([
-        'user_id' => auth()->id(),
-        'npo_name' => $request->npo_name,
-        'account_no' => $request->account_no,
-        'amount' => $request->amount
-    ]);
 
-    // Generate transaction ID
-    $txn = 'TXN-'.date('Y').'-'.str_pad($donation->id,6,'0',STR_PAD_LEFT);
-
-    // Update record with transaction id
-    $donation->transaction_ref = $txn;
-    $donation->save();
-    //Store Trasection
-     // Optionally, create a transaction record
-    Transaction1::create([
-    'user_id' => $user->id,
-    'bank_account_id' => $bank->id,
-    'transaction_date' => now(), // ✅ current timestamp
-    'description' => 'Donation to ' . $request->npo_name, // optional descriptive text
-    'type' => 'debit',
-    'category' => 'Donation',
-    'amount' => $request->amount,
-    'balance' => $lastBalance - $request->amount,
-]);
-// Call Participation Logs
-app(ParticipationService::class)->award($user->id, 'donation', $request->npo_name);
-// Call Participation Logs
+    // Call Participation Logs
+    app(ParticipationService::class)->award($user->id, 'donation', $request->npo_name);
+    // Call Participation Logs
     return response()->json([
         'status' => true,
         'txn' => $txn

@@ -768,6 +768,18 @@ public function storesurvey(Request $request)
     try {
 
         /* ============================
+           ✅ Authoritative balance re-check under row lock — the check
+           above happened before the transaction opened, so it can't
+           prevent a concurrent spend from racing in between. Re-verify
+           with a locked read and use that value as the running balance.
+        ============================ */
+        $availableBalance = \App\Services\BalanceService::lockedBalance($userId);
+
+        if ($availableBalance < $totalRequired) {
+            throw new \Exception('Insufficient balance');
+        }
+
+        /* ============================
            6️⃣ Store survey
         ============================ */
         $survey = ConsumerSurvey::create([

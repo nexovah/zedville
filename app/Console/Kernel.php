@@ -53,7 +53,7 @@ class Kernel extends ConsoleKernel
         })->everyMinute(); // check every minute
         // ✅ ADD THIS (Badge Calculation)
     $schedule->command('badges:calculate-monthly')
-        ->monthlyOn(31, '23:59')
+        ->lastDayOfMonth('23:59')
         ->withoutOverlapping()
         ->runInBackground();
 
