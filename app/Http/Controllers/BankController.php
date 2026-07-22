@@ -532,10 +532,14 @@ public function transfer_store(Request $request)
     }
 
     // 3️⃣ Check sender balance
-    $latestTxnSender = Transaction1::where('user_id', $sender->id)
+    /*$latestTxnSender = Transaction1::where('user_id', $sender->id)
         //->latest('transaction_date')
          ->orderBy('transaction_date', 'desc')
          ->orderBy('id', 'desc')
+        ->first();*/
+
+    $latestTxnSender = Transaction1::where('user_id', $sender->id)
+        ->latest('id') // or latest('created_at') if you track timestamps
         ->first();
     $senderBalance = $latestTxnSender?->balance ?? 0;
 
@@ -646,10 +650,14 @@ if ($request->boolean('saveAsBeneficiary')) {
 
             $senderBank = BankAccount::where('student_id', $sender->id)->first();
 
-            $latestSenderTxn = Transaction1::where('user_id', $sender->id)
+            /*$latestSenderTxn = Transaction1::where('user_id', $sender->id)
                 //->latest('transaction_date')
                 ->orderBy('transaction_date', 'desc')
                 ->orderBy('id', 'desc')
+                ->first();*/
+
+            $latestSenderTxn = Transaction1::where('user_id', $sender->id)
+                        ->latest('id') // or latest('created_at') if you track timestamps
                 ->first();
 
             /*$latestSenderTxn = Transaction1::where('user_id', $sender->id)
@@ -865,8 +873,11 @@ public function processBillPayment($userId, $amount, $beneficiaryName, $accountN
         $senderBank = BankAccount::where('student_id', $userId)->first();
         if (!$senderBank) return;
 
+        /*$latestTxn = Transaction1::where('user_id', $userId)
+            ->latest('transaction_date')->first();*/
         $latestTxn = Transaction1::where('user_id', $userId)
-            ->latest('transaction_date')->first();
+        ->latest('id') // or latest('created_at') if you track timestamps
+        ->first();
         $balance = $latestTxn?->balance ?? 0;
         //$newBalance = $balance - $amount;
         $newBalance = max(0, $balance - $amount);
