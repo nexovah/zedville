@@ -64,9 +64,9 @@
 
 <body>
 <div class="userAdmin">
-    <div class="flex h-screen overflow-y-hidden" x-data="setup()" x-init="$refs.loading.classList.add('hidden')">
+    <div class="flex h-screen overflow-y-hidden" x-data="setup()">
         <!-- Loading screen -->
-        <div x-ref="loading" class="fixed inset-0 z-50 flex items-center justify-center text-white bg-white bg-opacity-90" style="backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px)">
+        <div id="pageLoader" x-ref="loading" class="fixed inset-0 z-50 flex items-center justify-center text-white bg-white bg-opacity-90 opacity-100 transition-opacity duration-300 ease-in-out" style="backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px)">
             <div class="themeLoader">
                 <span class="ant-spin-dot">
                     <i></i>

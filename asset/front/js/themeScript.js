@@ -47,6 +47,51 @@ return {
   }
 }
 
+// Page loader: show while navigating away from a sidebar menu link,
+// fade out once the destination page has fully loaded.
+(function () {
+  function hidePageLoader() {
+    var loader = document.getElementById('pageLoader');
+    if (!loader) return;
+    loader.classList.add('opacity-0');
+    loader.classList.remove('opacity-100');
+    window.setTimeout(function () {
+      loader.classList.add('hidden');
+    }, 300);
+  }
+
+  function showPageLoader() {
+    var loader = document.getElementById('pageLoader');
+    if (!loader) return;
+    loader.classList.remove('hidden');
+    // force reflow so the opacity transition replays on repeated clicks
+    void loader.offsetWidth;
+    loader.classList.remove('opacity-0');
+    loader.classList.add('opacity-100');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.sidenav a[href]').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var href = link.getAttribute('href');
+        if (!href || href === '#' || href.indexOf('javascript:') === 0 || link.target === '_blank') {
+          return;
+        }
+        showPageLoader();
+      });
+    });
+  });
+
+  window.addEventListener('load', hidePageLoader);
+
+  // restored from bfcache (browser back/forward) - loader must not stay stuck
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+      hidePageLoader();
+    }
+  });
+})();
+
 // Tooltip Script
 
 document.querySelectorAll('[data-tooltip]').forEach(el => {
