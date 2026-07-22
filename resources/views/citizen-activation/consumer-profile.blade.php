@@ -43,7 +43,7 @@
               @include('citizen-activation.layouts.surveys')
              <!-- Consumer profile code -->
             </div>
-            <div class="btn-row">
+            <!-- <div class="btn-row">
 
                 <a href="{{ route('CitizenActivation.autoDebit') }}"
                     class="ca-btn-secondary">
@@ -55,7 +55,7 @@
                     Complete & See My Profile →
                 </button>
 
-            </div>
+            </div> -->
         </div>
 
     </div>
