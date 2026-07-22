@@ -113,6 +113,13 @@ document.querySelectorAll('[data-tooltip]').forEach(el => {
   document.body.appendChild(tooltip); // Append outside clipping
 
   const showTooltip = () => {
+    // Sidebar menu tooltips should only appear when the menu is collapsed
+    // (i.e. its text label is hidden) - skip them while the sidebar is open.
+    const sidebarLabel = el.querySelector('.sidebarLabel');
+    if (sidebarLabel && sidebarLabel.offsetWidth > 0) {
+      return;
+    }
+
     tooltip.style.opacity = 1;
 
     // Clear old arrow direction classes

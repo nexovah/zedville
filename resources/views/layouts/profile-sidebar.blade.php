@@ -89,23 +89,27 @@
                 <a
                     href="{{ route('dashboard') }}"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="Home"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/home.svg')}}" alt="">
                     </span>
-                    <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Home</span>
+                    <span class="sidebarLabel w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Home</span>
                 </a>
             </li>
             <li class="{{ Route::is('profile.mailbox') ? 'active' : '' }}">
                 <a
                     href="{{ route('profile.mailbox') }}"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="City Mailbox"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/citymaill.svg')}}" alt="">
                     </span>
                     <!-- <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">City Mailbox</span> -->
-                     <div class="flex items-center justify-between w-[calc(100%-30px)]"
+                     <div class="sidebarLabel flex items-center justify-between w-[calc(100%-30px)]"
                         :class="{ 'lg:hidden': !isSidebarOpen }">
 
                         <span>City Mailbox</span>
@@ -124,11 +128,13 @@
                 <a
                     href="{{ route('bank.index') }}"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="Bank Account"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/backaccount.svg')}}" alt="">
                     </span>
-                    <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Bank Account</span>
+                    <span class="sidebarLabel w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Bank Account</span>
                 </a>
             </li>
             <li x-data="{ open: {{ Route::is(['education.city-mall', 'education.spending-tracker*','supermarket*', 'education.npos','city-mood','education.city-hall', 'education.main-hall', 'education.civic-chamber', 'education.well-being-room']) ? 'true' : 'false' }}  }" class="relative">
@@ -139,13 +145,15 @@
                     @click="open = !open"
                     class="w-full flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black"
                     :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="City"
+                    data-tooltip-placement="right"
                 >
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/cityhall.svg') }}" alt="">
                     </span>
 
                     <span
-                        class="w-[calc(100%-30px)] text-left"
+                        class="sidebarLabel w-[calc(100%-30px)] text-left"
                         :class="{ 'lg:hidden': !isSidebarOpen }"
                     >
                         City
@@ -208,44 +216,52 @@
                 <a
                     href="{{ route('education.educational_finance_department') }}"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="Educational Finance Department"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/department.svg')}}" alt="">
                     </span>
-                    <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Educational Finance Department</span>
+                    <span class="sidebarLabel w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Educational Finance Department</span>
                 </a>
             </li>
             <li>
                 <a
                     href="#"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="PISA"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/pisa.svg')}}" alt="">
                     </span>
-                    <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">PISA</span>
+                    <span class="sidebarLabel w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">PISA</span>
                 </a>
             </li>
             <li {{ Route::is('education.calendar') ? 'active' : '' }}>
                 <a
                     href="{{ route('education.calendar') }}"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="Calendar"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/calendar.svg')}}" alt="">
                     </span>
-                    <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Calendar</span>
+                    <span class="sidebarLabel w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Calendar</span>
                 </a>
             </li>
             <li class="{{ Route::is('profile.edit') ? 'active' : '' }}">
                 <a
                     href="{{ route('profile.edit') }}"
                     class="flex items-center px-2 py-3 space-x-2 text-base font-semibold rounded-md hover:bg-[#E9F0E9] hover:text-black active"
-                    :class="{'justify-center': !isSidebarOpen}">
+                    :class="{'justify-center': !isSidebarOpen}"
+                    data-tooltip="Settings"
+                    data-tooltip-placement="right">
                     <span class="w-[30px]">
                         <img src="{{ asset('asset/front/images/settings.svg')}}" alt="">
                     </span>
-                    <span class="w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Settings</span>
+                    <span class="sidebarLabel w-[calc(100%-30px)]" :class="{ 'lg:hidden': !isSidebarOpen }">Settings</span>
                 </a>
             </li>
             <!-- Sidebar Links... -->
