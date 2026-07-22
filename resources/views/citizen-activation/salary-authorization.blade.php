@@ -17,7 +17,7 @@
                 Step 3 of 6 — Salary Setup
             </div>
 
-            <div class="step-title">
+            <div class="ca-step-title">
                 Get paid — set up your salary
             </div>
 
@@ -118,12 +118,12 @@
                 <div class="btn-row">
 
                     <a href="{{ route('CitizenActivation.bankAccount') }}"
-                       class="btn-secondary">
+                       class="ca-btn-secondary">
                         ← Back
                     </a>
 
                     <button type="submit"
-                            class="btn-primary">
+                            class="ca-btn-primary">
                         Authorise Direct Deposit →
                     </button>
 

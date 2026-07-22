@@ -17,7 +17,7 @@
                 Step 5 of 6 — Consumer Profile
             </div>
 
-            <div class="step-title">
+            <div class="ca-step-title">
                 What kind of spender are you?
             </div>
 
@@ -46,12 +46,12 @@
             <div class="btn-row">
 
                 <a href="{{ route('CitizenActivation.autoDebit') }}"
-                    class="btn-secondary">
+                    class="ca-btn-secondary">
                     ← Back
                 </a>
 
                 <button type="submit"
-                        class="btn-primary">
+                        class="ca-btn-primary">
                     Complete & See My Profile →
                 </button>
 

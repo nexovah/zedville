@@ -16,7 +16,7 @@
                 Step 1 of 6 — Welcome
             </div>
 
-            <div class="step-title">
+            <div class="ca-step-title">
                 Welcome to Zedville,
                 <span>{{ Auth::user()->name ?? 'Student' }}</span>!
             </div>
@@ -67,7 +67,7 @@
             <div class="btn-row">
 
                 <a href="{{ route('CitizenActivation.bankAccount') }}"
-                   class="btn-primary">
+                   class="ca-btn-primary">
                     Start Activation →
                 </a>
 

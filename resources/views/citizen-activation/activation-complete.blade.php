@@ -17,7 +17,7 @@
                 Step 6 of 6 — Complete
             </div>
 
-            <div class="step-title">
+            <div class="ca-step-title">
                 You are all set up,
                 <span>{{ Auth::user()->name }}</span>!
             </div>
@@ -188,12 +188,12 @@
             <div class="btn-row" style="margin-top:1.5rem">
 
                 <a href="#"
-                   class="btn-primary">
+                   class="ca-btn-primary">
                     Go to My Bank Account →
                 </a>
 
                 <a href="{{ route('CitizenActivation.consumerProfile') }}"
-                   class="btn-secondary">
+                   class="ca-btn-secondary">
                     ← Back
                 </a>
 

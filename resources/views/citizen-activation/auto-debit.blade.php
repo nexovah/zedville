@@ -17,7 +17,7 @@
                 Step 4 of 6 — Bill Payments
             </div>
 
-            <div class="step-title">
+            <div class="ca-step-title">
                 Pay your bills automatically
             </div>
 
@@ -197,12 +197,12 @@
                 <div class="btn-row">
 
                     <a href="{{ route('CitizenActivation.salaryAuthorization') }}"
-                       class="btn-secondary">
+                       class="ca-btn-secondary">
                         ← Back
                     </a>
 
                     <button type="submit"
-                            class="btn-primary">
+                            class="ca-btn-primary">
                         Confirm & Activate Auto-Pay →
                     </button>
 

@@ -60,7 +60,12 @@
   .progress-seg.active { background: var(--green-light); }
 
   /* ---- Step card ---- */
-  .step {
+  /* Prefixed with ca- to avoid clashing with the pre-existing .step /
+     .step.active / .step-title classes defined in surveys.css, which is
+     loaded on the same shared layout (layouts.profile) and used by the
+     unrelated consumer-survey wizard (profile/partials/surveys.blade.php
+     and citizen-activation/layouts/surveys.blade.php). */
+  .ca-step {
     display: none;
     background: var(--bg-white);
     border: 1px solid var(--border);
@@ -68,7 +73,7 @@
     overflow: hidden;
     margin-bottom: 0;
   }
-  .step.active { display: block; }
+  .ca-step.active { display: block; }
 
   .step-header {
     padding: 1.5rem 1.75rem 1.25rem;
@@ -82,7 +87,7 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
   }
-  .step-title {
+  .ca-step-title {
     font-family: 'Nunito', sans-serif;
     font-size: 1.55rem;
     font-weight: 800;
@@ -296,7 +301,7 @@
     margin-top: 1.25rem;
     flex-wrap: wrap;
   }
-  .btn-primary {
+  .ca-btn-primary {
     display: inline-flex; align-items: center; gap: 6px;
     background: var(--green-mid);
     color: #fff;
@@ -310,9 +315,9 @@
     transition: background 0.2s, transform 0.1s;
     text-decoration: none;
   }
-  .btn-primary:hover  { background: var(--green-dark); }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-secondary {
+  .ca-btn-primary:hover  { background: var(--green-dark); }
+  .ca-btn-primary:active { transform: scale(0.98); }
+  .ca-btn-secondary {
     display: inline-flex; align-items: center; gap: 6px;
     background: transparent;
     color: var(--text-secondary);
@@ -325,7 +330,7 @@
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
   }
-  .btn-secondary:hover { border-color: var(--green-light); color: var(--green-mid); }
+  .ca-btn-secondary:hover { border-color: var(--green-light); color: var(--green-mid); }
 
   /* ---- Completion screen ---- */
   .completion-banner {
@@ -421,6 +426,6 @@
   @media (max-width: 540px) {
     html { font-size: 16px; }
     .form-grid { grid-template-columns: 1fr; }
-    .step-title { font-size: 1.3rem; }
+    .ca-step-title { font-size: 1.3rem; }
     .page-shell { padding: 1rem 1rem 3rem; }
   }
