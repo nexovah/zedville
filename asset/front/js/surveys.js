@@ -36,13 +36,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupEventListeners() {
     // Agreement checkboxes
-    document.getElementById('agreement1').addEventListener('change', function() {
-        document.getElementById('step1Next').disabled = !this.checked;
-    });
+    const agreement1 = document.getElementById('agreement1');
+    if (agreement1) {
+        agreement1.addEventListener('change', function() {
+            document.getElementById('step1Next').disabled = !this.checked;
+        });
+    }
 
-    document.getElementById('agreement2').addEventListener('change', function() {
-        document.getElementById('step3Next').disabled = !this.checked;
-    });
+    const agreement2 = document.getElementById('agreement2');
+    if (agreement2) {
+        agreement2.addEventListener('change', function() {
+            document.getElementById('step3Next').disabled = !this.checked;
+        });
+    }
 
     // Radio button groups
     document.querySelectorAll('input[type="radio"]').forEach(radio => {
