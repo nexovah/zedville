@@ -468,8 +468,10 @@ function restartSurvey() {
 }
 
 function updateProgress() {
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
     const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
-    document.getElementById('progressBar').style.width = progress + '%';
+    progressBar.style.width = progress + '%';
 }
 
 function showError(message) {

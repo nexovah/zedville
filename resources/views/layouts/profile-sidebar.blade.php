@@ -6,7 +6,7 @@
     x-transition:leave="transition transform duration-300"
     x-transition:leave-start="translate-x-0 opacity-100 ease-out"
     x-transition:leave-end="-translate-x-full opacity-0 ease-in"
-    class="fixed inset-y-0 z-10 flex flex-col flex-shrink-0 w-72 max-h-screen overflow-hidden transition-all transform border-r-[2px] border-color-[#E8E8EA] lg:z-auto lg:static"
+    class="fixed inset-y-0 z-10 flex flex-col flex-shrink-0 w-72 max-h-screen overflow-hidden transition-all transform border-r-[2px] border-color-[#E8E8EA] bg-[#EEF9F5] lg:z-auto lg:static"
     :class="{'-translate-x-full lg:translate-x-0 lg:w-20': !isSidebarOpen}">
     <!-- sidebar header -->
     <div class="flex items-center justify-between flex-shrink-0" :class="{'lg:justify-center': !isSidebarOpen}">

@@ -1349,8 +1349,8 @@
     
     
     <script src="{{ asset('asset/front/js/themePlugin.js') }}?ver={{ rand(111, 999) }}" type="text/javascript"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.7.3/alpine.js" type="text/javascript"></script>
     <script src="{{ asset('asset/front/js/themeScript.js') }}?ver={{ rand(111, 999) }}" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('asset/front/js/surveys.js') }}?ver={{ rand(111, 999) }}" type="text/javascript"></script>

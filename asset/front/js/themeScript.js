@@ -186,7 +186,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  tabButtons[0].click();
+  if (tabButtons.length) {
+    tabButtons[0].click();
+  }
 });
 
 // Dropdown Script
