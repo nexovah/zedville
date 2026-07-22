@@ -154,7 +154,7 @@
                     <!-- Arrow icon -->
                     <svg
                         class="w-4 h-4 ml-auto transition-transform duration-300"
-                        :class="{ 'rotate-180': open }"
+                        :class="{ 'rotate-180': open, 'lg:hidden': !isSidebarOpen }"
                         fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24"
                     >
