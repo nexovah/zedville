@@ -92,7 +92,7 @@
             </div>
         </header>
 
-        <header class="flex-shrink-0 border-b">
+        <header class="flex-shrink-0 border-b bg-white">
             <div class="flex items-center justify-between py-2 px-4 lg:px-8" x-data="{ changeImageModal: false, notificationDrawer: false }">
                 <!-- Navbar left -->
                 <div class="flex items-center space-x-3">
