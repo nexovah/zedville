@@ -250,7 +250,7 @@
                   <div class="phptoPharane">
                     @foreach ($posters as $list)
                       <div class="photoholder">
-                        <img class='previewEnabled' src="{{ asset('public/uploads/room_poster/' . $list->poster_image) }}" alt="Poster">
+                        <img class='previewEnabled' data-src="{{ asset('public/uploads/room_poster/' . $list->poster_image) }}" alt="Poster" loading="lazy">
                       </div>
                     @endforeach
                    
@@ -293,7 +293,7 @@
                               <div style="padding: 18% 3% 3% 3%" class="absolute w-full h-full top-0 left-0 ">
                                 <div class="w-full h-full overflow-hidden">
                                   <img  class="h-full w-auto object-cover previewEnabled"
-                                    src="{{ asset('public/uploads/room_poster/' . $list->poster_image) }}" />
+                                    data-src="{{ asset('public/uploads/room_poster/' . $list->poster_image) }}" loading="lazy" />
                                 </div>
                               </div>
                             </div>

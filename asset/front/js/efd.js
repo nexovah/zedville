@@ -60,6 +60,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Door Modal
     function openDoorModal() {
         document.getElementById('doorModal').classList.remove('hidden');
+        // Lazily load poster images only now that the modal is actually opened,
+        // instead of eagerly loading every poster image on page load.
+        document.querySelectorAll('#doorModal img[data-src]').forEach(function (img) {
+            img.src = img.dataset.src;
+        });
         // 🎯 CALL REWARD API
         fetch('/zedville/award-poster-room', {
             method: 'POST',
