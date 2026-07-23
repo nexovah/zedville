@@ -60,6 +60,7 @@
             },
         };
     </script>
+    <style>[x-cloak] { display: none !important; }</style>
 </head>
 
 <body>
@@ -138,6 +139,7 @@
 
                         <!-- Dropdown card -->
                        <div
+    x-cloak
     @click.away="isOpen = false"
     @keydown.escape="isOpen = false"
     x-show.transition.opacity="isOpen"
@@ -1557,7 +1559,4 @@ window.quizPopup = function () {
     });
 </script>
 </body>
-<style>
-    [x-cloak] { display: none; }
-</style>
 </html>
