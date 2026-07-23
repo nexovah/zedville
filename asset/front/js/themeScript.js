@@ -47,6 +47,7 @@ return {
   }
 }
 
+/* Content Pre Loader code written here
 // Page loader: show while navigating away from a sidebar menu link,
 // fade out once the destination page has fully loaded.
 (function () {
@@ -91,6 +92,7 @@ return {
     }
   });
 })();
+*/
 
 // Tooltip Script
 
