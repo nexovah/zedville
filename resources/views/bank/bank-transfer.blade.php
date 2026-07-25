@@ -115,9 +115,18 @@
                             </label>
                         </div> -->
                         <div class="flex flex-col gap-2 mt-2">
+                            <label id="primaryAccountOption" class="inline-flex items-center gap-2">
+                                <input type="radio"
+                                    name="own_account_option"
+                                    value="Primary Savings Account"
+                                    class="form-radio account-radio text-indigo-600"
+                                    data-account="{{ $bankaccountdetails->primary_savings_account_number }}"
+                                    data-name="{{ $bankaccountdetails->student_name }}">
 
+                                <span class="ml-1">Primary Savings Account</span>
+                            </label>
                             {{-- Emergency Fund Account --}}
-                            <label class="inline-flex items-center gap-2
+                            <label id="emergencyAccountOption" class="inline-flex items-center gap-2
                                 {{ $bankaccountdetails->is_open_emergency_account == 0 ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 
                                 <input type="radio"
@@ -138,7 +147,7 @@
                             </label>
 
                             {{-- Money Market Account --}}
-                            <label class="inline-flex items-center gap-2
+                            <label id="moneyMarketOption" class="inline-flex items-center gap-2
                                 {{ $bankaccountdetails->is_open_money_market_account == 0 ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 
                                 <input type="radio"
@@ -410,6 +419,7 @@ document.querySelectorAll('.account-radio').forEach(radio => {
     });
 });
 document.getElementById('accountNumberInput').addEventListener('input', function() {
+    
     const sortCodeField = document.getElementById('sort_code');
     
     if (this.value.trim() !== '') {
@@ -418,6 +428,49 @@ document.getElementById('accountNumberInput').addEventListener('input', function
         sortCodeField.value = ''; // Clear if user deletes the account number
     }
 });
+document.getElementById('formAccountSelect').addEventListener('change', function () {
 
+    const primary   = document.getElementById('primaryAccountOption');
+    const emergency = document.getElementById('emergencyAccountOption');
+    const money     = document.getElementById('moneyMarketOption');
+
+    // Hide all options first
+    primary.style.display = 'none';
+    emergency.style.display = 'none';
+    money.style.display = 'none';
+
+    if (this.value === 'Primary Savings Account') {
+        emergency.style.display = 'flex';
+        money.style.display = 'flex';
+    }
+    else if (this.value === 'Emergency Fund Account') {
+        primary.style.display = 'flex';
+        money.style.display = 'flex';
+    }
+    else if (this.value === 'Money Market Account') {
+        primary.style.display = 'flex';
+        emergency.style.display = 'flex';
+    }
+
+    // Clear selected radio
+    document.querySelectorAll('.account-radio').forEach(function(radio){
+        radio.checked = false;
+    });
+
+    // Clear fields
+    document.getElementById('accountNumberInput').value = '';
+    document.getElementById('beneficiaryNameInput').value = '';
+    document.getElementById('sort_code').value = '';
+});
+
+document.getElementById('accountNumberInput').addEventListener('input', function() {
+    const sortCodeField = document.getElementById('sort_code');
+
+    if (this.value.trim() !== '') {
+        sortCodeField.value = 'UNIBWLXX';
+    } else {
+        sortCodeField.value = '';
+    }
+});
 </script>
 @endpush

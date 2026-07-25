@@ -51,6 +51,8 @@ Route::get('/email/sent-email', [AdminEmailTemplateController::class, 'sentEmail
 //Education
 Route::get('/education/monthly-budget-activity', [AdminEducationController::class, 'monthly_budget_activity'])->name('admin.education.monthly-budget-activity');
 Route::post('/education/mba-position', [AdminEducationController::class, 'mba_position'])->name('admin.education.mba-position');
+Route::get('/education/mba-position/delete/{id}', [AdminEducationController::class, 'mba_position_delete'])
+    ->name('admin.education.mba-position.delete');
 
 Route::get('/education/emergency-fund-account', [AdminEducationController::class, 'emergencyFundAccount'])->name('admin.education.emergency-fund-account');
 Route::post('/education/emergency-fund-position', [AdminEducationController::class, 'emergencyFundPosition'])->name('admin.education.emergency-fund-position');
@@ -99,13 +101,13 @@ Route::get('/accounts', [AdminDashboardController::class, 'city_bank_account'])-
 //For NPOs
 Route::get('/npos', [AdminEducationController::class, 'npos'])->name('admin.npos.npos');
 Route::post('/npo/add-npo', [AdminEducationController::class, 'add_npo'])->name('admin.npo.add-npo');
-Route::get('/npo/edit/{id}', [AdminEducationController::class,'edit_npo']);
-Route::post('/npo/update/{id}', [AdminEducationController::class,'update_npo']);
-Route::get('/npo/delete/{id}', [AdminEducationController::class,'delete_npo']);
+Route::get('/npo/edit/{id}', [AdminEducationController::class, 'edit_npo']);
+Route::post('/npo/update/{id}', [AdminEducationController::class, 'update_npo']);
+Route::get('/npo/delete/{id}', [AdminEducationController::class, 'delete_npo']);
 //For Login Question
 Route::get('/login-question', [AdminDashboardController::class, 'login_question'])->name('admin.login-question.login-question');
 Route::post('/login-question/loginQuestionStore', [AdminDashboardController::class, 'loginQuestionStore'])->name('admin.login-question.loginQuestionStore');
-Route::delete('/login-question/{id}', [AdminDashboardController::class, 'loginQuestionDestroy']) ->name('admin.login-question.loginQuestionDestroy');
+Route::delete('/login-question/{id}', [AdminDashboardController::class, 'loginQuestionDestroy'])->name('admin.login-question.loginQuestionDestroy');
 Route::get('/login-question/school-month-settings', [AdminDashboardController::class, 'school_month_settings'])->name('admin.login-question.school-month-settings');
 Route::post('/login-question/bulkSaveSMS', [AdminDashboardController::class, 'bulkSaveSMS'])->name('admin.login-question.bulkSaveSMS');
 // =====================================

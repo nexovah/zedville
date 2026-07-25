@@ -3,56 +3,176 @@
 @section('title', 'Emergency Fund Account')
 
 @section('content')
-<div class="adminHeading">
-    <h1 class="d-flex align-items-center theme-text-dark fw-500 fs-16 mab-20">Emergency Fund Account</h1>
-</div>
-<div class="row">
-    <div class="themeCard card card-custom card-stretch gutter-b mab-15">
-        <div class="card-body pall-30">
-            <form action="{{ url('admin/education/emergency-fund-position') }}" method="post">
-                @csrf
-                <div class="row justify-content-center">
-                    {{-- Class List --}}
-                    <div class="col-12 col-lg-6">
-                        <div class="form-group mab-25">
-                            <label class="form-label">Class</label>
+    <div class="adminHeading">
+        <h1 class="d-flex align-items-center theme-text-dark fw-500 fs-16 mab-20">Emergency Fund Account</h1>
+    </div>
+    <div class="row">
+        <div class="themeCard card card-custom card-stretch gutter-b mab-15">
+            <div class="card-body pall-30">
+                <form action="{{ url('admin/education/emergency-fund-position') }}" method="post">
+                    @csrf
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="row justify-content-center">
+                        {{-- Class List --}}
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group mab-25">
+                                <label class="form-label">Class</label>
 
-                            <select class="form-select" name="cid">
-                                <option value="">Select Class</option>
+                                <select class="form-select" name="cid" id="cid">
+                                    <option value="">Select Class</option>
 
-                                @foreach($classes as $class)
-                                    <option value="{{ $class->id }}"
-                                        {{ isset($position) && $position->cid == $class->id ? 'selected' : '' }}>
-                                        {{ $class->name }}
+                                    @foreach($classes as $class)
+                                        <option value="{{ $class->id }}">
+                                            {{ $class->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group mab-25">
+                                <label class="form-label">Position</label>
+                                <select class="form-select" aria-label="Default select example" name="position"
+                                    id="position">
+                                    <option value="">Select Position
                                     </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="form-group mab-25">
-                            <label  class="form-label">Position</label>
-                            <select class="form-select" aria-label="Default select example" name="position">
-                                <option value="" disabled {{ empty($position) ? 'selected' : '' }}>Select Position</option>
-                                <option value="required" 
-                                    {{ isset($position) && $position->required == 1 ? 'selected' : '' }}>
-                                    Required
-                                </option>
-                                <option value="optional" 
-                                    {{ isset($position) && $position->optional == 1 ? 'selected' : '' }}>
-                                    Optional
-                                </option>
-                            </select>
+                                    <option value="required">
+                                        Required
+                                    </option>
+                                    <option value="optional">
+                                        Optional
+                                    </option>
+                                </select>
 
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 text-end">
+                            <input type="submit" class="themeBtn text-white" value="Save">
                         </div>
                     </div>
-                    <div class="col-12 col-lg-6 text-end">
-                        <input type="submit" class="themeBtn text-white" value="Save">
-                    </div>
-                    </div>
-                </div>
+            </div>
             </form>
+            <div class="themeCard card card-custom mt-4">
+                <div class="card-body">
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>School</th>
+                                <th>Class</th>
+                                <th>Position</th>
+                                <th width="150">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @forelse($mbaList as $item)
+
+                                <tr>
+
+                                    <td>{{ $loop->iteration }}</td>
+
+                                    <td>{{ $item->school_name ?? 'Default' }}</td>
+
+                                    <td>{{ $item->class_name }}</td>
+
+                                    <td>
+                                        {{ $item->required ? 'Required' : 'Optional' }}
+                                    </td>
+
+                                    <td>
+
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-primary editBtn"
+                                            data-id="{{ $item->id }}" data-cid="{{ $item->cid }}"
+                                            data-position="{{ $item->required ? 'required' : 'optional' }}">
+                                            Edit
+                                        </a>
+
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-danger deleteBtn"
+                                            data-id="{{ $item->id }}">
+                                            Delete
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+                                    <td colspan="5" class="text-center">No Records Found</td>
+                                </tr>
+
+                            @endforelse
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
         </div>
     </div>
-</div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('.editBtn').forEach(function (btn) {
+
+            btn.addEventListener('click', function () {
+
+                document.getElementById('edit_id').value = this.dataset.id;
+                document.getElementById('cid').value = this.dataset.cid;
+                document.getElementById('position').value = this.dataset.position;
+
+                document.querySelector('.themeBtn').value = 'Update';
+
+                window.scrollTo({
+                    top: document.querySelector('form').offsetTop - 80,
+                    behavior: 'smooth'
+                });
+
+            });
+
+        });
+        //Delete code
+        document.querySelectorAll('.deleteBtn').forEach(function (btn) {
+
+            btn.addEventListener('click', async function () {
+
+                let id = this.dataset.id;
+
+                let randomCode = Math.floor(100000 + Math.random() * 900000);
+
+                const { value: code } = await Swal.fire({
+                    title: 'Delete MBA Position?',
+                    html: `
+                                <p>Type this code to confirm deletion</p>
+                                <h2 style="color:red">${randomCode}</h2>
+                            `,
+                    input: 'text',
+                    inputPlaceholder: 'Enter code',
+                    showCancelButton: true,
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Cancel'
+                });
+
+                if (code == randomCode) {
+
+                    window.location.href = "{{ url('admin/education/mba-position/delete') }}/" + id;
+
+                } else if (code !== undefined) {
+
+                    Swal.fire(
+                        'Wrong Code!',
+                        'Confirmation code does not match.',
+                        'error'
+                    );
+
+                }
+
+            });
+
+        });
+    </script>
 @endsection

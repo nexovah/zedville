@@ -64,11 +64,11 @@ class ClosetController extends Controller
     public static function addItem(string $studentId, int $catalogItemId, int $pricePaidZeds): int
     {
         return DB::table('student_closet')->insertGetId([
-            'student_id'      => $studentId,
+            'student_id' => $studentId,
             'catalog_item_id' => $catalogItemId,
             'price_paid_zeds' => $pricePaidZeds,
-            'purchase_date'   => now()->toDateString(),
-            'purchased_at'    => now(),
+            'purchase_date' => now()->toDateString(),
+            'purchased_at' => now(),
         ]);
     }
 
@@ -89,7 +89,7 @@ class ClosetController extends Controller
         $items = $rows->map(fn($r) => $this->formatClosetItem($r));
 
         return response()->json([
-            'items'      => $items,
+            'items' => $items,
             'totalValue' => $items->sum('pricePaidZeds'),
         ]);
     }
@@ -103,11 +103,11 @@ class ClosetController extends Controller
         $this->requireAuth();
         $this->requireAdminOrTutor();
 
-        $rows  = $this->fetchCloset($studentId);
+        $rows = $this->fetchCloset($studentId);
         $items = $rows->map(fn($r) => $this->formatClosetItem($r));
 
         return response()->json([
-            'items'      => $items,
+            'items' => $items,
             'totalValue' => $items->sum('pricePaidZeds'),
         ]);
     }
@@ -144,23 +144,23 @@ class ClosetController extends Controller
         $this->requireAdmin();
 
         $data = $request->validate([
-            'name'          => 'required|string|max:128',
-            'category'      => 'required|string|in:tech,transport,home,clothing,tools,other',
-            'icon'          => 'required|string|max:8',
-            'priceZeds'     => 'required|integer|min:1',
+            'name' => 'required|string|max:128',
+            'category' => 'required|string|in:tech,transport,home,clothing,tools,other',
+            'icon' => 'required|string|max:8',
+            'priceZeds' => 'required|integer|min:1',
             'lifespanYears' => 'required|integer|min:3',
-            'description'   => 'nullable|string',
+            'description' => 'nullable|string',
         ]);
 
         $id = DB::table('durable_goods_catalog')->insertGetId([
-            'name'           => $data['name'],
-            'category'       => $data['category'],
-            'icon'           => $data['icon'],
-            'price_zeds'     => $data['priceZeds'],
+            'name' => $data['name'],
+            'category' => $data['category'],
+            'icon' => $data['icon'],
+            'price_zeds' => $data['priceZeds'],
             'lifespan_years' => $data['lifespanYears'],
-            'description'    => $data['description'] ?? null,
-            'is_active'      => 1,
-            'created_at'     => now(),
+            'description' => $data['description'] ?? null,
+            'is_active' => 1,
+            'created_at' => now(),
         ]);
 
         $item = DB::table('durable_goods_catalog')->find($id);
@@ -178,23 +178,23 @@ class ClosetController extends Controller
         $this->requireAdmin();
 
         $data = $request->validate([
-            'name'          => 'sometimes|string|max:128',
-            'category'      => 'sometimes|string|in:tech,transport,home,clothing,tools,other',
-            'icon'          => 'sometimes|string|max:8',
-            'priceZeds'     => 'sometimes|integer|min:1',
+            'name' => 'sometimes|string|max:128',
+            'category' => 'sometimes|string|in:tech,transport,home,clothing,tools,other',
+            'icon' => 'sometimes|string|max:8',
+            'priceZeds' => 'sometimes|integer|min:1',
             'lifespanYears' => 'sometimes|integer|min:3',
-            'description'   => 'nullable|string',
-            'isActive'      => 'sometimes|boolean',
+            'description' => 'nullable|string',
+            'isActive' => 'sometimes|boolean',
         ]);
 
         $update = array_filter([
-            'name'           => $data['name']          ?? null,
-            'category'       => $data['category']       ?? null,
-            'icon'           => $data['icon']           ?? null,
-            'price_zeds'     => $data['priceZeds']      ?? null,
-            'lifespan_years' => $data['lifespanYears']  ?? null,
-            'description'    => $data['description']    ?? null,
-            'is_active'      => isset($data['isActive']) ? (int)$data['isActive'] : null,
+            'name' => $data['name'] ?? null,
+            'category' => $data['category'] ?? null,
+            'icon' => $data['icon'] ?? null,
+            'price_zeds' => $data['priceZeds'] ?? null,
+            'lifespan_years' => $data['lifespanYears'] ?? null,
+            'description' => $data['description'] ?? null,
+            'is_active' => isset($data['isActive']) ? (int) $data['isActive'] : null,
         ], fn($v) => !is_null($v));
 
         if (empty($update)) {
@@ -213,7 +213,7 @@ class ClosetController extends Controller
 
     // ── PRIVATE HELPERS ───────────────────────────────────────
 
-    private function fetchCloset(string $studentId)
+    /*private function fetchCloset(string $studentId)
     {
         return DB::table('student_closet as sc')
             ->join('durable_goods_catalog as dgc', 'dgc.id', '=', 'sc.catalog_item_id')
@@ -231,40 +231,122 @@ class ClosetController extends Controller
                 DB::raw('ROUND(TIMESTAMPDIFF(MONTH, sc.purchase_date, CURDATE()) / 12.0, 1) AS age_years'),
             ])
             ->get();
-    }
-    private function formatClosetItem(object $row): array
+    }*/
+    private function fetchCloset($studentId)
     {
-        $ageYears      = (float) $row->age_years;
-        $lifespanYears = (int)   $row->lifespan_years;
-        $lifeUsedPct   = min(100, (int) round(($ageYears / $lifespanYears) * 100));
-        $costPerYear   = (int) round($row->price_paid_zeds / $lifespanYears);
+        return DB::table('orders')
+            ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+            ->join('products', 'products.product_name', '=', 'order_items.name')
+            ->where('orders.user_id', $studentId)
+            ->where('products.goods_type', 'Durable Goods')
+            ->select([
+                'products.id',
+                'products.product_name as name',
+                'products.category',
+                'products.image',
+                'orders.created_at as purchase_date',
+                'order_items.price as price_paid_zeds',
+                DB::raw('3 as lifespan_years'),
+                DB::raw('"" as description'),
+                DB::raw('ROUND(TIMESTAMPDIFF(MONTH, orders.created_at, CURDATE()) / 12,1) as age_years')
+            ])
+            ->get();
+    }
+    /*private function fetchCloset($studentId)
+{
+    return DB::table('orders')
+        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->join('products', 'products.product_name', '=', 'order_items.name')
+        ->where('orders.user_id', $studentId)
+        ->where('products.goods_type', 'Durable Goods')
+        ->select(
+            'products.product_name as name',
+            'products.category',
+            'products.icon',
+            'orders.created_at as purchase_date',
+            'order_items.price as price_paid_zeds'
+        )
+        ->get();
+} */
+    /*private function formatClosetItem(object $row): array
+    {
+        $ageYears = (float) $row->age_years;
+        $lifespanYears = (int) $row->lifespan_years;
+        $lifeUsedPct = min(100, (int) round(($ageYears / $lifespanYears) * 100));
+        $costPerYear = (int) round($row->price_paid_zeds / $lifespanYears);
 
         return [
-            'id'            => $row->id,
-            'purchaseDate'  => $row->purchase_date,
+            'id' => $row->id,
+            'purchaseDate' => $row->purchase_date,
             'pricePaidZeds' => (int) $row->price_paid_zeds,
-            'ageYears'      => $ageYears,
-            'name'          => $row->name,
-            'category'      => $row->category,
-            'icon'          => $row->icon,
+            'ageYears' => $ageYears,
+            'name' => $row->name,
+            'category' => $row->category,
+            'icon' => $row->icon,
             'lifespanYears' => $lifespanYears,
-            'description'   => $row->description,
-            'lifeUsedPct'   => $lifeUsedPct,
-            'costPerYear'   => $costPerYear,
+            'description' => $row->description,
+            'lifeUsedPct' => $lifeUsedPct,
+            'costPerYear' => $costPerYear,
         ];
     }
 
     private function formatCatalogItem(object $row): array
     {
         return [
-            'id'            => $row->id,
-            'name'          => $row->name,
-            'category'      => $row->category,
-            'icon'          => $row->icon,
-            'priceZeds'     => (int) $row->price_zeds,
+            'id' => $row->id,
+            'name' => $row->name,
+            'category' => $row->category,
+            'icon' => $row->icon,
+            'priceZeds' => (int) $row->price_zeds,
             'lifespanYears' => (int) $row->lifespan_years,
-            'description'   => $row->description,
-            'isActive'      => (bool) $row->is_active,
+            'description' => $row->description,
+            'isActive' => (bool) $row->is_active,
+        ];
+    }*/
+    private function formatClosetItem(object $row): array
+    {
+        $ageYears = (float) ($row->age_years ?? 0);
+        $lifespanYears = (int) ($row->lifespan_years ?? 3); // Default 3 years
+
+        $lifeUsedPct = min(
+            100,
+            (int) round(($ageYears / max($lifespanYears, 1)) * 100)
+        );
+
+        $costPerYear = (int) round(($row->price_paid_zeds ?? 0) / max($lifespanYears, 1));
+
+        return [
+            'id' => $row->id,
+            'purchaseDate' => $row->purchase_date,
+            'pricePaidZeds' => (int) ($row->price_paid_zeds ?? 0),
+            'ageYears' => $ageYears,
+            'name' => $row->name,
+            'category' => $row->category,
+
+            // Your products table has "image", not "icon"
+            'icon' => $row->image ?? '',
+
+            'lifespanYears' => $lifespanYears,
+            'description' => $row->description ?? '',
+            'lifeUsedPct' => $lifeUsedPct,
+            'costPerYear' => $costPerYear,
+        ];
+    }
+
+    private function formatCatalogItem(object $row): array
+    {
+        return [
+            'id' => $row->id,
+            'name' => $row->name,
+            'category' => $row->category,
+
+            // Your products table has "image"
+            'icon' => $row->image ?? '',
+
+            'priceZeds' => (int) ($row->price_zeds ?? $row->price ?? 0),
+            'lifespanYears' => (int) ($row->lifespan_years ?? 3),
+            'description' => $row->description ?? '',
+            'isActive' => (bool) ($row->is_active ?? true),
         ];
     }
 }
