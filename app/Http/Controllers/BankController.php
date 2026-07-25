@@ -874,7 +874,7 @@ class BankController extends Controller
         $getAllbiller = ManagePayeeBiller::where('status', '1')->get();
         $transactions = Transaction1::where('user_id', Auth::id())
             ->where('type', 'debit')                 // ✅ exclude 0.00 or NULL
-            ->orderBy('id', 'ASC')
+            ->orderBy('id', 'DESC')
             ->get();
         $scheduledTransfers = Transfer::where('user_id', auth()->id())
             ->where(function ($q) {
