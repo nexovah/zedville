@@ -59,12 +59,18 @@ class EFDController extends Controller
     {
         $user = auth()->user();
 
-        $transactions = Transaction1::where('user_id', $user->id)
+        /*$transactions = Transaction1::where('user_id', $user->id)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->orderBy('id', 'desc')
-            ->get();
+            ->get();*/
+        $start = now()->subMonth()->startOfMonth();
+        $end = now()->subMonth()->endOfMonth();
 
+        $transactions = Transaction1::where('user_id', $user->id)
+            ->whereBetween('created_at', [$start, $end])
+            ->orderBy('id', 'desc')
+            ->get();
         $template = collect();
 
         /* ===============================
