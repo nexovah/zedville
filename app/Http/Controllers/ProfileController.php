@@ -413,7 +413,10 @@ public function findClosestMood($energy, $pleasantness)
             'status_type' => 'required|string|in:primary,starred,deleted'
         ]);
 
-        $mail = Mailbox::findOrFail($request->mail_id);
+        //$mail = Mailbox::findOrFail($request->mail_id);
+        $mail = Mailbox::where('id', $request->mail_id)
+            ->where('student_id', auth()->id())
+            ->firstOrFail();
         $mail->type = $request->status_type; // Direct assignment
         $mail->save();
 
@@ -1204,10 +1207,20 @@ public function findClosestMood($energy, $pleasantness)
         }
 
         // 🔹 CURRENT MONTH
-        $currentMonth = $now->month - 1; // convert to 0-based
+        /*$currentMonth = $now->month - 1; // convert to 0-based
         $currentYear = $now->year;
 
-        $monthly = $this->calculateMonthlyEngagement($studentId, $currentMonth, $currentYear);
+        $monthly = $this->calculateMonthlyEngagement($studentId, $currentMonth, $currentYear);*/
+        // 🔹 LAST COMPLETED MONTH
+        // 🔹 CURRENT MONTH (DB uses 0-11 format)
+        $currentMonth = $now->month - 1;
+        $currentYear = $now->year;
+
+        $monthly = $this->calculateMonthlyEngagement(
+            $studentId,
+            $currentMonth,
+            $currentYear
+        );
 
         // 🔹 YEARLY BADGE
         if ($totalPts >= 32)
@@ -1221,11 +1234,20 @@ public function findClosestMood($energy, $pleasantness)
         else
             $yearly = 'NONE';
 
-        return [
+        /*return [
             'monthly' => $monthly,
             'yearly' => $yearly,
             'history' => $history,
             'academicStartYear' => $academicStartYear
+        ];*/
+        return [
+            'monthly' => $monthly,
+            'yearly' => $yearly,
+            'history' => $history,
+            'academicStartYear' => $academicStartYear,
+            'academicStartMonth' => $academicStartMonth,
+            'currentMonth' => $currentMonth - 1,
+            'currentYear' => $currentYear,
         ];
     }
     private function calculateMonthlyFinHero($studentId, $month, $year)
@@ -1234,6 +1256,7 @@ public function findClosestMood($energy, $pleasantness)
         $settings = DB::table('finhero_monthly_settings')
             ->where('month', $month)
             ->where('year', $year)
+            ->where('badge_active', 1)
             ->first();
 
         if (!$settings || !$settings->badge_active) {
@@ -1291,6 +1314,9 @@ public function findClosestMood($energy, $pleasantness)
         $totalEarned = $quizPts + $libraryPts + $activityPts;
 
         $totalAvailable = 10 + ($settings->active_library_module_id ? 10 : 0) + $totalActivityMax;
+        /*$totalAvailable = 10
+            + ($settings->active_library_module_id ? 10 : 0)
+            + ($activityPts > 0 ? $totalActivityMax : 0);*/
 
         if ($totalAvailable == 0) {
             return 'NONE';
@@ -1308,7 +1334,22 @@ public function findClosestMood($energy, $pleasantness)
         } elseif ($pct >= $settings->threshold_rookie) {
             return 'ROOKIE';
         }
-
+        /*if ($month == 6) {
+            dd([
+                'quizPts' => $quizPts,
+                'libraryPts' => $libraryPts,
+                'activityPts' => $activityPts,
+                'totalEarned' => $totalEarned,
+                'totalAvailable' => $totalAvailable,
+                'percentage' => $pct,
+                'thresholds' => [
+                    'legend' => $settings->threshold_legend,
+                    'champion' => $settings->threshold_champion,
+                    'finhero' => $settings->threshold_finhero,
+                    'rookie' => $settings->threshold_rookie,
+                ]
+            ]);
+        }*/
         return 'NONE';
     }
     private function getFinHeroData($studentId)
@@ -1350,11 +1391,34 @@ public function findClosestMood($energy, $pleasantness)
         }
 
         // 🔹 CURRENT MONTH
+        /*$currentMonth = $now->month - 1;
+        $currentYear = $now->year;
+
+        $monthly = $this->calculateMonthlyFinHero($studentId, $currentMonth, $currentYear);*/
+        // 🔹 LAST COMPLETED MONTH
+        // 🔹 CURRENT MONTH (DB uses 0-11 format)
+        // Current month according to database (0 based)
         $currentMonth = $now->month - 1;
         $currentYear = $now->year;
 
-        $monthly = $this->calculateMonthlyFinHero($studentId, $currentMonth, $currentYear);
 
+        // If current month is not completed,
+// show previous month badge
+        if ($now->day < 31) {
+            $currentMonth--;
+
+            if ($currentMonth < 0) {
+                $currentMonth = 11;
+                $currentYear--;
+            }
+        }
+
+
+        $monthly = $this->calculateMonthlyFinHero(
+            $studentId,
+            $currentMonth,
+            $currentYear
+        );
         // 🔹 YEARLY BADGE (ACCORDING TO YOUR TABLE)
         if ($totalPts >= 32)
             $yearly = 'LEGEND';
@@ -1367,11 +1431,20 @@ public function findClosestMood($energy, $pleasantness)
         else
             $yearly = 'NONE';
 
-        return [
+        /*return [
             'monthly' => $monthly,
             'yearly' => $yearly,
             'history' => $history,
             'academicStartYear' => $academicStartYear
+        ];*/
+        return [
+            'monthly' => $monthly,
+            'yearly' => $yearly,
+            'history' => $history,
+            'academicStartYear' => $academicStartYear,
+            'academicStartMonth' => $academicStartMonth,
+            'currentMonth' => $currentMonth - 1,
+            'currentYear' => $currentYear,
         ];
     }
 }

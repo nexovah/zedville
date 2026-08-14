@@ -2577,7 +2577,10 @@ class BankController extends Controller
             'confirm_pin' => 'same:new_pin',
         ]);
 
-        $bankAccount = BankAccount::findOrFail($request->bank_account_id);
+        //$bankAccount = BankAccount::findOrFail($request->bank_account_id);
+        $bankAccount = BankAccount::where('id', $request->bank_account_id)
+            ->where('student_id', auth()->id())
+            ->firstOrFail();
 
         $bankAccount->update([
             'card_pin' => $request->new_pin,

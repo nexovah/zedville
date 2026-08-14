@@ -36,10 +36,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
-            Route::middleware(['web', 'auth']) // Add 'admin' middleware if needed
-            ->prefix('admin')
-            ->name('admin.')
-            ->group(base_path('routes/admin.php'));
+            Route::middleware(['web', 'auth', 'admin']) // Add 'admin' middleware if needed
+                ->prefix('admin')
+                ->name('admin.')
+                ->group(base_path('routes/admin.php'));
         });
         // NEW: Load bank.php with optional prefix and auth middleware
         Route::middleware(['web', 'auth'])
@@ -76,7 +76,7 @@ class RouteServiceProvider extends ServiceProvider
             ->name('CitizenActivation.')
             ->group(base_path('routes/citizenactivation.php'));
 
-        
+
     }
 
     /**
