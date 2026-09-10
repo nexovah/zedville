@@ -52,8 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
     Route::post('/order/placeActivity', [OrderController::class, 'placeOrder'])->name('order.place');
-
-
+    Route::get('/toggle-view-mode', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'toggleViewMode'])->name('toggle-view-mode');
 });
 // URL when mail is clicked
 /*Route::get('/profile/mailbox/{tab}/{encryptedId}', function ($tab, $encryptedId) {
@@ -62,6 +61,7 @@ Route::middleware('auth')->group(function () {
 // AJAX route to fetch mail content
 //Route::get('/profile/mailbox/show/{encryptedId}', [ProfileController::class, 'showMail'])->name('profile.showMail');
 require __DIR__.'/auth.php';
+require __DIR__.'/closet_routes.php';
 Route::get('/profile/consumer-profile-survey', [ProfileController::class, 'consumerProfileSurvey'])->name('consumer-profile-survey');
 Route::post('/profile/storesurvey', [ProfileController::class, 'storesurvey'])->name('storesurvey');
 
@@ -98,10 +98,12 @@ Route::get('/api/groceries/{diet}', function ($diet) {
 
 //Consumer Profile Survey
 //Calender Api Admin
-Route::get('/api/admin/calendar-events', [\App\Http\Controllers\Admin\CalendarEventController::class, 'getEvents'])->name('admin.calendar-events');
-Route::post('/api/admin/calendar-events', [\App\Http\Controllers\Admin\CalendarEventController::class, 'storeEvent'])->name('admin.calendar-events.store');
-Route::put('/api/admin/calendar-events/{id}', [\App\Http\Controllers\Admin\CalendarEventController::class, 'updateEvent'])->name('admin.calendar-events.update');
-Route::delete('/api/admin/calendar-events/{id}', [\App\Http\Controllers\Admin\CalendarEventController::class, 'deleteEvent'])->name('admin.calendar-events.delete');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/api/admin/calendar-events', [\App\Http\Controllers\Admin\CalendarEventController::class, 'getEvents'])->name('admin.calendar-events');
+    Route::post('/api/admin/calendar-events', [\App\Http\Controllers\Admin\CalendarEventController::class, 'storeEvent'])->name('admin.calendar-events.store');
+    Route::put('/api/admin/calendar-events/{id}', [\App\Http\Controllers\Admin\CalendarEventController::class, 'updateEvent'])->name('admin.calendar-events.update');
+    Route::delete('/api/admin/calendar-events/{id}', [\App\Http\Controllers\Admin\CalendarEventController::class, 'deleteEvent'])->name('admin.calendar-events.delete');
+});
 //For Login Quiz
 Route::get('/login-quiz/today',   [LoginQuizController::class, 'getTodayQuestion'])->name('login.quiz.today');
 Route::post('/login-quiz/submit', [LoginQuizController::class, 'submit'])->name('login.quiz.submit');

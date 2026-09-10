@@ -40,28 +40,28 @@ class RegisteredUserController extends Controller
         //dd($request->timezone);
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             //'reEnterEmail' => ['required', 'same:email'],
             'classCode' => ['required', 'exists:classes,classCode'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:2,3,4'],
+            'role' => ['nullable'],
         ]);
         // Extract domain from email
-    $email = $request->email;
-    $emailDomain = substr(strrchr($email, "@"), 1); // Gets everything after '@'
-    // Check if domain exists in school_domains
-    $domainExists = \App\Models\SchoolDomain::where('school_domain', $emailDomain)->exists();
-    if (!$domainExists) {
-        return redirect()->back()
-            ->withErrors(['email' => 'Your school domain is not authorised to register.'])
-            ->withInput();
-    }
-    $school = \App\Models\SchoolDomain::where('school_domain', $emailDomain)->first();
-    $sid = $school->id;
-    // Find Grade/Class by class code
+        $email = $request->email;
+        $emailDomain = substr(strrchr($email, "@"), 1); // Gets everything after '@'
+        // Check if domain exists in school_domains
+        $domainExists = \App\Models\SchoolDomain::where('school_domain', $emailDomain)->exists();
+        if (!$domainExists) {
+            return redirect()->back()
+                ->withErrors(['email' => 'Your school domain is not authorised to register.'])
+                ->withInput();
+        }
+        $school = \App\Models\SchoolDomain::where('school_domain', $emailDomain)->first();
+        $sid = $school->id;
+        // Find Grade/Class by class code
         $grade = Grade::where('classCode', $request->classCode)
-                    //->where('sid', $sid) // optional but recommended
-                    ->first();
+            //->where('sid', $sid) // optional but recommended
+            ->first();
 
         if (!$grade) {
             return redirect()->back()
@@ -77,14 +77,15 @@ class RegisteredUserController extends Controller
         //Generate Cityzen ID
 
         $user = User::create([
-            'sid'       => $sid,    
+            'sid' => $sid,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'citizenId' =>  $cityzenId, // Generate a unique citizen ID
-            'role' => $request->role,
+            'citizenId' => $cityzenId, // Generate a unique citizen ID
+            //'role' => $request->role,
+            'role' => 4,
             'avatar' => random_int(1, 9),
-            'grade'     => $grade->id, // Store class ID
+            'grade' => $grade->id, // Store class ID
         ]);
 
         event(new Registered($user));
@@ -100,25 +101,25 @@ class RegisteredUserController extends Controller
         'type' => 'primary',
         'read' => 0,
     ]);*/
-    // Schedule registration emails
-    //MailboxScheduler::scheduleForEvent('registration', $user->id);
-    /*MailboxScheduler::scheduleForEvent('registration', $user->id, [
-        'name' => $user->name, // replace placeholder dynamically
-        'citizenId' => $user->citizen_id, // replace placeholder dynamically
-    ]);*/
-    $timezone = $request->input('timezone', 'UTC');
-    // Send Welcome Email
-    $content = view('mailbox_templates.welcome', ['user' => $user])->render();
-    Mailbox::create([
-        'student_id' => $user->id,
-        'subject' => 'Welcome to Zedville , ' . $user->name . '!',
-        'content' => $content,
-        'type' => 'primary',
-        'read' => 0,
-        'created_at' => Carbon::now($timezone)->format('Y-m-d H:i:s'),
-        'updated_at' => Carbon::now($timezone)->format('Y-m-d H:i:s'),
-    ]);
-    // Send Welcome Email
+        // Schedule registration emails
+        //MailboxScheduler::scheduleForEvent('registration', $user->id);
+        /*MailboxScheduler::scheduleForEvent('registration', $user->id, [
+            'name' => $user->name, // replace placeholder dynamically
+            'citizenId' => $user->citizen_id, // replace placeholder dynamically
+        ]);*/
+        $timezone = $request->input('timezone', 'UTC');
+        // Send Welcome Email
+        $content = view('mailbox_templates.welcome', ['user' => $user])->render();
+        Mailbox::create([
+            'student_id' => $user->id,
+            'subject' => 'Welcome to Zedville , ' . $user->name . '!',
+            'content' => $content,
+            'type' => 'primary',
+            'read' => 0,
+            'created_at' => Carbon::now($timezone)->format('Y-m-d H:i:s'),
+            'updated_at' => Carbon::now($timezone)->format('Y-m-d H:i:s'),
+        ]);
+        // Send Welcome Email
         //return redirect(RouteServiceProvider::HOME);
         return redirect()->route('login')->with('success', 'You successfully registered to the website and log in to your profile now');
     }

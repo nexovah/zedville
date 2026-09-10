@@ -34,8 +34,8 @@
                                                             <label class="block mb-2 text-base font-medium text-black">From Account</label>
                                                             <select class="form-select" name="from_account">
                                                                 <option value="primary">Primary </option>
-                                                                <option value="emergency">Emergency </option>
-                                                                <option value="moneyMarket">Money Market </option>
+                                                                <!-- <option value="emergency">Emergency </option>
+                                                                <option value="moneyMarket">Money Market </option> -->
                                                             </select>
                                                         </div>
                                                     </div>

@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\AdminEducationController;
 use App\Http\Controllers\Admin\WellbeingController;
 use App\Http\Controllers\Admin\CivicChamberController;
 
+Route::middleware(['auth', 'admin'])->group(function () {
 // Dashboard Routes
 Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 Route::post('/school', [AdminDashboardController::class, 'setSchool'])->name('admin.school');
+Route::post('/settings/salary', [AdminDashboardController::class, 'updateBaseSalary'])->name('admin.settings.salary');
 
 // Profile Routes
 Route::get('/profile', [AdminDashboardController::class, 'profile'])->name('profile');
@@ -203,3 +205,5 @@ Route::post('/petition/close/{id}', [CivicChamberController::class, 'petitionClo
 // Delete Petition
 Route::delete('/petition/delete/{id}', [CivicChamberController::class, 'petitionDestroy'])
     ->name('petition.destroy');
+
+});

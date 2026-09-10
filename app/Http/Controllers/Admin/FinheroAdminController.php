@@ -16,7 +16,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 class FinheroAdminController extends Controller
 {
-    public function __construct(private FinheroBadgeCalculatorService $calculator) {}
+    public function __construct(private FinheroBadgeCalculatorService $calculator)
+    {
+    }
 
     // ─────────────────────────────────────────────────────────────
     // ACTIVITY MANAGER
@@ -42,38 +44,38 @@ class FinheroAdminController extends Controller
         return view('admin.finhero.activities', compact('activities', 'type'));
     }*/
     public function listActivities()
-{
-    //$query = DB::table('finhero_activity_registry')
+    {
+        //$query = DB::table('finhero_activity_registry')
         //->where('type', 'task');
 
-    $query = DB::table('finhero_activity_registry as far')
+        $query = DB::table('finhero_activity_registry as far')
             ->leftJoin('classes as c', 'far.cid', '=', 'c.id')
             ->select('far.*', 'c.name as class_name')
             ->where('far.type', 'task');
 
-    if (session()->has('selected_school')) {
-        $query->where('far.sid', session('selected_school'));
+        if (session()->has('selected_school')) {
+            $query->where('far.sid', session('selected_school'));
+        }
+
+        $activities = $query
+            ->orderBy('created_at')
+            ->get();
+        // Get classes
+        $classQuery = DB::table('classes');
+
+        // If school selected, show only classes of that school
+        if (session()->has('selected_school')) {
+            $classQuery->where('sid', session('selected_school'));
+        }
+
+        $classes = $classQuery
+            ->orderBy('id')
+            ->get();
+
+        $type = 'task';
+
+        return view('admin.finhero.activities', compact('activities', 'type', 'classes'));
     }
-
-    $activities = $query
-        ->orderBy('created_at')
-        ->get();
-    // Get classes
-    $classQuery = DB::table('classes');
-
-    // If school selected, show only classes of that school
-    if (session()->has('selected_school')) {
-        $classQuery->where('sid', session('selected_school'));
-    }
-
-    $classes = $classQuery
-        ->orderBy('id')
-        ->get();
-
-    $type = 'task';
-
-    return view('admin.finhero.activities', compact('activities', 'type', 'classes'));
-}
     public function taskActivities()
     {
         /*$activities = DB::table('finhero_activity_registry')
@@ -123,93 +125,266 @@ class FinheroAdminController extends Controller
      * Admin fills in name, points, position via the UI form.
      */
     //public function addActivity(Request $request): JsonResponse
-    public function addActivity(Request $request)
-{ 
-    $validated = $request->validate([
-        'activity_key' => [
-            'required',
-            'string',
-            Rule::unique('finhero_activity_registry')
-                ->where(function ($query) use ($request) {
-                    /*return $query->where('type', $request->type);*/
-                    return $query
-                    ->where('type', $request->type)
-                    ->where('sid', session('selected_school'));
-                }),
-        ],
-        'cid' => 'nullable|exists:classes,id',
-        'activity_name' => 'required|string|max:255',
-        'max_points'    => 'required|integer|min:1|max:100',
-        'position'      => 'required|in:required,optional,free',
-        'type'          => 'required|string',
-        // Salary required only for task
-        'salary'        => 'required_if:type,task|nullable|numeric|min:0',
-        'is_active'     => 'required|in:0,1',
-        'description'   => 'nullable|string',
-    ]);
+    /*public function addActivity(Request $request)
+    {
+        $validated = $request->validate([
+            'activity_key' => [
+                'required',
+                'string',
+                Rule::unique('finhero_activity_registry')
+                    ->where(function ($query) use ($request) {
 
-    $id = DB::table('finhero_activity_registry')->insertGetId([
-        'activity_key'  => $validated['activity_key'],
-        'activity_name' => $validated['activity_name'],
-        'max_points'    => $validated['max_points'],
-        'position'      => $validated['position'],
-        'type'          => $validated['type'],
-        // ADD THIS LINE
-        'sid'           => session('selected_school') ?: null,
-        'cid' => $request->classId ?: null,
-
-        // Store salary only for task
-        'salary'        => $request->type == 'task'
-            ? $request->salary
-            : null,
-        'is_active'     => $validated['is_active'],
-        'description'   => $validated['description'] ?? null,
-        'created_at'    => now(),
-        'updated_at'    => now(),
-    ]);
-// Calendar Event Insert / Update
-    $calendarEvent = DB::table('calendar_events')
-        ->where('sid', session('selected_school') ?: null,)
-        ->where('title', $request->type.'-'.$validated['activity_name'])
-        ->whereYear('created_at', now()->year)
-        ->whereMonth('created_at', now()->month)
-        ->first();
-
-    if ($calendarEvent) {
-
-        DB::table('calendar_events')
-            ->where('id', $calendarEvent->id)
-            ->update([
-                'position'        => $validated['position'],
-                'backgroundColor' => '#0053f9',
-                'borderColor'     => '#0053f9',
-                'updated_at'      => now(),
-            ]);
-
-    } else {
-
-        DB::table('calendar_events')->insert([
-            'sid'             => session('selected_school') ?: null,
-            'classId'         => $request->classId ?: null,
-            'title'           => $request->type.'-'.$validated['activity_name'],
-            'description'     => $validated['description'] ?? '',
-            'position'        => $validated['position'],
-            'repeatActivity'  => '0',
-            'backgroundColor' => '#0053f9',
-            'borderColor'     => '#0053f9',
-            'start'           => now(),
-            'end'             => now(),
-            'created_at'      => now(),
-            'updated_at'      => now(),
+                        return $query
+                            ->where('type', $request->type)
+                            ->where('sid', session('selected_school'));
+                    }),
+            ],
+            'cid' => 'nullable|exists:classes,id',
+            'activity_name' => 'required|string|max:255',
+            'max_points' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'max:100',
+                'required_if:type,task',
+            ],
+            'position' => 'required|in:required,optional,free',
+            'type' => 'required|string',
+            // Salary required only for task
+            'salary' => 'required_if:type,task|nullable|numeric|min:0',
+            'is_active' => 'required|in:0,1',
+            'description' => 'nullable|string',
         ]);
-    }
-    $route = $request->type == 'task'
-        ? '/admin/finhero/activities'
-        : '/admin/finhero/task-activities';
 
-    return redirect($route)
-        ->with('success', 'Activity added successfully.');
-}
+        $id = DB::table('finhero_activity_registry')->insertGetId([
+            'activity_key' => $validated['activity_key'],
+            'activity_name' => $validated['activity_name'],
+            'max_points' => $validated['max_points'],
+            'position' => $validated['position'],
+            'type' => $validated['type'],
+            // ADD THIS LINE
+            'sid' => session('selected_school') ?: null,
+            'cid' => $request->classId ?: null,
+
+            // Store salary only for task
+            'salary' => $request->type == 'task'
+                ? $request->salary
+                : null,
+            'is_active' => $validated['is_active'],
+            'description' => $validated['description'] ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        // Calendar Event Insert / Update
+        $calendarEvent = DB::table('calendar_events')
+            ->where('sid', session('selected_school') ?: null, )
+            ->where('title', $request->type . '-' . $validated['activity_name'])
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->first();
+
+        if ($calendarEvent) {
+
+            DB::table('calendar_events')
+                ->where('id', $calendarEvent->id)
+                ->update([
+                    'position' => $validated['position'],
+                    'backgroundColor' => '#0053f9',
+                    'borderColor' => '#0053f9',
+                    'updated_at' => now(),
+                ]);
+
+        } else {
+
+            DB::table('calendar_events')->insert([
+                'sid' => session('selected_school') ?: null,
+                'classId' => $request->classId ?: null,
+                'title' => $request->type . '-' . $validated['activity_name'],
+                'description' => $validated['description'] ?? '',
+                'position' => $validated['position'],
+                'repeatActivity' => '0',
+                'backgroundColor' => '#0053f9',
+                'borderColor' => '#0053f9',
+                'start' => now(),
+                'end' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        $route = $request->type == 'task'
+            ? '/admin/finhero/activities'
+            : '/admin/finhero/task-activities';
+
+        return redirect($route)
+            ->with('success', 'Activity added successfully.');
+    }*/
+
+    public function addActivity(Request $request)
+    {
+        $selectedSchool = session('selected_school') ?: null;
+        $classId = $request->classId ?: null;
+
+        $validated = $request->validate([
+
+            // Activity key must be unique per school + class + type
+            'activity_key' => [
+                'required',
+                'string',
+                Rule::unique('finhero_activity_registry')
+                    ->where(function ($query) use ($request, $selectedSchool, $classId) {
+                        return $query
+                            ->where('type', $request->type)
+                            ->where('sid', $selectedSchool)
+                            ->where('cid', $classId);
+                    }),
+            ],
+
+            'cid' => 'nullable|exists:classes,id',
+
+            'activity_name' => 'required|string|max:255',
+
+            // Required ONLY for task
+            'max_points' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'max:100',
+                'required_if:type,task',
+            ],
+
+            'position' => 'required|in:required,optional,free',
+
+            'type' => 'required|string',
+
+            // Salary required ONLY for task
+            'salary' => [
+                'required_if:type,task',
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'is_active' => 'required|in:0,1',
+
+            'description' => 'nullable|string',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check duplicate activity name by SCHOOL + CLASS + TYPE
+        |--------------------------------------------------------------------------
+        */
+
+        $activityExists = DB::table('finhero_activity_registry')
+            ->where('sid', $selectedSchool)
+            ->where('cid', $classId)
+            ->where('type', $validated['type'])
+            ->where('activity_name', $validated['activity_name'])
+            ->exists();
+
+        if ($activityExists) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors([
+                    'activity_name' =>
+                        'This activity already exists for the selected class.'
+                ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Insert Activity
+        |--------------------------------------------------------------------------
+        */
+
+        $id = DB::table('finhero_activity_registry')->insertGetId([
+            'activity_key' => $validated['activity_key'],
+            'activity_name' => $validated['activity_name'],
+
+            // Library can have NULL max points
+            'max_points' => $validated['max_points'] ?? null,
+
+            'position' => $validated['position'],
+
+            'type' => $validated['type'],
+
+            'sid' => $selectedSchool,
+
+            'cid' => $classId,
+
+            // Salary only for task
+            'salary' => $validated['type'] === 'task'
+                ? ($validated['salary'] ?? null)
+                : null,
+
+            'is_active' => $validated['is_active'],
+
+            'description' => $validated['description'] ?? null,
+
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Calendar Event Insert / Update
+        |--------------------------------------------------------------------------
+        */
+
+        $calendarEvent = DB::table('calendar_events')
+            ->where('sid', $selectedSchool)
+            ->where('classId', $classId)
+            ->where('title', $validated['type'] . '-' . $validated['activity_name'])
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->first();
+
+
+        if ($calendarEvent) {
+
+            DB::table('calendar_events')
+                ->where('id', $calendarEvent->id)
+                ->update([
+                    'position' => $validated['position'],
+                    'backgroundColor' => '#0053f9',
+                    'borderColor' => '#0053f9',
+                    'updated_at' => now(),
+                ]);
+
+        } else {
+
+            DB::table('calendar_events')->insert([
+                'sid' => $selectedSchool,
+                'classId' => $classId,
+                'title' => $validated['type'] . '-' . $validated['activity_name'],
+                'description' => $validated['description'] ?? '',
+                'position' => $validated['position'],
+                'repeatActivity' => '0',
+                'backgroundColor' => '#0053f9',
+                'borderColor' => '#0053f9',
+                'start' => now(),
+                'end' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect
+        |--------------------------------------------------------------------------
+        */
+
+        $route = $validated['type'] === 'task'
+            ? '/admin/finhero/activities'
+            : '/admin/finhero/task-activities';
+
+        return redirect($route)
+            ->with('success', 'Activity added successfully.');
+    }
 
     /**
      * PUT /admin/finhero/activities/{id} — update an activity
@@ -259,26 +434,26 @@ class FinheroAdminController extends Controller
 
         $validated = $request->validate([
             'activity_name' => 'sometimes|string|max:255',
-            'cid'         => $request->classId ?: null,
-            'max_points'    => 'sometimes|integer|min:1|max:100',
-            'position'      => 'sometimes|in:required,optional,free',
+            'cid' => $request->classId ?: null,
+            'max_points' => 'sometimes|integer|min:1|max:100',
+            'position' => 'sometimes|in:required,optional,free',
 
             // Salary required only for task type
-            'salary'        => $activity->type == 'task'
+            'salary' => $activity->type == 'task'
                 ? 'required|numeric|min:0'
                 : 'nullable',
 
-            'is_active'     => 'sometimes|boolean',
-            'description'   => 'nullable|string',
+            'is_active' => 'sometimes|boolean',
+            'description' => 'nullable|string',
         ]);
-        
+
 
         // Prepare update data
         $updateData = array_merge($validated, [
-            'cid'   => $request->classId ?: null,
+            'cid' => $request->classId ?: null,
             'updated_at' => now()
         ]);
-//dd($updateData);
+        //dd($updateData);
         // Remove salary for library type
         if ($activity->type != 'task') {
             unset($updateData['salary']);
@@ -287,43 +462,43 @@ class FinheroAdminController extends Controller
         DB::table('finhero_activity_registry')
             ->where('id', $id)
             ->update($updateData);
-    // Calendar Event Insert / Update
-    $calendarEvent = DB::table('calendar_events')
-        ->where('sid', session('selected_school') ?: null,)
-        ->where('title', $activity->type.'-'.$validated['activity_name'])
-        ->whereYear('created_at', now()->year)
-        ->whereMonth('created_at', now()->month)
-        ->first();
+        // Calendar Event Insert / Update
+        $calendarEvent = DB::table('calendar_events')
+            ->where('sid', session('selected_school') ?: null, )
+            ->where('title', $activity->type . '-' . $validated['activity_name'])
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->first();
 
-    if ($calendarEvent) {
+        if ($calendarEvent) {
 
-        DB::table('calendar_events')
-            ->where('id', $calendarEvent->id)
-            ->update([
-                'classId'        => $request->classId ?: null,
-                'position'        => $validated['position'],
+            DB::table('calendar_events')
+                ->where('id', $calendarEvent->id)
+                ->update([
+                    'classId' => $request->classId ?: null,
+                    'position' => $validated['position'],
+                    'backgroundColor' => '#0053f9',
+                    'borderColor' => '#0053f9',
+                    'updated_at' => now(),
+                ]);
+
+        } else {
+
+            DB::table('calendar_events')->insert([
+                'sid' => session('selected_school') ?: null,
+                'classId' => $request->classId ?: null,
+                'title' => $activity->type . '-' . $validated['activity_name'],
+                'description' => $validated['description'] ?? '',
+                'position' => $validated['position'],
+                'repeatActivity' => '0',
                 'backgroundColor' => '#0053f9',
-                'borderColor'     => '#0053f9',
-                'updated_at'      => now(),
+                'borderColor' => '#0053f9',
+                'start' => now(),
+                'end' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
-
-    } else {
-
-        DB::table('calendar_events')->insert([
-            'sid'             => session('selected_school') ?: null,
-            'classId'        => $request->classId ?: null,
-            'title'           => $activity->type.'-'.$validated['activity_name'],
-            'description'     => $validated['description'] ?? '',
-            'position'        => $validated['position'],
-            'repeatActivity'  => '0',
-            'backgroundColor' => '#0053f9',
-            'borderColor'     => '#0053f9',
-            'start'           => now(),
-            'end'             => now(),
-            'created_at'      => now(),
-            'updated_at'      => now(),
-        ]);
-    }
+        }
         $route = $activity->type == 'task'
             ? '/admin/finhero/activities'
             : '/admin/finhero/task-activities';
@@ -335,13 +510,13 @@ class FinheroAdminController extends Controller
     //public function deleteActivity(int $id): JsonResponse
     public function deleteActivity(Request $request, int $id)
     {
-         if ($request->confirm_code != $request->delete_code) {
-        return back()->with('error', 'Confirmation code does not match.');
-    }
+        if ($request->confirm_code != $request->delete_code) {
+            return back()->with('error', 'Confirmation code does not match.');
+        }
         DB::table('finhero_activity_registry')->where('id', $id)->delete();
         //return response()->json(['success' => true, 'message' => 'Activity removed.']);
         return redirect('/admin/finhero/activities')
-        ->with('success', 'Activity removed.');
+            ->with('success', 'Activity removed.');
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -356,14 +531,14 @@ class FinheroAdminController extends Controller
     public function saveSettings(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'month'                      => 'required|integer|min:1|max:12',
-            'year'                       => 'required|integer',
-            'active_library_module_id'   => 'nullable|integer',
-            'badge_active'               => 'required|boolean',
-            'threshold_legend'           => 'required|integer|min:1|max:100',
-            'threshold_champion'         => 'required|integer|min:1|max:100',
-            'threshold_finhero'          => 'required|integer|min:1|max:100',
-            'threshold_rookie'           => 'required|integer|min:1|max:100',
+            'month' => 'required|integer|min:1|max:12',
+            'year' => 'required|integer',
+            'active_library_module_id' => 'nullable|integer',
+            'badge_active' => 'required|boolean',
+            'threshold_legend' => 'required|integer|min:1|max:100',
+            'threshold_champion' => 'required|integer|min:1|max:100',
+            'threshold_finhero' => 'required|integer|min:1|max:100',
+            'threshold_rookie' => 'required|integer|min:1|max:100',
         ]);
 
         $academicYear = $this->calculator->getAcademicYear($validated['month'], $validated['year']);
@@ -379,17 +554,20 @@ class FinheroAdminController extends Controller
     /** GET /admin/finhero/settings?month=4&year=2026 — get settings for a month */
     public function getSettings(Request $request): JsonResponse
     {
-        $month    = $request->input('month', now()->month);
-        $year     = $request->input('year', now()->year);
+        $month = $request->input('month', now()->month);
+        $year = $request->input('year', now()->year);
         $settings = DB::table('finhero_monthly_settings')->where('month', $month)->where('year', $year)->first();
 
         // Return defaults if no settings exist yet
         return response()->json($settings ?? [
-            'month' => $month, 'year' => $year,
+            'month' => $month,
+            'year' => $year,
             'active_library_module_id' => null,
             'badge_active' => true,
-            'threshold_legend' => 90, 'threshold_champion' => 70,
-            'threshold_finhero' => 50, 'threshold_rookie' => 25,
+            'threshold_legend' => 90,
+            'threshold_champion' => 70,
+            'threshold_finhero' => 50,
+            'threshold_rookie' => 25,
         ]);
     }
 
@@ -407,31 +585,31 @@ class FinheroAdminController extends Controller
             ->orderBy('year')->orderBy('month')
             ->get()
             ->map(fn($r) => [
-                'month'               => $r->month,
-                'year'                => $r->year,
-                'quiz_pts'            => $r->quiz_pts,
-                'library_pts'         => $r->library_pts,
-                'activity_pts'        => $r->activity_pts,
-                'total_earned'        => $r->total_earned,
-                'total_available'     => $r->total_available,
-                'monthly_pct'         => $r->monthly_pct,
-                'monthly_badge'       => $r->effective_monthly_badge,
-                'monthly_badge_points'=> $r->monthly_badge_points,
-                'accumulated_points'  => $r->accumulated_points,
-                'accumulated_badge'   => $r->accumulated_badge,
-                'is_overridden'       => $r->is_overridden,
-                'badge_meta'          => FinheroBadgeRecord::BADGE_META[$r->effective_monthly_badge],
+                'month' => $r->month,
+                'year' => $r->year,
+                'quiz_pts' => $r->quiz_pts,
+                'library_pts' => $r->library_pts,
+                'activity_pts' => $r->activity_pts,
+                'total_earned' => $r->total_earned,
+                'total_available' => $r->total_available,
+                'monthly_pct' => $r->monthly_pct,
+                'monthly_badge' => $r->effective_monthly_badge,
+                'monthly_badge_points' => $r->monthly_badge_points,
+                'accumulated_points' => $r->accumulated_points,
+                'accumulated_badge' => $r->accumulated_badge,
+                'is_overridden' => $r->is_overridden,
+                'badge_meta' => FinheroBadgeRecord::BADGE_META[$r->effective_monthly_badge],
             ]);
 
         $current = $records->last();
 
         return response()->json([
-            'student_id'         => $studentId,
-            'academic_year'      => $academicYear,
-            'current_month'      => $current,
-            'accumulated_badge'  => $current['accumulated_badge'] ?? 'NONE',
+            'student_id' => $studentId,
+            'academic_year' => $academicYear,
+            'current_month' => $current,
+            'accumulated_badge' => $current['accumulated_badge'] ?? 'NONE',
             'accumulated_points' => $current['accumulated_points'] ?? 0,
-            'history'            => $records,
+            'history' => $records,
         ]);
     }
 
@@ -439,7 +617,7 @@ class FinheroAdminController extends Controller
     public function classSummary(Request $request): JsonResponse
     {
         $month = $request->input('month', now()->month);
-        $year  = $request->input('year', now()->year);
+        $year = $request->input('year', now()->year);
 
         $summary = FinheroBadgeRecord::where('month', $month)->where('year', $year)
             ->selectRaw('monthly_badge, COUNT(*) as count')
@@ -447,13 +625,14 @@ class FinheroAdminController extends Controller
             ->pluck('count', 'monthly_badge');
 
         return response()->json([
-            'month' => $month, 'year' => $year,
+            'month' => $month,
+            'year' => $year,
             'summary' => [
-                'LEGEND'   => $summary['LEGEND']   ?? 0,
+                'LEGEND' => $summary['LEGEND'] ?? 0,
                 'CHAMPION' => $summary['CHAMPION'] ?? 0,
-                'FINHERO'  => $summary['FINHERO']  ?? 0,
-                'ROOKIE'   => $summary['ROOKIE']   ?? 0,
-                'NONE'     => $summary['NONE']     ?? 0,
+                'FINHERO' => $summary['FINHERO'] ?? 0,
+                'ROOKIE' => $summary['ROOKIE'] ?? 0,
+                'NONE' => $summary['NONE'] ?? 0,
             ],
         ]);
     }
@@ -470,15 +649,16 @@ class FinheroAdminController extends Controller
     {
         $v = $request->validate([
             'student_id' => 'required|integer|exists:users,id',
-            'month'      => 'required|integer|min:1|max:12',
-            'year'       => 'required|integer',
-            'badge'      => 'required|in:LEGEND,CHAMPION,FINHERO,ROOKIE,NONE',
+            'month' => 'required|integer|min:1|max:12',
+            'year' => 'required|integer',
+            'badge' => 'required|in:LEGEND,CHAMPION,FINHERO,ROOKIE,NONE',
         ]);
 
         $record = FinheroBadgeRecord::where('student_id', $v['student_id'])
             ->where('month', $v['month'])->where('year', $v['year'])->first();
 
-        if (!$record) return response()->json(['error' => 'No record found.'], 404);
+        if (!$record)
+            return response()->json(['error' => 'No record found.'], 404);
 
         $record->update(['is_overridden' => true, 'override_badge' => $v['badge'], 'overridden_at' => now()]);
 
@@ -490,8 +670,8 @@ class FinheroAdminController extends Controller
     {
         $v = $request->validate([
             'student_id' => 'required|integer|exists:users,id',
-            'month'      => 'required|integer|min:1|max:12',
-            'year'       => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+            'year' => 'required|integer',
         ]);
 
         FinheroBadgeRecord::where('student_id', $v['student_id'])
@@ -505,8 +685,8 @@ class FinheroAdminController extends Controller
     public function recalculate(Request $request): JsonResponse
     {
         $v = $request->validate([
-            'month'      => 'required|integer|min:1|max:12',
-            'year'       => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+            'year' => 'required|integer',
             'student_id' => 'nullable|integer|exists:users,id',
         ]);
 
@@ -524,7 +704,7 @@ class FinheroAdminController extends Controller
     /** POST /admin/finhero/reset-year — trigger academic year reset */
     public function resetAcademicYear(Request $request): JsonResponse
     {
-        $v = $request->validate(['new_academic_year' => ['required','string','regex:/^\d{4}-\d{4}$/']]);
+        $v = $request->validate(['new_academic_year' => ['required', 'string', 'regex:/^\d{4}-\d{4}$/']]);
         // Historical records are kept. New year starts fresh automatically.
         return response()->json([
             'success' => true,

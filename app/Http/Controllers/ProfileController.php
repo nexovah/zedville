@@ -222,6 +222,31 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('status', 'avatar-updated');
     }
+    /*public function saveMode(Request $request)
+    {
+
+        $request->validate([
+            'mood' => 'required|string|max:255'
+        ]);
+        $alreadyLogged = MoodLog::where('user_id', auth()->id())
+            ->whereDate('created_at', now()->toDateString())
+            ->exists();
+
+        if ($alreadyLogged) {
+            return response()->json(['message' => 'Mood already submitted today']);
+        }
+        $user = Auth::user();
+        $moodlog = MoodLog::create([
+            'user_id' => $user->id,
+            'sid' => $user->sid ?? session()->get('sid'),
+            'mood' => $request->mood,
+            'energy' => $data['energy'],                // Add this
+            'pleasantness' => $data['pleasantness'],    // Add this
+            'created_at' => now()
+        ]);
+
+        return response()->json(['message' => 'Mood saved successfully']);
+    }*/
     public function saveMode(Request $request)
     {
 
@@ -248,7 +273,6 @@ class ProfileController extends Controller
 
         return response()->json(['message' => 'Mood saved successfully']);
     }
-
     public function getMoodCoordinates($mood)
     {
         $map = [
@@ -979,29 +1003,34 @@ public function findClosestMood($energy, $pleasantness)
                 one log entry
               - totalLogs  = raw row count
         ══════════════════════════════════════════════════════════ */
+        $user = Auth::user();
         $cityMonths = DB::table('mood_logs')
+            ->join('users', 'users.id', '=', 'mood_logs.user_id')
             ->selectRaw("
-        YEAR(created_at) AS year,
-        MONTH(created_at) AS month,
-        ROUND(AVG(energy),1) AS avgEnergy,
-        ROUND(AVG(pleasantness),1) AS avgPleasantness,
-        COUNT(DISTINCT DATE(created_at)) AS daysLogged,
-        COUNT(*) AS totalLogs
-    ")
-            ->where('user_id', $userId)
-            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
-            ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
+                YEAR(mood_logs.created_at) AS year,
+                MONTH(mood_logs.created_at) AS month,
+                ROUND(AVG(mood_logs.energy),1) AS avgEnergy,
+                ROUND(AVG(mood_logs.pleasantness),1) AS avgPleasantness,
+                COUNT(DISTINCT DATE(mood_logs.created_at)) AS daysLogged,
+                COUNT(*) AS totalLogs
+            ")
+            ->where('users.sid', $user->sid)
+            ->where('users.grade', $user->grade)
+            ->groupByRaw('YEAR(mood_logs.created_at), MONTH(mood_logs.created_at)')
+            ->orderByRaw('YEAR(mood_logs.created_at) DESC, MONTH(mood_logs.created_at) DESC')
             ->get()
-            ->map(function ($month) use ($userId) {
+            ->map(function ($month) use ($user) {
 
                 $dominantMood = DB::table('mood_logs')
-                    ->select('mood', DB::raw('COUNT(*) as total'))
-                    ->where('user_id', $userId)
-                    ->whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->groupBy('mood')
+                    ->join('users', 'users.id', '=', 'mood_logs.user_id')
+                    ->select('mood_logs.mood', DB::raw('COUNT(*) as total'))
+                    ->where('users.sid', $user->sid)
+                    ->where('users.grade', $user->grade)
+                    ->whereYear('mood_logs.created_at', $month->year)
+                    ->whereMonth('mood_logs.created_at', $month->month)
+                    ->groupBy('mood_logs.mood')
                     ->orderByDesc('total')
-                    ->value('mood');
+                    ->value('mood_logs.mood');
 
                 return [
                     'year' => (int) $month->year,
@@ -1078,29 +1107,34 @@ public function findClosestMood($energy, $pleasantness)
                 one log entry
               - totalLogs  = raw row count
         ══════════════════════════════════════════════════════════ */
+        $user = Auth::user();
         $cityMonths = DB::table('mood_logs')
+            ->join('users', 'users.id', '=', 'mood_logs.user_id')
             ->selectRaw("
-        YEAR(created_at) AS year,
-        MONTH(created_at) AS month,
-        ROUND(AVG(energy),1) AS avgEnergy,
-        ROUND(AVG(pleasantness),1) AS avgPleasantness,
-        COUNT(DISTINCT DATE(created_at)) AS daysLogged,
-        COUNT(*) AS totalLogs
-    ")
-            ->where('user_id', $userId)
-            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
-            ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
+                YEAR(mood_logs.created_at) AS year,
+                MONTH(mood_logs.created_at) AS month,
+                ROUND(AVG(mood_logs.energy),1) AS avgEnergy,
+                ROUND(AVG(mood_logs.pleasantness),1) AS avgPleasantness,
+                COUNT(DISTINCT DATE(mood_logs.created_at)) AS daysLogged,
+                COUNT(*) AS totalLogs
+            ")
+            ->where('users.sid', $user->sid)
+            ->where('users.grade', $user->grade)
+            ->groupByRaw('YEAR(mood_logs.created_at), MONTH(mood_logs.created_at)')
+            ->orderByRaw('YEAR(mood_logs.created_at) DESC, MONTH(mood_logs.created_at) DESC')
             ->get()
-            ->map(function ($month) use ($userId) {
+            ->map(function ($month) use ($user) {
 
                 $dominantMood = DB::table('mood_logs')
-                    ->select('mood', DB::raw('COUNT(*) as total'))
-                    ->where('user_id', $userId)
-                    ->whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->groupBy('mood')
+                    ->join('users', 'users.id', '=', 'mood_logs.user_id')
+                    ->select('mood_logs.mood', DB::raw('COUNT(*) as total'))
+                    ->where('users.sid', $user->sid)
+                    ->where('users.grade', $user->grade)
+                    ->whereYear('mood_logs.created_at', $month->year)
+                    ->whereMonth('mood_logs.created_at', $month->month)
+                    ->groupBy('mood_logs.mood')
                     ->orderByDesc('total')
-                    ->value('mood');
+                    ->value('mood_logs.mood');
 
                 return [
                     'year' => (int) $month->year,

@@ -579,4 +579,46 @@ public function bulkSaveSMS(Request $request)
         'message' => 'All months saved successfully!'
     ]);
 }
+
+/**
+ * Super Admin: update base monthly salary setting
+ */
+public function updateBaseSalary(Request $request)
+{
+    $user = Auth::user();
+    if ($user->role != 1 && $user->role != '1') {
+        return back()->with('error', 'Only Super Admin can edit the base monthly salary.');
+    }
+
+    $request->validate([
+        'monthly_salary' => 'required|numeric|min:1',
+    ]);
+
+    DB::table('settings')->updateOrInsert(
+        ['key' => 'monthly_salary'],
+        ['value' => $request->monthly_salary, 'updated_at' => now()]
+    );
+
+    return back()->with('success', 'Base monthly salary updated successfully!');
 }
+
+/**
+ * Tutor / Admin: Toggle between Management Panel and Citizen View without logging out
+ */
+public function toggleViewMode(Request $request)
+{
+    $user = Auth::user();
+    if (in_array($user->role, [1, 2, 3, '1', '2', '3', 'admin', 'tutor'])) {
+        $current = session('view_mode', 'admin');
+        $newMode = ($current === 'citizen') ? 'admin' : 'citizen';
+        session(['view_mode' => $newMode]);
+
+        return $newMode === 'citizen'
+            ? redirect('/dashboard')->with('success', 'Switched to Citizen View.')
+            : redirect('/admin/dashboard')->with('success', 'Switched to Management Panel.');
+    }
+
+    return redirect('/dashboard');
+}
+}
+

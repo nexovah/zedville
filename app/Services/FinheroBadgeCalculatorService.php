@@ -158,7 +158,7 @@ class FinheroBadgeCalculatorService
 
     public function getAcademicYear(int $month, int $year): string
     {
-        $startMonth = config('zedville.academic_year_start_month', 4);
+        $startMonth = config('zedville.academic_year_start_month', 4); // September — TODO: adjust if needed
         return $month >= $startMonth
             ? "{$year}-" . ($year + 1)
             : ($year - 1) . "-{$year}";
@@ -170,9 +170,7 @@ class FinheroBadgeCalculatorService
 
     /**
      * Get all active students.
-     * Role 4 = student (see AdminStudentController::add_student, ProfileController,
-     * AuthenticatedSessionController — role is stored as a string/numeric code,
-     * never the literal string 'student').
+     * TODO: change 'users', 'role', 'student' to match your schema.
      */
     private function getAllActiveStudents()
     {

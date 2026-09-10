@@ -98,8 +98,10 @@ public function supermarket()
     // 🔹 Classmates
     $classmates = User::where('id', '!=', $user->id)
         ->where('role', '4')
-        ->orderBy('name')
-        ->get(['id', 'name']);
+        ->where('sid', $user->sid)
+        ->where('grade', $user->grade)
+        ->orderBy('citizenId')
+        ->get(['id', 'citizenId', 'name']);
 
     // 🔹 URL type (omnivore / veg / etc.)
     $type = request()->segment(count(request()->segments()));

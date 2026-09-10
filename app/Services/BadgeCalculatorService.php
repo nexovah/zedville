@@ -200,13 +200,15 @@ class BadgeCalculatorService
 
     /**
      * Determine academic year string from month/year.
-     * Academic year start month is centralized in config('zedville.academic_year_start_month').
-     * e.g. with start month 4 (April): Month 5 (May) 2026 → "2026-2027"
-     *      Month 3 (Mar) 2026 → "2025-2026"
+     * Academic year runs September to August.
+     * e.g. Month 5 (May) 2026 → "2025-2026"
+     *      Month 10 (Oct) 2025 → "2025-2026"
+     *
+     * TODO: Adjust the start month if your academic year starts differently.
      */
     public function getAcademicYear(int $month, int $year): string
     {
-        $academicStartMonth = config('zedville.academic_year_start_month', 4);
+        $academicStartMonth = config('zedville.academic_year_start_month', 4); // September — change if needed
 
         if ($month >= $academicStartMonth) {
             return $year . '-' . ($year + 1);
@@ -222,9 +224,10 @@ class BadgeCalculatorService
     /**
      * Get all active students who should receive badge calculations.
      *
-     * Role 4 = student (see AdminStudentController::add_student, ProfileController,
-     * AuthenticatedSessionController — role is stored as a string/numeric code,
-     * never the literal string 'student').
+     * TODO: Replace with your actual query.
+     *       - Change 'users' to your students table name if different
+     *       - Change 'role' and 'student' to match your role system
+     *       - Add any other filters (e.g. active, enrolled in a class)
      */
     private function getAllActiveStudents()
     {

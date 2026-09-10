@@ -71,7 +71,10 @@ class BankController extends Controller
         $emmsavingsAmount = round($salaryamount * ($emmsavingsPct / 100), 2);
         $emmengercyfundintrest = $this->emmengercyfundintrest($user->id);
         $emmengercyfundtransactions = \App\Models\Transaction1::where('user_id', $user->id)
-            ->where('description', 'Auto Transfer to Savings Account')
+            ->where(function ($q) {
+                $q->where('description', 'Auto Transfer to Savings Account')
+                    ->orWhere('description', 'Auto Transfer to Emergency Fund');
+            })
             //->orderBy('transaction_date', 'desc') // latest first
             ->get();
         $moneymarketintrest = $this->moneymarketintrest($user->id);
@@ -80,7 +83,8 @@ class BankController extends Controller
             //->orderBy('transaction_date', 'desc') // latest first
             ->get();
         if ($bankAccount) {
-            //$this->creditMonthlySalary($user->id, $bankAccount);
+            $this->creditMonthlySalary($user->id);
+            $this->ensureMonthlyBills($user);
             // If bank account exists → load welcome view
             return view('bank.bank-account', compact('user', 'bankAccount', 'transactions', 'lastBalance', 'emmsavingsAmount', 'emmengercyfundintrest', 'emmengercyfundtransactions', 'moneymarketintrest', 'moneymarkettransactions'));
         }
@@ -169,6 +173,10 @@ class BankController extends Controller
         $user = auth()->user();
         // Check if this student already has a bank account
         $bankAccount = \App\Models\BankAccount::where('student_id', $user->id)->first();
+        if ($bankAccount) {
+            $this->creditMonthlySalary($user->id);
+            $this->ensureMonthlyBills($user);
+        }
         $transactions = \App\Models\Transaction1::where('user_id', $user->id)
             //->orderBy('transaction_date', 'desc') // latest first
             ->get();
@@ -178,7 +186,10 @@ class BankController extends Controller
         $lastBalance = $latestTxn ? $latestTxn->balance : 0;
         $emmengercyfundintrest = $this->emmengercyfundintrest($user->id);
         $emmengercyfundtransactions = \App\Models\Transaction1::where('user_id', $user->id)
-            ->where('description', 'Auto Transfer to Savings Account')
+            ->where(function ($q) {
+                $q->where('description', 'Auto Transfer to Savings Account')
+                    ->orWhere('description', 'Auto Transfer to Emergency Fund');
+            })
             //->orderBy('transaction_date', 'desc') // latest first
             ->get();
         $moneymarketintrest = $this->moneymarketintrest($user->id);
@@ -1428,50 +1439,8 @@ class BankController extends Controller
         // Remove duplicates
         $selectedDescriptions = array_unique($selectedDescriptions);
 
-        /*
-        |--------------------------------------------------------------------------
-        | 4️⃣ CREATE TRANSACTIONS
-        |--------------------------------------------------------------------------
-        */
-        $salaryDate = now();
-        $bankAccount = BankAccount::where('student_id', $user->id)->first();
-
-        foreach ($selectedDescriptions as $description) {
-
-            if (!isset($fixedTransactions[$description])) {
-                continue;
-            }
-
-            $exists = Transaction1::where('user_id', $user->id)
-                ->where('description', $description)
-                ->whereDate('transaction_date', $salaryDate->toDateString())
-                ->exists();
-
-            if ($exists) {
-                continue;
-            }
-
-            $latestTxn = Transaction1::where('user_id', $user->id)
-                ->latest('id')
-                ->first();
-
-            $lastBalance = $latestTxn ? $latestTxn->balance : 0;
-            $amount = $fixedTransactions[$description];
-            $newBalance = max(0, $lastBalance - $amount);
-
-            Transaction1::create([
-                'user_id' => $user->id,
-                'sid' => session()->get('sid'),
-                'bank_account_id' => $bankAccount->id ?? null,
-                'transaction_date' => $salaryDate,
-                'description' => $description,
-                'type' => 'debit',
-                'category' => 'Needs',
-                'amount' => $amount,
-                'balance' => $newBalance,
-                'is_penalty' => false,
-            ]);
-        }
+        // ✅ Ensure monthly bills are processed only on or after the 7th
+        $this->ensureMonthlyBills($user);
 
         /*
         |--------------------------------------------------------------------------
@@ -1697,7 +1666,7 @@ class BankController extends Controller
             ]
         );
     }*/
-    protected function creditMonthlySalary($userId)
+    /*public function creditMonthlySalary($userId)
     {
         // ✅ Salary is only credited on/after the 6th of each month
         if (now()->day < 6) {
@@ -1710,9 +1679,12 @@ class BankController extends Controller
             return;
         }
 
-        // ✅ Prevent duplicate credit for the same month
+        // ✅ Prevent duplicate credit for the same month (matches any salary or Income entry)
         $alreadyCredited = Transaction1::where('user_id', $userId)
-            ->where('description', 'LIKE', 'Monthly Salary Credit%')
+            ->where(function ($query) {
+                $query->where('category', 'Income')
+                    ->orWhere('description', 'LIKE', '%Salary%');
+            })
             ->whereMonth('transaction_date', now()->month)
             ->whereYear('transaction_date', now()->year)
             ->exists();
@@ -1729,13 +1701,14 @@ class BankController extends Controller
             ->value('balance') ?? 0;
 
         $newBalance = $lastBalance + $amount;
+        $salaryDate = Carbon::create(now()->year, now()->month, 6, 8, 0, 0);
 
         // ✅ Create transaction entry
         $transaction = Transaction1::create([
             'user_id' => $userId,
             'sid' => session()->get('sid'),
             'bank_account_id' => $account->id,
-            'transaction_date' => now(),
+            'transaction_date' => $salaryDate,
             'description' => 'Monthly Salary Credit - ' . now()->format('F Y'),
             'type' => 'credit',
             'category' => 'Income',
@@ -1755,8 +1728,242 @@ class BankController extends Controller
                 'month' => now()->format('F Y'),
             ]
         );
-    }
 
+        // 💰 Auto Transfer 20% to Emergency Fund if account is active
+        if ($account->is_open_emergency_account == 1) {
+            $alreadyTransferred = Transaction1::where('user_id', $userId)
+                ->where(function ($q) {
+                    $q->where('description', 'LIKE', '%Emergency Fund%')
+                        ->orWhere('description', 'LIKE', '%Savings Account%');
+                })
+                ->where('category', 'Savings')
+                ->whereMonth('transaction_date', now()->month)
+                ->whereYear('transaction_date', now()->year)
+                ->exists();
+
+            if (!$alreadyTransferred) {
+                $emmsavingsPct = config('zedville.emargency_fund_persentage', 20);
+                $savingsAmount = round($amount * ($emmsavingsPct / 100), 2);
+
+                if ($newBalance >= $savingsAmount) {
+                    $newBalance = max(0, $newBalance - $savingsAmount);
+
+                    // Update account balance
+                    $account->emergency_fund_account_amount = ($account->emergency_fund_account_amount ?? 0) + $savingsAmount;
+                    $account->save();
+
+                    // Create auto-transfer debit transaction
+                    Transaction1::create([
+                        'user_id' => $userId,
+                        'sid' => session()->get('sid'),
+                        'bank_account_id' => $account->id,
+                        'transaction_date' => Carbon::create(now()->year, now()->month, 6, 8, 5, 0),
+                        'description' => 'Auto Transfer to Emergency Fund',
+                        'type' => 'debit',
+                        'category' => 'Savings',
+                        'amount' => $savingsAmount,
+                        'balance' => $newBalance,
+                        'is_penalty' => false,
+                    ]);
+                }
+            }
+        }
+    }*/
+    public function creditMonthlySalary($userId)
+    {
+        // =========================================================
+        // Monthly Salary Credit
+        // Salary is credited on/after the 6th of every month
+        // Business timezone: Europe/Berlin
+        // =========================================================
+
+        $businessNow = Carbon::now('Europe/Berlin');
+
+        // Salary can only be credited from the 6th onward
+        if ($businessNow->day < 6) {
+            return;
+        }
+
+        // =========================================================
+        // Find user's bank account
+        // =========================================================
+
+        $account = BankAccount::where('student_id', $userId)->first();
+
+        if (!$account) {
+            return;
+        }
+
+        // =========================================================
+        // Salary transaction date
+        // Salary is officially dated on the 6th at 08:00 Berlin time
+        // =========================================================
+
+        /*$salaryDate = $businessNow->copy()
+            ->startOfDay()
+            ->setTime(8, 0, 0);*/
+        $salaryDate = Carbon::create(
+            $businessNow->year,
+            $businessNow->month,
+            6,
+            8,
+            0,
+            0,
+            'Europe/Berlin'
+        );
+
+        // =========================================================
+        // Prevent duplicate salary for the same month
+        // =========================================================
+
+        $alreadyCredited = Transaction1::where('user_id', $userId)
+            ->where(function ($query) {
+                $query->where('category', 'Income')
+                    ->orWhere('description', 'LIKE', '%Salary%');
+            })
+            ->whereMonth('transaction_date', $businessNow->month)
+            ->whereYear('transaction_date', $businessNow->year)
+            ->exists();
+
+        if ($alreadyCredited) {
+            return;
+        }
+
+        // =========================================================
+        // Monthly salary amount
+        // =========================================================
+
+        $amount = config('zedville.monthly_salary', 3952.40);
+
+        // =========================================================
+        // IMPORTANT:
+        // Get the balance from the latest transaction BEFORE
+        // the salary transaction date.
+        //
+        // We do NOT use orderBy('id', 'desc') alone because the
+        // highest transaction ID is not always the transaction
+        // that represents the balance immediately before salary.
+        // =========================================================
+
+        $lastBalance = Transaction1::where('user_id', $userId)
+            ->where('transaction_date', '<', $salaryDate)
+            ->orderBy('transaction_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->value('balance') ?? 0;
+
+        // Make sure the balance is numeric
+        $lastBalance = (float) $lastBalance;
+
+        // =========================================================
+        // Add monthly salary to previous balance
+        // Example:
+        // Previous balance = €70.00
+        // Salary           = €3952.40
+        // New balance      = €4022.40
+        // =========================================================
+
+        $newBalance = round($lastBalance + $amount, 2);
+
+        // =========================================================
+        // Create Salary Transaction
+        // =========================================================
+
+        $transaction = Transaction1::create([
+            'user_id' => $userId,
+            'sid' => session()->get('sid'),
+            'bank_account_id' => $account->id,
+            'transaction_date' => $salaryDate,
+            'description' => 'Monthly Salary Credit - ' . $businessNow->format('F Y'),
+            'type' => 'credit',
+            'category' => 'Income',
+            'amount' => $amount,
+            'balance' => $newBalance,
+            'is_penalty' => false,
+        ]);
+
+        // =========================================================
+        // Trigger mailbox notification
+        // =========================================================
+
+        MailboxScheduler::scheduleForEvent(
+            'salary-deposite',
+            $userId,
+            [
+                'transaction_id' => $transaction->id,
+                'amount' => $amount,
+                'balance' => $newBalance,
+                'month' => $businessNow->format('F Y'),
+            ]
+        );
+
+        // =========================================================
+        // Auto Transfer 20% to Emergency Fund
+        // =========================================================
+
+        if ($account->is_open_emergency_account == 1) {
+
+            // Prevent duplicate Emergency Fund transfer
+            $alreadyTransferred = Transaction1::where('user_id', $userId)
+                ->where(function ($q) {
+                    $q->where('description', 'LIKE', '%Emergency Fund%')
+                        ->orWhere('description', 'LIKE', '%Savings Account%');
+                })
+                ->where('category', 'Savings')
+                ->whereMonth('transaction_date', $businessNow->month)
+                ->whereYear('transaction_date', $businessNow->year)
+                ->exists();
+
+            if (!$alreadyTransferred) {
+
+                $emmsavingsPct = config(
+                    'zedville.emargency_fund_persentage',
+                    20
+                );
+
+                $savingsAmount = round(
+                    $amount * ($emmsavingsPct / 100),
+                    2
+                );
+
+                // Make sure there is enough balance
+                if ($newBalance >= $savingsAmount) {
+
+                    // Deduct Emergency Fund amount from running balance
+                    $newBalance = round(
+                        $newBalance - $savingsAmount,
+                        2
+                    );
+
+                    // Update Emergency Fund account balance
+                    $account->emergency_fund_account_amount =
+                        ($account->emergency_fund_account_amount ?? 0)
+                        + $savingsAmount;
+
+                    $account->save();
+
+                    // =================================================
+                    // Create Emergency Fund Debit Transaction
+                    // =================================================
+
+                    Transaction1::create([
+                        'user_id' => $userId,
+                        'sid' => session()->get('sid'),
+                        'bank_account_id' => $account->id,
+                        //'transaction_date' => $businessNow->copy()
+                        //->startOfDay()
+                        //->setTime(8, 5, 0),
+                        'transaction_date' => $salaryDate->copy()->addMinutes(5),
+                        'description' => 'Auto Transfer to Emergency Fund',
+                        'type' => 'debit',
+                        'category' => 'Savings',
+                        'amount' => $savingsAmount,
+                        'balance' => $newBalance,
+                        'is_penalty' => false,
+                    ]);
+                }
+            }
+        }
+    }
     protected function processAutoDebits($userId)
     {
         $today = now()->toDateString();
@@ -1887,8 +2094,13 @@ class BankController extends Controller
         'transactions' => $transactions,
     ]);
 }*/
-    private function ensureMonthlyBills(User $user)
+    public function ensureMonthlyBills(User $user)
     {
+        // 🔒 Only generate bills on or after the 7th of the month
+        if (now()->day < 7) {
+            return;
+        }
+
         $fixedTransactions = [
             ['day' => 7, 'description' => 'Utility - Electricity', 'amount' => rand(60, 90)],
             ['day' => 7, 'description' => 'Utility - Water', 'amount' => rand(30, 60)],
@@ -1898,8 +2110,15 @@ class BankController extends Controller
         ];
 
         $today = now();
+        $bankAccount = BankAccount::where('student_id', $user->id)->first();
 
         foreach ($fixedTransactions as $item) {
+            $billDay = $item['day'] ?? 7;
+
+            // Only process if today is on or past this bill's day
+            if ($today->day < $billDay) {
+                continue;
+            }
 
             $exists = Transaction1::where('user_id', $user->id)
                 ->where('description', $item['description'])
@@ -1911,7 +2130,7 @@ class BankController extends Controller
                 continue;
             }
 
-            $txnDate = now()->startOfMonth()->addDays($item['day'] - 1);
+            $txnDate = Carbon::create($today->year, $today->month, $billDay, 9, 0, 0);
 
             $latestTxn = Transaction1::where('user_id', $user->id)
                 ->latest('id')
@@ -1919,9 +2138,8 @@ class BankController extends Controller
 
             $lastBalance = $latestTxn ? $latestTxn->balance : 0;
             $newBalance = max(0, $lastBalance - $item['amount']);
-            $bankAccount = BankAccount::where('student_id', $user->id)->first();
+
             // ✅ CATEGORY RULE
-            //$category = ($item['description'] === 'Internet') ? 'Needs' : 'Wants';
             $needsItems = [
                 'Utility - Electricity',
                 'Utility - Water',
@@ -1949,17 +2167,13 @@ class BankController extends Controller
     public function bank_statement_show(StatementGenerator $generator, Request $request)
     {
         $user = Auth::user();
+        $this->creditMonthlySalary($user->id);
         $this->ensureMonthlyBills($user);
-        // ✅ Only allow penalty check between 1st–5th of each month
-        //$today = now()->day;
+
         $today = now();
 
         // 🔹 Check last day of current month
-        $isLastDayOfMonth = $today->isSameDay($today->copy()->endOfMonth());
-
-        // 🔹 Account must be older than this month
-        $accountCreatedBeforeThisMonth =
-            $user->created_at->lessThan(now()->startOfMonth());
+        $isLastDayOfMonth = $today->isLastOfMonth();
 
         // 🔹 Penalty already applied this month?
         $penaltyExists = Transaction1::where('user_id', $user->id)
@@ -1968,13 +2182,9 @@ class BankController extends Controller
             ->whereMonth('transaction_date', $today->month)
             ->exists();
 
-        // ✅ APPLY PENALTY ONLY ON LAST DAY
-        if (
-            $isLastDayOfMonth &&
-            !$penaltyExists &&
-            $accountCreatedBeforeThisMonth
-        ) {
-            $this->banks_penalty(app(StatementGenerator::class));
+        // ✅ APPLY PENALTY ONLY ON LAST DAY OF MONTH
+        if ($isLastDayOfMonth && !$penaltyExists) {
+            $this->banks_penalty($generator, $user);
         }
 
 
@@ -2276,7 +2486,10 @@ class BankController extends Controller
 
         // 3️⃣ Get ending balance (latest txn before end of month)
         $endingBalance = Transaction1::where('user_id', $userId)
-            ->where('description', 'Auto Transfer to Savings Account')
+            ->where(function ($q) {
+                $q->where('description', 'Auto Transfer to Savings Account')
+                    ->orWhere('description', 'Auto Transfer to Emergency Fund');
+            })
             ->where('transaction_date', '<=', $previousMonth->endOfMonth())
             ->orderBy('transaction_date', 'desc')
             ->value('balance');
@@ -2443,105 +2656,96 @@ class BankController extends Controller
         // 🔒 STEP 0: DATE & SECURITY GUARDS
         $today = now();
 
-        // ❌ Allow only LAST DAY of current month
-        if (!$today->isSameDay($today->copy()->endOfMonth())) {
-            return redirect()
-                ->route('bank.bank_statement_show')
-                ->with('error', 'Penalty can only be applied on the last day of the month.');
+        // If called directly via route without being end of month
+        if (!$today->isLastOfMonth() && !$today->isSameDay($today->copy()->endOfMonth())) {
+            if (!app()->runningInConsole() && request()->routeIs('bank.banks_penalty')) {
+                return redirect()
+                    ->route('bank.bank_statement_show')
+                    ->with('error', 'Penalty can only be applied on the last day of the month.');
+            }
         }
-        //dd('test');
-        $user = Auth::user();
+
+        $user = $user ?? Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
         $bankAccount = BankAccount::where('student_id', $user->id)->first();
-        $aviableblance = Transaction1::where('user_id', $user->id)->latest('id')->first();
+
         // STEP 1: GATHER INPUTS
-        //$monthlySalary = $generator->getActiveBudgetConfig()->monthly_salary ?? 3952.40;
-        $monthlySalary1 = $aviableblance->balance;
         $monthlySalary = $generator->getActiveBudgetConfig()->monthly_salary ?? config('zedville.monthly_salary', 3952.40);
-        //dd($monthlySalary);
         $minThreshold = $monthlySalary * 0.91; // 91%
         $targetAmount = $monthlySalary * 0.99; // 99%
-        $targetAmount1 = $monthlySalary1 * 0.99; // 99%
 
-        // STEP 2: CALCULATE TOTAL EXPENSES (Needs + Wants)
+        // STEP 2: CALCULATE TOTAL EXPENSES (Debits, excluding existing penalty transactions)
         $totalExpenses = Transaction1::where('user_id', $user->id)
-            //->whereIn('category', ['Needs', 'Wants'])
             ->where('type', 'debit')
+            ->where('category', '!=', 'Penalty')
+            ->where('is_penalty', 0)
             ->whereYear('transaction_date', now()->year)
             ->whereMonth('transaction_date', now()->month)
             ->sum('amount');
-        //dd($minThreshold,$totalExpenses);
+
         // STEP 3: CHECK IF PENALTY APPLIES
         if ($totalExpenses >= $minThreshold) {
-
-            // ✅ No Penalty - reverse if any exists
-            /*$existingPenalty = Transaction1::where('user_id', $user->id)
-                ->where('category', 'Penalty')
-                ->whereYear('transaction_date', now()->year)
-                ->whereMonth('transaction_date', now()->month)
-                ->first();
-
-            if ($existingPenalty) {
-                $latestTxn = Transaction1::where('user_id', $user->id)
-                    ->latest('transaction_date')
-                    ->first();
-
-                $currentBalance = $latestTxn ? $latestTxn->balance : 0;
-                $newBalance = $currentBalance + $existingPenalty->amount;
-
-                Transaction1::create([
-                    'user_id' => $user->id,
-                    'bank_account_id' => $bankAccount->id ?? null,
-                    'transaction_date' => now(),
-                    'description' => 'Penalty Reversed (Expenses >= 91% of Salary)',
-                    'type' => 'credit',
-                    'category' => 'Penalty',
-                    'amount' => $existingPenalty->amount,
-                    'balance' => $newBalance,
-                    'is_penalty' => true,
-                ]);
-            }*/
-
-            return redirect()->route('bank.bank_statement_show');
+            if (request()->routeIs('bank.banks_penalty')) {
+                return redirect()->route('bank.bank_statement_show');
+            }
+            return;
         }
 
         // STEP 4: PENALTY APPLIES - CALCULATE PENALTY AMOUNT
-        //$penaltyAmount = $targetAmount1 - $totalExpenses;
-
-        /*if ($penaltyAmount <= 0) {
-            return redirect()->route('bank.bank_statement_show');
-        }*/
-        //$penaltyAmount = $targetAmount1;
         $penaltyAmount = max(0, $targetAmount - $totalExpenses);
-        // safety cap
+
+        // safety cap with available balance
         $latestTxn = Transaction1::where('user_id', $user->id)->latest('id')->first();
         $lastBalance = $latestTxn ? $latestTxn->balance : 0;
-        $penaltyAmount = min($penaltyAmount, $lastBalance);
+        $penaltyAmount = min($penaltyAmount, max(0, $lastBalance));
 
-        // STEP 4B: SELECT RANDOM PENALTY ITEMS FROM penalty_wants_items TABLE
-        $wantsItems = DB::table('penalty_wants_items')->inRandomOrder()->get(['item_name', 'price']);
-        $selectedItems = [];
-        $accumulated = 0;
-
-        foreach ($wantsItems as $item) {
-            if ($accumulated + $item->price > $penaltyAmount)
-                break;
-
-            $selectedItems[] = [
-                'name' => $item->item_name,
-                'price' => $item->price
-            ];
-            $accumulated += $item->price;
+        if ($penaltyAmount <= 0) {
+            if (request()->routeIs('bank.banks_penalty')) {
+                return redirect()->route('bank.bank_statement_show');
+            }
+            return;
         }
 
-        // Add a filler if remaining small amount
-        if ($accumulated < $penaltyAmount && $wantsItems->count() > 0) {
-            $remaining = $penaltyAmount - $accumulated;
+        // STEP 4B: SELECT RANDOM PENALTY ITEMS FROM penalty_wants_items TABLE
+        $selectedItems = [];
+        try {
+            $wantsItems = DB::table('penalty_wants_items')->inRandomOrder()->get(['item_name', 'price']);
+            $accumulated = 0;
+
+            foreach ($wantsItems as $item) {
+                if ($accumulated + $item->price > $penaltyAmount) {
+                    break;
+                }
+
+                $selectedItems[] = [
+                    'name' => $item->item_name,
+                    'price' => $item->price
+                ];
+                $accumulated += $item->price;
+            }
+
+            // Add a filler if remaining small amount
+            if ($accumulated < $penaltyAmount && $wantsItems->count() > 0) {
+                $remaining = $penaltyAmount - $accumulated;
+                $selectedItems[] = [
+                    'name' => 'More items',
+                    'price' => round($remaining, 2)
+                ];
+                $accumulated += $remaining;
+            }
+        } catch (\Exception $e) {
+            Log::warning('penalty_wants_items query failed or table missing: ' . $e->getMessage());
+        }
+
+        // Fallback: If table has no items or nothing was selected, add standard penalty item
+        if (empty($selectedItems) && $penaltyAmount > 0) {
             $selectedItems[] = [
-                //'name' => 'Misc. Wants (auto-adjust)',
-                'name' => 'More items',
-                'price' => round($remaining, 2)
+                'name' => 'Monthly Budget Penalty (Expenses < 91%)',
+                'price' => round($penaltyAmount, 2),
             ];
-            $accumulated += $remaining;
         }
 
         // STEP 4C: APPLY PENALTY TRANSACTIONS
@@ -2549,7 +2753,7 @@ class BankController extends Controller
         $lastBalance = $latestTxn ? $latestTxn->balance : 0;
 
         foreach ($selectedItems as $item) {
-            $lastBalance -= $item['price'];
+            $lastBalance = max(0, $lastBalance - $item['price']);
 
             Transaction1::create([
                 'user_id' => $user->id,
@@ -2565,9 +2769,12 @@ class BankController extends Controller
             ]);
         }
 
-        // STEP 5: REDIRECT TO STATEMENT
-        return redirect()->route('bank.bank_statement_show');
+        // STEP 5: REDIRECT TO STATEMENT IF DIRECT WEB REQUEST
+        if (request()->routeIs('bank.banks_penalty')) {
+            return redirect()->route('bank.bank_statement_show')->with('success', 'Monthly penalty applied successfully.');
+        }
     }
+
     public function updatePin(Request $request)
     {
         $request->validate([

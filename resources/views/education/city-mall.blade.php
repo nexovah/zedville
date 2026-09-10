@@ -158,22 +158,9 @@
     </div>
 </div>
 <script>
-function enterShop(storeId) {
-    // Redirect based on store ID
-    const storeUrls = {
-        1: "https://dev.nexovah.in/zedville/education/spending-tracker/basicco",
-        2: "https://dev.nexovah.in/zedville/education/spending-tracker/store2",
-        3: "https://dev.nexovah.in/zedville/education/spending-tracker/store3",
-        4: "https://dev.nexovah.in/zedville/education/spending-tracker/store4",
-        5: "https://dev.nexovah.in/zedville/education/spending-tracker/store5",
-        6: "https://dev.nexovah.in/zedville/education/spending-tracker/store6",
-        7: "https://dev.nexovah.in/zedville/education/spending-tracker/store7",
-        8: "https://dev.nexovah.in/zedville/education/spending-tracker/store8",
-        9: "https://dev.nexovah.in/zedville/education/spending-tracker/store9",
-        10: "https://dev.nexovah.in/zedville/education/spending-tracker/store10"
-    };
-    
-    window.location.href = storeUrls[storeId];
+function enterShop(storeType) {
+    const baseUrl = "{{ url('/education/spending-tracker') }}";
+    window.location.href = baseUrl + '/' + storeType;
 }
 </script>
 @endsection

@@ -36,15 +36,16 @@ class ClosetController extends Controller
 
     private function requireAdminOrTutor()
     {
-        $role = auth()->user()->role ?? '';
-        if (!in_array($role, ['admin', 'tutor'])) {
+        $role = auth()->user()->role ?? 0;
+        if (!in_array($role, [1, 2, 3, '1', '2', '3', 'admin', 'tutor'])) {
             abort(403, 'Forbidden');
         }
     }
 
     private function requireAdmin()
     {
-        if ((auth()->user()->role ?? '') !== 'admin') {
+        $role = auth()->user()->role ?? 0;
+        if (!in_array($role, [1, 2, '1', '2', 'admin'])) {
             abort(403, 'Forbidden');
         }
     }

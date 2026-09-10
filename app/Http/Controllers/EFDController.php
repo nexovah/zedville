@@ -321,9 +321,11 @@ class EFDController extends Controller
         $hasBankAccount = BankAccount::where('student_id', $user->id)->exists();
         $bankAccount = \App\Models\BankAccount::where('student_id', $user->id)->first();
         $classmates = User::where('id', '!=', $user->id)
-            ->where('role', '4') // remove if not applicable
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->where('role', '4')
+            ->where('sid', $user->sid)
+            ->where('grade', $user->grade)
+            ->orderBy('citizenId')
+            ->get(['id', 'citizenId', 'name']);
         // Get last URL segment (basicco)
         $type = request()->segment(count(request()->segments()));
 
@@ -346,9 +348,11 @@ class EFDController extends Controller
         $user = auth()->user();
         $bankAccount = \App\Models\BankAccount::where('student_id', $user->id)->first();
         $classmates = User::where('id', '!=', $user->id)
-            ->where('role', '4') // remove if not applicable
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->where('role', '4')
+            ->where('sid', $user->sid)
+            ->where('grade', $user->grade)
+            ->orderBy('citizenId')
+            ->get(['id', 'citizenId', 'name']);
         // Get last URL segment (basicco)
         $type = request()->segment(count(request()->segments()));
 
@@ -368,9 +372,11 @@ class EFDController extends Controller
         $user = auth()->user();
         $bankAccount = \App\Models\BankAccount::where('student_id', $user->id)->first();
         $classmates = User::where('id', '!=', $user->id)
-            ->where('role', '4') // remove if not applicable
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->where('role', '4')
+            ->where('sid', $user->sid)
+            ->where('grade', $user->grade)
+            ->orderBy('citizenId')
+            ->get(['id', 'citizenId', 'name']);
         // Get last URL segment (basicco)
         $type = request()->segment(count(request()->segments()));
 
@@ -393,8 +399,10 @@ class EFDController extends Controller
 
         $classmates = User::where('id', '!=', $user->id)
             ->where('role', '4')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->where('sid', $user->sid)
+            ->where('grade', $user->grade)
+            ->orderBy('citizenId')
+            ->get(['id', 'citizenId', 'name']);
 
         // URL → DB mapping
         $storeMap = [
@@ -538,8 +546,8 @@ class EFDController extends Controller
         $user = auth()->user();
         $bank = BankAccount::where('student_id', auth()->id())->first();
 
-        // Check PIN
-        if (!$bank || $bank->card_pin != $request->pin) {
+        // Check PIN with strict comparison
+        if (!$bank || (string) $bank->card_pin !== (string) $request->pin) {
             return response()->json([
                 'status' => false
             ]);
@@ -659,10 +667,16 @@ class EFDController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $activePetitions = Petition::whereIn('status', [
-            'pending',
-            'approved'
-        ])
+        // Only show approved petitions within 3 months (and student's own pending petitions)
+        $threeMonthsAgo = now()->subMonths(3);
+
+        $activePetitions = Petition::where('status', 'approved')
+            ->where('created_at', '>=', $threeMonthsAgo)
+            ->orWhere(function ($query) use ($studentId, $threeMonthsAgo) {
+                $query->where('status', 'pending')
+                    ->where('created_by', $studentId)
+                    ->where('created_at', '>=', $threeMonthsAgo);
+            })
             ->orderBy('id', 'DESC')
             ->get();
 
@@ -670,6 +684,7 @@ class EFDController extends Controller
             'rejected',
             'closed'
         ])
+            ->orWhere('created_at', '<', $threeMonthsAgo)
             ->orderBy('id', 'DESC')
             ->get();
 
@@ -710,7 +725,17 @@ class EFDController extends Controller
             'vote' => 'required|in:yes,no',
         ]);
 
-        $studentId = Auth::id();
+        $user = Auth::user();
+
+        // Enforce that only students (role 4) can vote on referendums
+        if ($user->role != 4 && $user->role != '4') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only students are eligible to vote in referendums.'
+            ], 403);
+        }
+
+        $studentId = $user->id;
 
         $exists = ReferendumVote::where('referendum_id', $id)
             ->where('student_id', $studentId)

@@ -73,4 +73,90 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Models\SchoolDomain::class, 'sid', 'id');
     }
+
+    // ==========================================
+    // AUTHORITATIVE ROLE CONSTANTS
+    // ==========================================
+    const ROLE_SUPER_ADMIN  = 1;
+    const ROLE_SCHOOL_ADMIN = 2;
+    const ROLE_TUTOR        = 3;
+    const ROLE_STUDENT      = 4;
+
+    // ==========================================
+    // ROLE HELPER METHODS
+    // ==========================================
+
+    /**
+     * Check if user is Super Admin (Platform-wide)
+     */
+    public function isSuperAdmin(): bool
+    {
+        return in_array($this->role, [1, '1', 0, '0']);
+    }
+
+    /**
+     * Check if user is School Admin (Scoped to their school)
+     */
+    public function isSchoolAdmin(): bool
+    {
+        return in_array($this->role, [2, '2']);
+    }
+
+    /**
+     * Check if user is any Admin (Super Admin or School Admin)
+     */
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, [0, 1, 2, '0', '1', '2', 'admin']);
+    }
+
+    /**
+     * Check if user is Tutor
+     */
+    public function isTutor(): bool
+    {
+        return in_array($this->role, [3, '3', 'tutor']);
+    }
+
+    /**
+     * Check if user is Staff (Admin or Tutor)
+     */
+    public function isAdminOrTutor(): bool
+    {
+        return in_array($this->role, [0, 1, 2, 3, '0', '1', '2', '3', 'admin', 'tutor']);
+    }
+
+    /**
+     * Check if user is Student
+     */
+    public function isStudent(): bool
+    {
+        return in_array($this->role, [4, '4', 'student']);
+    }
+
+    /**
+     * Get readable role name
+     */
+    public function getRoleNameAttribute(): string
+    {
+        return match ((int) $this->role) {
+            1, 0    => 'Super Admin',
+            2       => 'School Admin',
+            3       => 'Tutor',
+            4       => 'Student',
+            default => 'Unknown',
+        };
+    }
+
+    /**
+     * Pseudonym Accessor (Uses existing citizenId without extra DB fields)
+     */
+    public function getPseudonymAttribute(): string
+    {
+        if ($this->isStudent()) {
+            return $this->citizenId ?? ('Citizen #' . $this->id);
+        }
+        return $this->name;
+    }
 }
+

@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $users = User::all();
             foreach ($users as $user) {
-               MailboxScheduler::scheduleForEvent('login', $user->id);
+                MailboxScheduler::scheduleForEvent('login', $user->id);
             }
         })->everyMinute();
 
@@ -43,7 +43,7 @@ class Kernel extends ConsoleKernel
             $recurringTransfers = Transfer::where('type', 'recurring')
                 ->where(function ($query) {
                     $query->where('start_date', '<=', now())
-                          ->where('end_date', '>=', now());
+                        ->where('end_date', '>=', now());
                 })
                 ->get();
 
@@ -52,10 +52,10 @@ class Kernel extends ConsoleKernel
             }
         })->everyMinute(); // check every minute
         // ✅ ADD THIS (Badge Calculation)
-    $schedule->command('badges:calculate-monthly')
-        ->lastDayOfMonth('23:59')
-        ->withoutOverlapping()
-        ->runInBackground();
+        $schedule->command('badges:calculate-monthly')
+            ->lastDayOfMonth('23:59')
+            ->withoutOverlapping('badges-calculate-monthly')
+            ->runInBackground();
 
         // ----- Monthly Salary & Bills Backfill -----
         // Salary is credited on/after the 6th, fixed bills (rent/school/electricity/
@@ -77,15 +77,13 @@ class Kernel extends ConsoleKernel
             \App\Models\User::where('role', 4)
                 ->chunkById(100, function ($students) use ($now, $isLastDayOfMonth) {
                     $statementGenerator = app(\App\Services\StatementGenerator::class);
-                    $sessionController = app(\App\Http\Controllers\Auth\AuthenticatedSessionController::class);
                     $bankController = app(\App\Http\Controllers\BankController::class);
 
                     foreach ($students as $student) {
                         $accountCreatedAt = \Carbon\Carbon::parse($student->created_at);
 
-                        // Same eligibility rule used at login: skip students whose
-                        // account was created this same month (their first statement
-                        // is generated separately via the activation flow).
+                        // Skip students created in current month whose first statement
+                        // is generated separately via direct deposit onboarding
                         $isEligible = !(
                             $accountCreatedAt->year === $now->year &&
                             $accountCreatedAt->month === $now->month
@@ -96,41 +94,41 @@ class Kernel extends ConsoleKernel
                         }
 
                         try {
+                            // 1. Credit Salary on/after 6th (+ Emergency Fund 20% auto-transfer)
                             if ($now->day >= 6) {
-                                $statementGenerator->generateForUser($student->id);
+                                $bankController->creditMonthlySalary($student->id);
                             }
 
+                            // 2. Debit Fixed Bills on/after 7th
                             if ($now->day >= 7) {
-                                $sessionController->ensureMonthlyBills($student);
+                                $bankController->ensureMonthlyBills($student);
                             }
 
-                            // ----- Last-day-of-month penalty (mirrors login-flow guard) -----
+                            // 3. Month-end penalty on last day of month
                             if ($isLastDayOfMonth) {
-                                $accountCreatedBeforeThisMonth = $accountCreatedAt
-                                    ->lessThan($now->copy()->startOfMonth());
-
                                 $penaltyExists = \App\Models\Transaction1::where('user_id', $student->id)
                                     ->where('category', 'Penalty')
                                     ->whereYear('transaction_date', $now->year)
                                     ->whereMonth('transaction_date', $now->month)
                                     ->exists();
 
-                                if ($accountCreatedBeforeThisMonth && !$penaltyExists) {
+                                if (!$penaltyExists) {
                                     $bankController->banks_penalty($statementGenerator, $student);
                                 }
                             }
                         } catch (\Throwable $e) {
                             \Illuminate\Support\Facades\Log::error('Monthly finance backfill failed for user', [
                                 'user_id' => $student->id,
-                                'error'   => $e->getMessage(),
+                                'error' => $e->getMessage(),
                             ]);
                         }
                     }
                 });
         })->dailyAt('00:15')
             ->timezone('Europe/Berlin')
-            ->withoutOverlapping()
-            ->name('monthly-finance-backfill');
+            ->name('monthly-finance-backfill')
+            ->withoutOverlapping();
+
     }
 
     /**
@@ -140,9 +138,9 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
-    
+
 }

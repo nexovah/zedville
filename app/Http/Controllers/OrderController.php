@@ -158,36 +158,38 @@ class OrderController extends Controller
     {
         $request->validate([
             'pin' => 'required|digits:4',
-
             'cart' => 'required|array|min:1',
-
             'cart.*.id' => 'required|integer|exists:products,id',
             'cart.*.quantity' => 'required|integer|min:1',
         ]);
 
         $user = Auth::user();
 
-        // Verify PIN
-        if (!Hash::check($request->pin, $user->pin)) {
+        // 1. Get bank account
+        $bankAccount = DB::table('bank_accounts')
+            ->where('student_id', $user->id)
+            ->first();
+
+        if (!$bankAccount) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bank account not found.'
+            ], 404);
+        }
+
+        // 2. Strict PIN check
+        if ((string) $request->pin !== (string) $bankAccount->card_pin) {
             return response()->json([
                 'status' => false,
                 'message' => 'Invalid PIN.'
             ], 422);
         }
 
-        /*
-         * IMPORTANT:
-         * Never trust price, name, type, category or total
-         * coming from the browser.
-         *
-         * Get everything from the products table.
-         */
-
+        // 3. Server-side price and total calculation from products catalogue
         $serverTotal = 0;
         $validatedCart = [];
 
         foreach ($request->cart as $item) {
-
             $product = DB::table('products')
                 ->where('id', $item['id'])
                 ->first();
@@ -200,12 +202,8 @@ class OrderController extends Controller
             }
 
             $quantity = (int) $item['quantity'];
-
-            // Server-side price
             $price = (float) $product->price;
-
             $itemSubtotal = $price * $quantity;
-
             $serverTotal += $itemSubtotal;
 
             $validatedCart[] = [
@@ -215,21 +213,13 @@ class OrderController extends Controller
             ];
         }
 
-        // Get latest bank balance
-        $bankAccount = BankAccount::where('user_id', $user->id)
+        // 4. Balance check from latest transaction
+        $latestTxn = Transaction1::where('user_id', $user->id)
             ->latest('id')
             ->first();
 
-        if (!$bankAccount) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Bank account not found.'
-            ], 422);
-        }
+        $lastBalance = $latestTxn ? (float) $latestTxn->balance : 0;
 
-        $lastBalance = (float) $bankAccount->balance;
-
-        // IMPORTANT: compare against SERVER calculated total
         if ($lastBalance < $serverTotal) {
             return response()->json([
                 'status' => false,
@@ -244,8 +234,7 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
-
-            // Create order using SERVER calculated total
+            // 5. Create order using server-calculated total
             $orderId = DB::table('orders')->insertGetId([
                 'user_id' => $user->id,
                 'total' => $serverTotal,
@@ -257,7 +246,6 @@ class OrderController extends Controller
             $runningBalance = $lastBalance;
 
             foreach ($validatedCart as $cartItem) {
-
                 $product = $cartItem['product'];
                 $quantity = $cartItem['quantity'];
                 $itemSubtotal = $cartItem['subtotal'];
@@ -268,37 +256,27 @@ class OrderController extends Controller
                     throw new \Exception('Insufficient balance.');
                 }
 
-                // Store catalogue values, NOT browser values
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'sid' => session()->get('sid'),
-
                     'name' => $product->product_name,
-
                     'price' => $product->price,
-
                     'qty' => $quantity,
-
                     'subtotal' => $itemSubtotal,
-
                     'type' => $product->type,
-
-                    'category' => $product->category,
-
+                    'category' => $product->category ?? 'Wants',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                // Record transaction using server-calculated amount
                 Transaction1::create([
                     'user_id' => $user->id,
                     'sid' => session()->get('sid'),
                     'bank_account_id' => $bankAccount->id,
                     'transaction_date' => now(),
-                    'description' =>
-                        "Purchase: {$product->product_name} (Order #{$orderId})",
+                    'description' => "Purchase: {$product->product_name} (Order #{$orderId})",
                     'type' => 'debit',
-                    'category' => $product->category,
+                    'category' => $product->category ?? 'Wants',
                     'amount' => $itemSubtotal,
                     'balance' => $runningBalance,
                     'is_penalty' => 0,
@@ -307,9 +285,7 @@ class OrderController extends Controller
                 ]);
             }
 
-            // Update bank balance
-            $bankAccount->balance = $runningBalance;
-            $bankAccount->save();
+            session()->forget('cart');
 
             DB::commit();
 
@@ -317,16 +293,17 @@ class OrderController extends Controller
                 'status' => true,
                 'message' => 'Order placed successfully.',
                 'order_id' => $orderId,
+                'balance' => $runningBalance,
                 'total' => $serverTotal,
             ]);
 
         } catch (\Throwable $e) {
-
             DB::rollBack();
 
             return response()->json([
                 'status' => false,
                 'message' => 'Unable to place order.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
