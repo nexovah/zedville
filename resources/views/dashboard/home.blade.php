@@ -6,7 +6,15 @@
 @push('styles')
 <style>
     /* Scoped to .zvHome so nothing here leaks into the rest of the app. */
-    .zvHome { color: #222; }
+    /* Match the rest of the app: full-width, left-aligned content
+       (layout <main> already provides px-8 / py-10). Overrides the
+       max-w-5xl / mx-auto utilities on the wrapper without a HTML change. */
+    .zvHome {
+        color: #222;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
     .zvHome .zv-card {
         background: #fff;
         border: 1px solid #D2DDDB;
