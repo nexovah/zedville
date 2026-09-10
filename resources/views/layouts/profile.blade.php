@@ -84,8 +84,8 @@
             <div class="flex items-center justify-between px-2">
                 <!-- Navbar left -->
                 <div class="flex items-center space-x-3 relative">
-                    <button @click="toggleSidbarMenu()" class="p-0 absolute left-[-22px] top-[20px] rounded-full w-6 h-6 hover:bg-themegreen text-[#667085] hover:text-white bg-[#F9F9F9] border border-color-[#E9EBF0] flex items-center justify-center transition duration-300 ease-in-out">
-                        <svg class="w-4 h-4" :class="{ 'transform transition-transform -scale-x-100': isSidebarOpen }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <button @click="toggleSidbarMenu()" class="p-0 absolute left-[-22px] top-[20px] w-7 h-7 text-[#667085] flex items-center justify-center transition duration-300 ease-in-out">
+                        <svg class="w-[18px] h-[18px]" :class="{ 'transform transition-transform -scale-x-100': isSidebarOpen }" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
                             <path d="M9 3V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -99,8 +99,8 @@
                 <!-- Navbar left -->
                 <div class="flex items-center space-x-3">
                     <!-- Toggle sidebar button -->
-                    <button @click="toggleSidbarMenu()" class="rounded-full w-6 h-6 hover:bg-themegreen text-[#667085] hover:text-white bg-[#F9F9F9] border border-color-[#E9EBF0] flex items-center justify-center transition duration-300 ease-in-out">
-                        <svg class="w-4 h-4" :class="{ 'transform transition-transform -scale-x-100': isSidebarOpen }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <button @click="toggleSidbarMenu()" class="w-7 h-7 text-[#667085] flex items-center justify-center transition duration-300 ease-in-out">
+                        <svg class="w-[18px] h-[18px]" :class="{ 'transform transition-transform -scale-x-100': isSidebarOpen }" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
                             <path d="M9 3V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
