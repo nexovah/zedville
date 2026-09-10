@@ -47,13 +47,24 @@ return {
   }
 }
 
-/* Content Pre Loader code written here
 // Page loader: show while navigating away from a sidebar menu link,
-// fade out once the destination page has fully loaded.
+// fade out once the destination page is ready.
+// Hardened: hides on multiple independent triggers + a hard failsafe timeout,
+// so a single slow/stalled sub-resource (seen on the bank / activities pages)
+// can never leave the overlay stuck on screen.
 (function () {
+  var HIDE_FAILSAFE_MS = 6000; // absolute upper bound before we force-hide
+  var hidden = false;
+
+  function getLoader() {
+    return document.getElementById('pageLoader');
+  }
+
   function hidePageLoader() {
-    var loader = document.getElementById('pageLoader');
+    if (hidden) return;
+    var loader = getLoader();
     if (!loader) return;
+    hidden = true;
     loader.classList.add('opacity-0');
     loader.classList.remove('opacity-100');
     window.setTimeout(function () {
@@ -62,8 +73,9 @@ return {
   }
 
   function showPageLoader() {
-    var loader = document.getElementById('pageLoader');
+    var loader = getLoader();
     if (!loader) return;
+    hidden = false;
     loader.classList.remove('hidden');
     // force reflow so the opacity transition replays on repeated clicks
     void loader.offsetWidth;
@@ -71,28 +83,59 @@ return {
     loader.classList.add('opacity-100');
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.sidenav a[href]').forEach(function (link) {
-      link.addEventListener('click', function () {
-        var href = link.getAttribute('href');
-        if (!href || href === '#' || href.indexOf('javascript:') === 0 || link.target === '_blank') {
-          return;
-        }
-        showPageLoader();
-      });
-    });
-  });
+  function bindSidenavLinks() {
+    var links = document.querySelectorAll('.sidenav a[href]');
+    for (var i = 0; i < links.length; i++) {
+      (function (link) {
+        link.addEventListener('click', function () {
+          var href = link.getAttribute('href');
+          if (!href || href === '#' || href.indexOf('javascript:') === 0 || link.target === '_blank') {
+            return;
+          }
+          showPageLoader();
+        });
+      })(links[i]);
+    }
+  }
 
+  // --- hide triggers (first one to fire wins; hidePageLoader is idempotent) ---
+
+  // 1. normal case: everything finished loading
   window.addEventListener('load', hidePageLoader);
 
-  // restored from bfcache (browser back/forward) - loader must not stay stuck
+  // 2. script parsed after 'load' already fired (defer / cache / bfcache)
+  if (document.readyState === 'complete') {
+    hidePageLoader();
+  }
+
+  // 3. DOM is usable even if some asset is still downloading
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      bindSidenavLinks();
+      // give real assets a brief chance, then stop blocking the view
+      window.setTimeout(hidePageLoader, 1500);
+    });
+  } else {
+    bindSidenavLinks();
+    window.setTimeout(hidePageLoader, 1500);
+  }
+
+  // 4. restored from bfcache (browser back/forward)
   window.addEventListener('pageshow', function (e) {
     if (e.persisted) {
+      hidden = false;
       hidePageLoader();
     }
   });
+
+  // 5. hard failsafe: no matter what breaks on the page, never stay stuck
+  window.setTimeout(hidePageLoader, HIDE_FAILSAFE_MS);
+
+  // 6. if a page script throws before load, don't trap the user behind the overlay
+  window.addEventListener('error', function () {
+    window.setTimeout(hidePageLoader, 800);
+  });
 })();
-*/
 
 // Tooltip Script
 

@@ -66,8 +66,8 @@
 <body>
 <div class="userAdmin">
     <div class="flex h-screen overflow-y-hidden" x-data="setup()">
-        {{-- Content Pre Loader code written here
-        <div id="pageLoader" x-ref="loading" class="fixed inset-0 z-50 flex items-center justify-center text-white bg-white bg-opacity-90 opacity-100 transition-opacity duration-300 ease-in-out" style="backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px)">
+        {{-- Content Pre Loader (re-enabled). Show/hide handled in themeScript.js --}}
+        <div id="pageLoader" class="fixed inset-0 z-50 flex items-center justify-center text-white bg-white bg-opacity-90 opacity-100 transition-opacity duration-300 ease-in-out" style="backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px)">
             <div class="themeLoader">
                 <span class="ant-spin-dot">
                     <i></i>
@@ -77,7 +77,6 @@
                 </span>
             </div>
         </div>
-        --}}
        @include('layouts.profile-sidebar')
     
       <div class="flex flex-col flex-1 h-full">
