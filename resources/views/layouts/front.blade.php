@@ -84,7 +84,7 @@
                     </button>
                 </div>
                 <ul class="hidden lg:flex lg:gap-x-12 themenav">
-                    <li class="navlits"><a href="#" class="navitems">About123</a></li>
+                    <li class="navlits"><a href="#" class="navitems">About</a></li>
                     <li class="navlits"><a href="{{ route('how-it-work') }}" class="navitems">How It Works</a></li>
                     <li class="navlits"><a href="{{ route('faq') }}" class="navitems">FAQ</a></li>
                     <li class="navlits"><a href="{{ route('contact') }}" class="navitems">Contact</a></li>
