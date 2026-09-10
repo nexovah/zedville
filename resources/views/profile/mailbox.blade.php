@@ -86,6 +86,95 @@
 .mailboxMain .mailboxLists .mailItems.active  .text-xs, .mailboxMain .mailboxLists .mailItems:hover  .text-xs{
     color: #fff !important;
 }
+
+/* ── SweetAlert popups aligned to the app design system ── */
+.swal2-popup {
+    border-radius: 12px;
+    border: 1px solid #D2DDDB;
+    font-family: 'Open Sans', sans-serif;
+    padding: 2rem 1.75rem 1.75rem;
+}
+.swal2-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #222;
+}
+.swal2-html-container {
+    font-size: 14px;
+    color: #5C5C5C;
+    line-height: 1.6;
+}
+.swal2-html-container h2 {
+    font-family: 'Manrope', sans-serif;
+}
+.swal2-input {
+    height: 44px;
+    font-size: 14px;
+    color: #222;
+    border: 1px solid #D2DDDB;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.swal2-input:focus {
+    border-color: #00A47D;
+    box-shadow: 0 0 0 3px rgba(0, 164, 125, 0.15);
+}
+.swal2-actions {
+    gap: 12px;
+}
+/* Base button shape = app pill buttons */
+.swal2-styled {
+    border-radius: 30px !important;
+    font-weight: 600 !important;
+    font-family: 'Open Sans', sans-serif;
+    padding: 0.65rem 1.6rem !important;
+    box-shadow: none !important;
+    transition: 0.2s !important;
+}
+.swal2-styled:focus {
+    box-shadow: 0 0 0 3px rgba(0, 164, 125, 0.25) !important;
+}
+/* Confirm — green primary when no explicit colour was set */
+.swal2-styled.swal2-confirm:not([style*="background"]) {
+    background-color: #00A47D !important;
+    border: 1px solid #016950 !important;
+    box-shadow: 0 3px 0 #016950 !important;
+    color: #fff !important;
+}
+.swal2-styled.swal2-confirm:not([style*="background"]):hover {
+    background-color: #016950 !important;
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #016950 !important;
+}
+/* Confirm for a destructive action (inline confirmButtonColor: #dc3545) —
+   keep it red, just give it the app's pill + pressed-edge treatment */
+.swal2-styled.swal2-confirm[style*="background"] {
+    border: 1px solid #A61B29 !important;
+    box-shadow: 0 3px 0 #A61B29 !important;
+    color: #fff !important;
+}
+.swal2-styled.swal2-confirm[style*="background"]:hover {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #A61B29 !important;
+}
+/* Cancel = neutral outline pill */
+.swal2-styled.swal2-cancel {
+    background-color: #fff !important;
+    border: 1px solid #D2DDDB !important;
+    color: #5C5C5C !important;
+}
+.swal2-styled.swal2-cancel:hover {
+    background-color: #F2F2F2 !important;
+    color: #222 !important;
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(0, 164, 125, 0.3);
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #00A47D;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

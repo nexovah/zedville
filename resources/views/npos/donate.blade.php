@@ -40,6 +40,58 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
+        /* ── Align donate screen with the app design system ── */
+
+        /* Card shell → app card (1px #D2DDDB, 8px radius, soft shadow) */
+        #checkoutForm,
+        #thankYouScreen {
+            border-radius: 12px !important;
+            border: 1px solid #D2DDDB !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Inputs → 8px radius, green focus ring */
+        #checkoutForm input:not(.pin-input) {
+            border-radius: 8px !important;
+        }
+        #checkoutForm input:focus {
+            border-color: #00A47D !important;
+            box-shadow: 0 0 0 3px rgba(0, 164, 125, 0.15) !important;
+        }
+        #checkoutForm .pin-input {
+            border-radius: 8px !important;
+        }
+
+        /* Confirm button → .themeBtn identity (solid green, dark edge, pill) */
+        #confirmBtn,
+        #newDonationBtn {
+            background: #00A47D !important;
+            border: 1px solid #016950 !important;
+            box-shadow: 0 3px 0 #016950 !important;
+            border-radius: 30px !important;
+            transform: none !important;
+            transition: 0.2s !important;
+        }
+        #confirmBtn:hover:not(:disabled),
+        #newDonationBtn:hover {
+            background: #016950 !important;
+            transform: translateY(3px) !important;
+            box-shadow: 0 1px 0 #016950 !important;
+        }
+        #confirmBtn:disabled {
+            opacity: 0.6;
+        }
+
+        /* Top-right Back button → neutral pill matching the app */
+        .donate-back-btn {
+            border-radius: 30px !important;
+        }
+        .donate-back-btn:hover {
+            background: #F2F2F2 !important;
+            border-color: #D2DDDB !important;
+        }
     </style>
 @endpush
 <!-- <div class="flex flex-col items-start justify-between pb-6 space-y-4 lg:items-center lg:space-y-0 lg:flex-row">
@@ -54,7 +106,7 @@
 
     <!-- Right Side - Back Button -->
     <button onclick="history.back()"
-        class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition">
+        class="donate-back-btn flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition">
 
         Back
 
@@ -316,34 +368,34 @@
                     },
                     colors: {
                         warm: {
-                            50: '#f0fdf6',
-                            100: '#dcfce9',
-                            200: '#bbf7d4',
-                            300: '#86efb8',
-                            400: '#1a9e5a',
-                            500: '#157a46',
-                            600: '#0f6e3d',
-                            700: '#0a4f2c',
+                            50: '#EEF9F5',
+                            100: '#D2DDDB',
+                            200: '#B7E3D6',
+                            300: '#9FD8CB',
+                            400: '#00A47D',
+                            500: '#00926F',
+                            600: '#016950',
+                            700: '#014A38',
                         },
                         sage: {
-                            50: '#f0fdf6',
-                            100: '#e6f7ef',
-                            200: '#c3e9d5',
-                            300: '#86cfaa',
-                            400: '#1a9e5a',
-                            500: '#157a46',
+                            50: '#EEF9F5',
+                            100: '#E7FBF3',
+                            200: '#B7E3D6',
+                            300: '#9FD8CB',
+                            400: '#00A47D',
+                            500: '#016950',
                         },
                         blush: {
-                            50: '#f0fdf6',
-                            100: '#e6f7ef',
-                            200: '#c3e9d5',
-                            300: '#86cfaa',
-                            400: '#4ade80',
+                            50: '#EEF9F5',
+                            100: '#E7FBF3',
+                            200: '#B7E3D6',
+                            300: '#9FD8CB',
+                            400: '#00A47D',
                         },
                         cream: {
-                            50: '#f7faf9',
-                            100: '#e6f7ef',
-                            200: '#c3e9d5',
+                            50: '#F7FCF7',
+                            100: '#EEF9F5',
+                            200: '#B7E3D6',
                         }
                     }
                 }
