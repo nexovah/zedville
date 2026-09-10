@@ -36,7 +36,7 @@
         pointer-events: auto;
         clip-path: var(--poly);
         background: rgba(0, 0, 0, 0);
-        outline: 1px dashed rgba(255,0,0,.7);
+        outline: none;
     }
     
     /* Category positions */
@@ -63,7 +63,8 @@
 
     .modal-content-wrapper {
         background: #fff;
-        border-radius: 12px;
+        border: 1px solid #D2DDDB;
+        border-radius: 8px;
         width: 100%;
         max-width: 800px;
         max-height: 90vh;
@@ -87,32 +88,39 @@
 
     .btn {
         padding: 12px 30px;
-        border-radius: 6px;
-        border: none;
+        border-radius: 30px;
+        border: 1px solid transparent;
         cursor: pointer;
         font-weight: 600;
         font-size: 16px;
         text-decoration: none;
         display: inline-block;
         margin: 5px;
+        transition: .2s;
     }
 
     .btn-primary {
-        background: #6b7280;
+        background: #00A47D;
+        border-color: #016950;
+        box-shadow: 0 3px 0 #016950;
         color: #fff;
     }
 
     .btn-primary:hover {
-        background: #4b5563;
+        background: #016950;
+        color: #fff;
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 #016950;
     }
 
     .btn-secondary {
-        background: #e5e7eb;
-        color: #333;
+        background: #fff;
+        border-color: #D2DDDB;
+        color: #5C5C5C;
     }
 
     .btn-secondary:hover {
-        background: #d1d5db;
+        background: #F2F2F2;
     }
 
     .survey-placeholder {

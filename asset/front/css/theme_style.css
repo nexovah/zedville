@@ -5,3 +5,68 @@
 /* Close-button component: light-green circle, +15% size, applied everywhere */
 svg:has(circle[fill="#E7FBF3"]){width:28px;height:28px}
 svg circle[fill="#E7FBF3"]{fill:#DFF5EC}
+
+/* ============================================================
+   DESIGN-SYSTEM CONSOLIDATION  (CSS only — appended, overrides last)
+   ============================================================ */
+
+/* A. Fix the invalid `border-color-[#D2DDDB]` utility used ~59x
+   (Tailwind never generated it, so those borders were missing). */
+.userAdmin [class~="border-color-[#D2DDDB]"],
+.userAdmin [class~="border-color-[#d2dddb]"] { border-color: #D2DDDB !important; }
+
+/* G. Global smoothness layer — scoped to the user account shell only.
+   Cheap GPU-friendly transitions, no JS, reduced-motion respected. */
+.userAdmin { scroll-behavior: smooth; }
+
+.userAdmin a,
+.userAdmin button,
+.userAdmin input,
+.userAdmin select,
+.userAdmin textarea,
+.userAdmin .tabitems,
+.userAdmin .quicklink,
+.userAdmin [class*="hover:bg-"],
+.userAdmin [class*="hover:text-"],
+.userAdmin [class*="hover:border-"] {
+    transition: background-color .18s ease,
+                border-color .18s ease,
+                color .18s ease,
+                box-shadow .18s ease,
+                transform .18s ease,
+                opacity .18s ease;
+}
+
+/* modal / overlay content: consistent fade + slight rise on open */
+.userAdmin .modalContent,
+.userAdmin .modal-content,
+.userAdmin .modal-content-wrapper,
+.userAdmin .success-modal,
+.userAdmin .efd-modal-dialog {
+    animation: zvPop .22s ease both;
+}
+@keyframes zvPop {
+    from { opacity: 0; transform: translateY(6px) scale(.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* dropdown panel (themeScript .hidden toggle) */
+.userAdmin #dropdown { transition: opacity .18s ease, transform .18s ease; }
+
+/* dashboard content: one-shot gentle fade-up on load (scoped, opt-in) */
+.userAdmin .zvHome { animation: zvFadeIn .26s ease both; }
+@keyframes zvFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .userAdmin *,
+    .userAdmin *::before,
+    .userAdmin *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

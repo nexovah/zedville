@@ -70,3 +70,33 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
 - Old `resources/views/dashboard.blade.php` left orphaned (harmless), not deleted.
 - TODO: no monthly savings-goal figure exists → progress bar hidden; badge praise
   messages are a small static map in the controller (no praise text in DB).
+
+## Design-system consolidation pass (A–G)
+- `asset/front/css/theme_style.css` — appended one block:
+  * A: `.userAdmin [class~="border-color-[#D2DDDB]"]{border-color:#D2DDDB!important}`
+       — fixes ~59 borders that used the invalid `border-color-[...]` utility.
+  * G: scoped smoothness layer — `.userAdmin` transitions on a/button/input/
+       select/textarea/.tabitems/.quicklink/hover-utils; `zvPop` open animation
+       on `.modalContent/.modal-content/.modal-content-wrapper/.success-modal/
+       .efd-modal-dialog`; `#dropdown` transition; `.zvHome` one-shot fade-up;
+       full `prefers-reduced-motion` guard. No JS.
+- C: removed dead `@import Poppins` from `education/city-mall.blade.php` and
+     `education/city-hall/city-hall.blade.php` (font already switched earlier).
+- D: dashboard H1 `text-2xl`→`text-xl whitespace-nowrap`, header wrapper `pb-2`→`pb-6`.
+- F: `#libraryModalapp .rounded-2xl{border-radius:12px}` in EFD.
+- B: themed the 3 `spendingActivities/*` twin files (supermarket, spending-tracker,
+     market-list) with the same token remap already applied to their
+     `supermarket/*` / `education/spending-tracker-basicco` counterparts
+     (teal→green, dashed→1px #D2DDDB, grey btns→themeBtn pill, Poppins→Open Sans,
+     red debug outline removed, radii normalised).
+- E: no safe action — remaining off-theme colours are semantic (mood quadrants)
+     or dead commented code (statement.blade.php penalty button).
+
+## Still open (flagged, NOT changed — need a decision, not a minor edit)
+- Font drift in city-hall subpages (civic-chamber / main-hall / well-being-room
+  use Lora + DM Sans as a deliberate "civic" look) and finhero/task-*.blade.php
+  (Nunito throughout) and donate (Nunito via tailwind config) and city-mood /
+  my-mood (Plus Jakarta Sans). Normalising these = a visible redesign, out of
+  scope for "minor".
+- `border-gray-200/300` (~58 uses) vs `#D2DDDB` — cosmetically close, left as-is.
+- Old `resources/views/dashboard.blade.php` still orphaned.

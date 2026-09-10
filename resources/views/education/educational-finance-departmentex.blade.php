@@ -882,6 +882,9 @@
 
     /* ── Financial Literacy (library modal) — theme alignment ── */
 
+    /* Card radius in line with the rest of the app (8-12px, not 2xl) */
+    #libraryModalapp .rounded-2xl { border-radius: 12px; }
+
     /* Module card action button = same identity as .themeBtn, full width */
     #libraryModalapp .efd-card-btn {
       display: block;

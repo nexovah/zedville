@@ -42,10 +42,10 @@
 <div class="zvHome max-w-5xl mx-auto space-y-4">
 
     {{-- Header --}}
-    <div class="flex flex-col items-start justify-between pb-2 space-y-2 lg:flex-row lg:items-baseline lg:space-y-0">
+    <div class="flex flex-col items-start justify-between pb-6 space-y-2 lg:flex-row lg:items-baseline lg:space-y-0">
         <div>
-            <h1 class="text-2xl font-bold">Welcome, {{ $studentName }}</h1>
-            <p class="text-sm text-gray-500 mt-0.5">Citizen of Zedville · {{ $className }}</p>
+            <h1 class="text-xl font-bold whitespace-nowrap">Welcome, {{ $studentName }}</h1>
+            <p class="text-sm text-gray-500 mt-1">Citizen of Zedville · {{ $className }}</p>
         </div>
     </div>
 

@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="{{ asset('asset/front/css/efd.css') }}?ver={{ rand(111, 999) }}">
     <link rel="stylesheet" href="{{ asset('asset/front/css/surveys.css') }}">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
 
         :root {
-            --primary-teal: #00c4b4;
-            --primary-dark: #009e91;
+            --primary-teal: #00A47D;
+            --primary-dark: #016950;
             --accent-yellow: #ffeaa7;
-            --text-dark: #2d3436;
-            --text-muted: #636e72;
+            --text-dark: #222222;
+            --text-muted: #5C5C5C;
             --bg-body: #f8f9fa;
             --bg-sidebar: #f0fdfa;
             --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -25,7 +25,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Open Sans', sans-serif;
         }
 
         body {
@@ -74,7 +74,7 @@
         .user-avatar {
             width: 40px;
             height: 40px;
-            background: #2d3436;
+            background: #222222;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -118,7 +118,7 @@
         }
 
         .balance-label { font-size: 12px; color: #7f6000; font-weight: 600; margin-bottom: 4px; }
-        .balance-amount { font-size: 24px; font-weight: 800; color: #2d3436; }
+        .balance-amount { font-size: 24px; font-weight: 800; color: #222222; }
 
         .main-content {
             flex-grow: 1;
@@ -127,7 +127,7 @@
             position: relative;
         }
 
-        header h1 { font-size: 28px; font-weight: 700; color: #2d3436; }
+        header h1 { font-size: 28px; font-weight: 700; color: #222222; }
 
         .app-grid {
             display: grid;
@@ -138,7 +138,7 @@
 
         .section-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 12px;
             padding: 25px;
             box-shadow: var(--card-shadow);
             border: 1px solid var(--border-color);
@@ -153,7 +153,7 @@
             border-bottom: 2px solid #f1f2f6;
         }
 
-        .section-title { font-size: 18px; font-weight: 700; color: #2d3436; }
+        .section-title { font-size: 18px; font-weight: 700; color: #222222; }
 
         .view-controls {
             display: flex;
@@ -227,18 +227,18 @@
         .item-card:hover {
             border-color: var(--primary-teal);
             border-style: solid;
-            background: #f0fdfa;
+            background: #EEF9F5;
         }
 
-        .item-name { font-weight: 600; color: #2d3436; }
+        .item-name { font-weight: 600; color: #222222; }
         .item-price {
             display: inline-block;
             padding: 4px 10px;
             background: #e2e8f0;
-            border-radius: 20px;
+            border-radius: 12px;
             font-weight: 700;
             font-size: 13px;
-            color: #2d3436;
+            color: #222222;
         }
 
         .item-controls { display: flex; align-items: center; gap: 8px; }
@@ -300,7 +300,7 @@
 
         .budget-row.total {
             border-top: 2px dashed #e2e8f0; padding-top: 15px; margin-top: 15px;
-            font-weight: 700; font-size: 18px; color: #2d3436;
+            font-weight: 700; font-size: 18px; color: #222222;
             display: flex; justify-content: space-between;
         }
 
@@ -316,7 +316,7 @@
 
         .checkout-box {
             margin-top: 20px;
-            background: #f0fdfa;
+            background: #EEF9F5;
             padding: 20px;
             border-radius: 15px;
             border: 1px solid #b2dfdb;
@@ -327,7 +327,7 @@
 
         .form-control {
             width: 100%; padding: 10px 12px;
-            border: 2px solid #e0e0e0; border-radius: 8px;
+            border: 1px solid #D2DDDB; border-radius: 8px;
             font-size: 13px; transition: 0.3s;
         }
         .form-control:focus { outline: none; border-color: var(--primary-teal); background: white; }
@@ -352,7 +352,7 @@
         }
         .overlay.show { display: flex; animation: fadeIn 0.3s; }
         .success-modal {
-            background: white; padding: 40px; border-radius: 20px; text-align: center;
+            background: white; padding: 40px; border-radius: 12px; text-align: center;
             max-width: 450px; width: 90%;
             border-top: 8px solid var(--primary-teal);
         }
@@ -425,9 +425,9 @@
             margin: 5px;
         }
 
-        .btn-primary { background: #6b7280; color: #fff; }
-        .btn-primary:hover { background: #4b5563; }
-        .btn-secondary { background: #e5e7eb; color: #333; }
+        .btn-primary { background: #00A47D; border:1px solid #016950; box-shadow:0 3px 0 #016950; color: #fff; }
+        .btn-primary:hover { background: #016950; transform:translateY(3px); box-shadow:0 1px 0 #016950; }
+        .btn-secondary { background: #fff; border:1px solid #D2DDDB; color: #5C5C5C; }
         .btn-secondary:hover { background: #d1d5db; }
 
         .survey-placeholder {
@@ -498,7 +498,7 @@
                     <div class="success-modal">
                         <h1 style="font-size: 50px; margin-bottom: 10px;">✔</h1>
                         <h2 style="color: var(--primary-dark); margin-bottom: 10px;">Payment Successful!</h2>
-                        <p id="deliveryMessage" style="color: #636e72; margin-bottom: 25px; line-height: 1.6;">Transaction complete.</p>
+                        <p id="deliveryMessage" style="color: #5C5C5C; margin-bottom: 25px; line-height: 1.6;">Transaction complete.</p>
                         <button class="btn-pay" onclick="closeSuccessMessage()" style="background: var(--text-dark);">Close</button>
                     </div>
                 </div>
