@@ -1,3 +1,37 @@
+<style>
+    /* ── Updated sidebar palette & profile block ── */
+    .userAdmin aside {
+        background: #F1FCF8 !important;
+        border-right-color: #94B0A9 !important;
+    }
+
+    /* menu item states */
+    .userAdmin aside .sidenav li.active > a,
+    .userAdmin aside .sidenav li.active > a.active {
+        background-color: #CFF2E4 !important;
+    }
+    .userAdmin aside .sidenav a:hover,
+    .userAdmin aside .sidenav button:hover {
+        background-color: #E3F7EF !important;
+    }
+
+    /* profile (name + image) block: top & bottom outline only, 25px inner gap */
+    .userAdmin aside .userDtls > div {
+        background: transparent !important;
+        border: 0 !important;
+        border-top: 1px solid #94B0A9 !important;
+        border-bottom: 1px solid #94B0A9 !important;
+        border-radius: 0 !important;
+        padding-top: 25px !important;
+        padding-bottom: 25px !important;
+    }
+
+    /* badge icon under the avatar: -35% */
+    .userAdmin aside .sidebarUserSection .userImg span img {
+        transform: scale(0.65);
+        transform-origin: center;
+    }
+</style>
 <aside
     x-cloak
     x-transition:enter="transition transform duration-300"
