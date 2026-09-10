@@ -7,33 +7,134 @@
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
 <style>
 :root {
-    --primary-color: #6b7280;
-    --primary-dark: #4b5563;
+    /* Align calendar accents with the app theme (matches .themeBtn / bank + mailbox pages) */
+    --primary-color: #00A47D;
+    --primary-dark: #016950;
+    --cal-border: #D2DDDB;
+    --cal-border-soft: #E9EBF0;
+    --cal-head-bg: #EEF9F5;
+    --cal-text: #222;
+    --cal-text-muted: #999999;
 }
 
+/* Card wrapper — same treatment as the bank / mailbox content cards */
 .calendar-container {
-    /* background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 20px; */
+    background: #fff;
+    border: 1px solid var(--cal-border);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 1100px;
+    width: 100%;
+    margin-top: 1rem;
 }
 
 .fc {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    color: var(--cal-text);
 }
 
-.fc-button-primary {
+/* keep FullCalendar's own text (day numbers, week days) from picking up the
+   global green link colour */
+.fc a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Toolbar */
+.fc .fc-toolbar-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cal-text);
+}
+
+/* Buttons — themed like .themeBtn (green, dark-green edge, pill, press-down hover) */
+.fc .fc-button-primary {
     background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
+    border: 1px solid var(--primary-dark) !important;
+    color: #fff !important;
+    font-weight: 600;
+    text-transform: capitalize;
+    box-shadow: 0 3px 0 var(--primary-dark);
+    border-radius: 8px;
+    transition: 0.2s;
 }
 
-.fc-button-primary:hover {
+.fc .fc-button-primary:hover {
     background-color: var(--primary-dark) !important;
     border-color: var(--primary-dark) !important;
+    color: #fff !important;
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--primary-dark);
 }
 
-.fc-button-primary:not(:disabled).fc-button-active {
+.fc .fc-button-primary:focus,
+.fc .fc-button-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 3px 0 var(--primary-dark), 0 0 0 3px rgba(0, 164, 125, 0.25);
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
     background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    box-shadow: 0 1px 0 var(--primary-dark);
+    transform: translateY(2px);
+}
+
+.fc .fc-button-primary:disabled {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-dark) !important;
+    opacity: 0.5;
+}
+
+/* Grid + borders */
+.fc .fc-scrollgrid,
+.fc .fc-scrollgrid-section > * {
+    border-color: var(--cal-border-soft);
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: var(--cal-border-soft);
+}
+
+.fc .fc-col-header-cell {
+    background-color: var(--cal-head-bg);
+    padding: 10px 0;
+}
+
+.fc .fc-col-header-cell-cushion {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--cal-text);
+}
+
+.fc .fc-daygrid-day-number {
+    font-size: 13px;
+    color: var(--cal-text);
+    padding: 8px 10px;
+}
+
+.fc .fc-day-other .fc-daygrid-day-number {
+    color: var(--cal-text-muted);
+}
+
+/* Today highlight — subtle theme-green tint instead of the default yellow */
+.fc .fc-day-today {
+    background-color: rgba(0, 164, 125, 0.06) !important;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+/* "more" link */
+.fc .fc-daygrid-more-link {
+    color: var(--primary-dark);
+    font-weight: 600;
 }
 
 .fc-event {
@@ -79,7 +180,8 @@
 
 .modal-content {
     background: #fff;
-    border-radius: 12px;
+    border: 1px solid var(--cal-border);
+    border-radius: 8px;
     width: 90%;
     max-width: 500px;
     max-height: 90vh;
@@ -97,6 +199,9 @@
 .modal-header h3 {
     margin: 0;
     font-size: 20px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    color: var(--cal-text);
 }
 
 .modal-body {
@@ -128,30 +233,38 @@
 }
 
 .btn {
-    padding: 10px 20px;
-    border-radius: 6px;
-    border: none;
+    padding: 10px 22px;
+    border-radius: 30px;
+    border: 1px solid transparent;
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
+    transition: 0.2s;
 }
 
 .btn-primary {
     background: var(--primary-color);
+    border-color: var(--primary-dark);
     color: #fff;
+    box-shadow: 0 3px 0 var(--primary-dark);
 }
 
 .btn-primary:hover {
     background: var(--primary-dark);
+    color: #fff;
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--primary-dark);
 }
 
 .btn-secondary {
-    background: #6b7280;
-    color: #fff;
+    background: #fff;
+    border-color: var(--cal-border);
+    color: #5C5C5C;
 }
 
 .btn-secondary:hover {
-    background: #4b5563;
+    background: #F2F2F2;
+    color: #222;
 }
 
 .btn-danger {
@@ -189,8 +302,10 @@
 .event-detail strong {
     display: block;
     margin-bottom: 4px;
-    color: #6b7280;
+    color: var(--primary-dark);
     font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
 }
 </style>
