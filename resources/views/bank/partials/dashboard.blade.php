@@ -1,3 +1,10 @@
+<style>
+    /* Quick Actions widgets — outline like the Statement Summary / My Accounts cards */
+    .accountDashboard button.bg-blue-50.text-blue-700   { border: 1px solid #bfdbfe; }
+    .accountDashboard button.bg-green-50.text-green-700  { border: 1px solid #bbf7d0; }
+    .accountDashboard button.bg-purple-50.text-purple-700 { border: 1px solid #e9d5ff; }
+    .accountDashboard button.bg-orange-50.text-orange-700 { border: 1px solid #fed7aa; }
+</style>
 <div class="accountDashboard" x-data="{openEmergencyModal: false, emerFundmodal: false, openAccountModal: false, viewmoneymarketmodal : false,}">
     <h2 class="text-xl xl:text-2xl 2xl:text-3xl font-bold text-gray-900">Welcome back, {{ $bankAccount->student_name }}!</h2>
     <p class="text-gray-600 mt-1">Here's your financial overview</p>
