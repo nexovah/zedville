@@ -879,6 +879,95 @@
     .themeModal .modalContent .focus\:ring-blue-500:focus {
       --tw-ring-color: rgba(0, 164, 125, 0.35) !important;
     }
+
+    /* ── Financial Literacy (library modal) — theme alignment ── */
+
+    /* Module card action button = same identity as .themeBtn, full width */
+    #libraryModalapp .efd-card-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-transform: none;
+      cursor: pointer;
+    }
+
+    /* Module page green header */
+    #libraryModalapp .efd-module-head {
+      color: #fff;
+    }
+    #libraryModalapp .efd-module-title {
+      color: #fff !important;
+      line-height: 1.2;
+    }
+    #libraryModalapp .efd-module-sub {
+      margin-top: 4px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+    #libraryModalapp .efd-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    #libraryModalapp .efd-back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    #libraryModalapp .efd-back-arrow {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    /* Quiz heading + progress counter */
+    #libraryModalapp .quiz-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    #libraryModalapp .quiz-progress {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: #FFF5D4;
+      color: #8a6d1d;
+      border: 1px solid #F1E2B0;
+      white-space: nowrap;
+    }
+    #libraryModalapp .quiz-progress.is-complete {
+      background: #EEF9F5;
+      color: #016950;
+      border-color: #B7E3D6;
+    }
+
+    /* "answer all questions" warning */
+    #libraryModalapp .quiz-warn {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #B4232B;
+    }
+    #libraryModalapp .quiz-warn.shake {
+      animation: efdWarnShake 0.4s ease;
+    }
+    @keyframes efdWarnShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
   </style>
 @endsection
 @push('scripts')
@@ -989,8 +1078,8 @@ function createModuleCard(module, index) {
 
         ${
           hasAttempt
-            ? `<div class="mt-4 py-3 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-400 to-teal-500 group-hover:shadow-lg transition-all text-center">Review</div>`
-            : `<div class="mt-4 py-3 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-400 to-teal-500 group-hover:shadow-lg transition-all text-center">Start Learning</div>`
+            ? `<div class="themeBtn efd-card-btn mt-4">Review</div>`
+            : `<div class="themeBtn efd-card-btn mt-4">Start Learning</div>`
         }
       </div>
     </div>
@@ -1033,10 +1122,12 @@ function createModuleCard(module, index) {
         const score = getScore(module.id);
 
         document.getElementById('libraryModalapp').innerHTML = `
-            <div class="bg-gradient-to-r ${module.color} text-white shadow-lg p-6">
-                <button onclick="goBack()" class="mb-4">&larr; Back</button>
-                <h1 class="text-3xl font-bold">${module.title}</h1>
-                <p class="opacity-80">${module.content.questions.length} Questions</p>
+            <div class="bg-gradient-to-r ${module.color} shadow-lg px-6 py-6 rounded-b-2xl efd-module-head">
+                <button type="button" onclick="goBack()" class="efd-back-btn">
+                    <span class="efd-back-arrow">&larr;</span> Back
+                </button>
+                <h1 class="text-3xl font-bold efd-module-title" style="color:#fff">${module.title}</h1>
+                <p class="efd-module-sub" style="color:rgba(255,255,255,.85)">${module.content.questions.length} Questions</p>
             </div>
 
             <div class="max-w-7xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
@@ -1084,10 +1175,20 @@ function createModuleCard(module, index) {
        QUIZ SECTION
     ====================================================================== */
     function renderQuiz(m, score, allAnswered) {
+        const total = m.content.questions.length;
+        const answered = m.content.questions.filter((q, i) =>
+            answers[`${m.id}-${i}`] !== undefined
+        ).length;
+
         return `
             <div class="bg-white rounded-2xl shadow p-6">
 
-                <h2 class="text-2xl font-bold mb-4">Quiz Questions</h2>
+                <div class="quiz-head">
+                  <h2 class="text-2xl font-bold">Quiz Questions</h2>
+                  <span class="quiz-progress ${answered === total ? 'is-complete' : ''}">
+                    ${answered}/${total} questions answered
+                  </span>
+                </div>
 
                 <div class="quiz-scroll-box space-y-4 max-h-[600px] overflow-y-auto pr-2 scrollbar-hide">
                   ${m.content.questions.map((q, i) => renderQuestion(m, q, i)).join("")}
@@ -1096,11 +1197,14 @@ function createModuleCard(module, index) {
                 <div class="mt-6 border-t pt-4 button-group">
                   ${showResults[m.id]
                     ? `<button onclick="retry(${m.id})" class="themeBtn">Try Again</button> <button  onclick="goBack()" class="themeBtn">Next Module</button>`
-                    : `<button onclick="checkAnswers(${m.id})"
-                               ${!allAnswered ? "disabled" : ""}
-                               class="themeBtn  ${allAnswered ? " " : "bg-gray-400"}">
-                         ${allAnswered ? "Check Answers" : "Answer All Questions"}
-                       </button>`
+                    : `<button type="button" onclick="checkAnswers(${m.id})"
+                               class="themeBtn"
+                               title="${allAnswered ? 'Check your answers' : 'Answer all ' + total + ' questions before checking'}">
+                         Check Answers
+                       </button>
+                       <p id="quizWarn-${m.id}" class="quiz-warn" hidden>
+                         Please answer all ${total} questions before checking answers.
+                       </p>`
                   }
                 </div>
             </div>
@@ -1175,9 +1279,23 @@ function createModuleCard(module, index) {
     };
 
     window.checkAnswers = function (moduleId) {
-       console.log("checkAnswers triggered"); // 👈 add this
+        const module = modules.find(m => m.id === moduleId);
+        const allAnswered = module.content.questions.every((q, i) =>
+            answers[`${moduleId}-${i}`] !== undefined
+        );
+
+        if (!allAnswered) {
+            const warn = document.getElementById('quizWarn-' + moduleId);
+            if (warn) {
+                warn.hidden = false;
+                warn.classList.remove('shake');
+                void warn.offsetWidth;
+                warn.classList.add('shake');
+            }
+            return;
+        }
+
         showResults[moduleId] = true;
-        
         renderModule();
     };
 
