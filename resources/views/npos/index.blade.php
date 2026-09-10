@@ -6,18 +6,18 @@
 
 <style>
     :root {
-        --green-primary: #1a9e5a;
-        --green-hover: #157a46;
-        --green-light: #e6f7ef;
-        --green-muted: #a8d5bc;
-        --green-text: #0f6e3d;
+        --green-primary: #00A47D;
+        --green-hover: #016950;
+        --green-light: #EEF9F5;
+        --green-muted: #9FD8CB;
+        --green-text: #016950;
         --card-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        --card-radius: 12px;
-        --border-color: #e2e8f0;
-        --bg-page: #f7faf9;
-        --text-primary: #1a202c;
-        --text-secondary: #4a5568;
-        --text-muted: #718096;
+        --card-radius: 8px;
+        --border-color: #D2DDDB;
+        --bg-page: #F7FCF7;
+        --text-primary: #222222;
+        --text-secondary: #5C5C5C;
+        --text-muted: #999999;
     }
 
     body, .content-area {
@@ -97,7 +97,7 @@
     }
 
     .npo-card:hover {
-        box-shadow: 0 6px 20px rgba(26, 158, 90, 0.15);
+        box-shadow: 0 6px 20px rgba(0, 164, 125, 0.15);
         transform: translateY(-2px);
     }
 
@@ -188,22 +188,24 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 18px;
+        padding: 9px 20px;
         background: var(--green-primary);
         color: #fff;
         font-size: 13px;
         font-weight: 600;
-        border-radius: 8px;
+        border-radius: 30px;
+        border: 1px solid var(--green-hover);
+        box-shadow: 0 3px 0 var(--green-hover);
         text-decoration: none;
-        border: none;
         cursor: pointer;
-        transition: background 0.18s, box-shadow 0.18s;
+        transition: 0.2s;
         align-self: flex-start;
     }
 
     .btn-donate:hover {
         background: var(--green-hover);
-        box-shadow: 0 4px 12px rgba(26, 158, 90, 0.3);
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 var(--green-hover);
         color: #fff;
         text-decoration: none;
     }
@@ -240,6 +242,7 @@
     .page-header h1 {
         font-size: 20px;
         font-weight: 700;
+        font-family: 'Manrope', sans-serif;
         color: var(--text-primary);
     }
 

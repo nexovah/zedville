@@ -10,14 +10,14 @@
     .shop-front-card {
         background: white;
         padding: 40px;
-        border-radius: 24px;
-        box-shadow: 0 20px 60px rgba(0, 196, 180, 0.15);
+        border-radius: 8px;
+        box-shadow: 0 20px 60px rgba(0, 164, 125, 0.15);
         width: 100%;
         max-width: 450px;
-        border: 1px solid white;
+        border: 1px solid #D2DDDB;
         margin: 0 auto;
         text-align: center;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Open Sans', sans-serif;
     }
 
     .shop-image-placeholder {
@@ -42,37 +42,38 @@
         height: 40px;
         background: repeating-linear-gradient(
             45deg,
-            #00c4b4,
-            #00c4b4 20px,
+            #00A47D,
+            #00A47D 20px,
             white 20px,
             white 40px
         );
     }
 
     .shop-title {
-        color: #2d3436;
+        color: #222;
         margin-bottom: 10px;
         font-weight: 800;
         font-size: 24px;
+        font-family: 'Manrope', sans-serif;
     }
 
     .shop-desc {
-        color: #636e72;
+        color: #5C5C5C;
         margin-bottom: 30px;
         font-size: 14px;
     }
 
     .btn-large-enter {
-        background: #00c4b4;
+        background: #00A47D;
         color: white;
         font-size: 18px;
         font-weight: 700;
         padding: 16px 40px;
-        border-radius: 50px;
-        border: none;
+        border-radius: 30px;
+        border: 1px solid #016950;
         cursor: pointer;
-        box-shadow: 0 10px 25px rgba(0, 196, 180, 0.4);
-        transition: 0.3s ease;
+        box-shadow: 0 3px 0 #016950;
+        transition: 0.2s ease;
         text-transform: uppercase;
         letter-spacing: 1px;
         display: inline-flex;
@@ -81,9 +82,9 @@
     }
 
     .btn-large-enter:hover {
-        transform: translateY(-3px) scale(1.02);
-        background: #009e91;
-        box-shadow: 0 15px 35px rgba(0, 196, 180, 0.5);
+        transform: translateY(3px);
+        background: #016950;
+        box-shadow: 0 1px 0 #016950;
     }
     
 .mall-map {

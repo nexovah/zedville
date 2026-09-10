@@ -324,17 +324,28 @@ left: 62%;
 }
 
 .btn {
-  padding: 8px 16px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  border-radius: 6px;
+  padding: 8px 18px;
+  border: 1px solid #016950;
+  background: #00A47D;
+  color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 3px 0 #016950;
   cursor: pointer;
   font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #016950;
+  color: #fff;
 }
 
 .btn:disabled {
-  background: #99b4f4;
+  background: #9FD8CB;
+  border-color: #9FD8CB;
+  box-shadow: none;
   cursor: not-allowed;
 }
 

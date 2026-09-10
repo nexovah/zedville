@@ -858,6 +858,27 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* Bring the EFD modals in line with the app's green theme
+       (scoped to .themeModal so nothing else is affected) */
+    .themeModal .modalContent {
+      border-radius: 0.5rem;
+    }
+    .themeModal .modalContent .bg-blue-50 {
+      background-color: #EEF9F5 !important;
+    }
+    .themeModal .modalContent .border-blue-200 {
+      border-color: #B7E3D6 !important;
+    }
+    .themeModal .modalContent .text-blue-900 {
+      color: #016950 !important;
+    }
+    .themeModal .modalContent .text-blue-600 {
+      color: #00A47D !important;
+    }
+    .themeModal .modalContent .focus\:ring-blue-500:focus {
+      --tw-ring-color: rgba(0, 164, 125, 0.35) !important;
+    }
   </style>
 @endsection
 @push('scripts')

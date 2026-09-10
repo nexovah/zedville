@@ -11,21 +11,21 @@
                                                    ZEDVILLE DESIGN SYSTEM
                                                 ══════════════════════════════════════════ */
             :root {
-                --bg-page: #eef9f5;
+                --bg-page: #EEF9F5;
                 --bg-white: #ffffff;
-                --teal: #1aaa8e;
-                --teal-light: #e8f7f3;
-                --teal-mid: #b6e8d8;
-                --teal-dark: #158870;
-                --navy: #1a1a2e;
+                --teal: #00A47D;
+                --teal-light: #EEF9F5;
+                --teal-mid: #9FD8CB;
+                --teal-dark: #016950;
+                --navy: #222222;
                 --red: #e03e3e;
-                --border: #e4eae7;
-                --text-secondary: #666666;
+                --border: #D2DDDB;
+                --text-secondary: #5C5C5C;
                 --text-muted: #999999;
                 --sidebar-w: 220px;
                 --sidebar-coll: 64px;
                 --radius-pill: 50px;
-                --radius-card: 14px;
+                --radius-card: 8px;
                 --transition-sb: 0.26s cubic-bezier(0.4, 0, 0.2, 1);
 
                 --q-HC-color: #d97706;
@@ -52,7 +52,7 @@
             }
 
             body {
-                font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+                font-family: 'Open Sans', system-ui, sans-serif;
                 background: var(--bg-page);
                 color: var(--navy);
                 min-height: 100vh;
@@ -96,6 +96,7 @@
             .page-heading {
                 font-size: 22px;
                 font-weight: 700;
+                font-family: 'Manrope', sans-serif;
                 color: var(--navy);
                 letter-spacing: -0.02em;
                 margin-bottom: 4px;
@@ -127,7 +128,7 @@
                 border-radius: var(--radius-pill);
                 border: none;
                 background: transparent;
-                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-family: 'Open Sans', sans-serif;
                 font-size: 13px;
                 font-weight: 500;
                 color: var(--text-secondary);
@@ -138,7 +139,7 @@
             .tab-btn.active {
                 background: var(--teal);
                 color: #fff;
-                box-shadow: 0 2px 8px rgba(26, 170, 142, 0.25);
+                box-shadow: 0 2px 8px rgba(0, 164, 125, 0.25);
             }
 
             .tab-btn:hover:not(.active) {
@@ -270,7 +271,7 @@
                 border: 1.5px solid var(--border);
                 border-radius: var(--radius-pill);
                 padding: 7px 16px;
-                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-family: 'Open Sans', sans-serif;
                 font-size: 12px;
                 font-weight: 600;
                 color: var(--teal);
