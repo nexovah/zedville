@@ -16,15 +16,19 @@
         background-color: #E3F7EF !important;
     }
 
-    /* profile (name + image) block: top & bottom outline only, 25px inner gap */
+    /* profile (name + image) block: full-width top & bottom outline, no side gap */
+    .userAdmin aside .userDtls {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
     .userAdmin aside .userDtls > div {
         background: transparent !important;
         border: 0 !important;
         border-top: 1px solid #D2DDDB !important;
         border-bottom: 1px solid #D2DDDB !important;
         border-radius: 0 !important;
-        padding-top: 25px !important;
-        padding-bottom: 25px !important;
+        margin: 0 !important;
+        padding: 25px 22px !important;
     }
 
     /* badge icon under the avatar: -35% */
