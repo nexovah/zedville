@@ -92,7 +92,7 @@
                     </span>
                 </div>
                 <div class="userName mr-auto" :class="{'hidden': !isSidebarOpen}">
-                    <p class="text-sm text-[#5C5C5C] singlelineTxt">{{ $greeting }},</p>
+                    <p class="text-sm text-[#5C5C5C] singlelineTxt"><span id="zvGreeting">{{ $greeting }}</span>,</p>
                     <h4 class="text-md xl:text-lg 2xl:text-xl font-semibold text-black singlelineTxt">{{ $user->name }}</h4>
                 </div>
                 
@@ -320,3 +320,17 @@
 
     @endphp
 </aside>
+<script>
+    /* Greeting follows the viewer's own local time (device time zone),
+       not the server clock. SSR value above is a fallback until this runs. */
+    (function () {
+        var el = document.getElementById('zvGreeting');
+        if (!el) return;
+        var h = new Date().getHours();
+        var g = h >= 5 && h < 12  ? 'Good morning'
+              : h >= 12 && h < 17 ? 'Good afternoon'
+              : h >= 17 && h < 21 ? 'Good evening'
+              : 'Good night';
+        el.textContent = g;
+    })();
+</script>
