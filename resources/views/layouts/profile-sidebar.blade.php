@@ -2,7 +2,8 @@
     /* ── Updated sidebar palette & profile block ── */
     .userAdmin aside {
         background: #F1FCF8 !important;
-        border-right-color: #94B0A9 !important;
+        border-right-width: 1px !important;
+        border-right-color: #D2DDDB !important;
     }
 
     /* menu item states */
@@ -19,8 +20,8 @@
     .userAdmin aside .userDtls > div {
         background: transparent !important;
         border: 0 !important;
-        border-top: 1px solid #94B0A9 !important;
-        border-bottom: 1px solid #94B0A9 !important;
+        border-top: 1px solid #D2DDDB !important;
+        border-bottom: 1px solid #D2DDDB !important;
         border-radius: 0 !important;
         padding-top: 25px !important;
         padding-bottom: 25px !important;
