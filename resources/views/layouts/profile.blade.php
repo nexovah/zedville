@@ -60,7 +60,61 @@
             },
         };
     </script>
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>[x-cloak] { display: none !important; }
+
+    /* ── Avatar dropdown — aligned to the app design system ── */
+    .avatarDropdown,
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 {
+        border-radius: 8px !important;
+        border: 1px solid #D2DDDB !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 > .bg-\[\#56F4CF\]\/10 {
+        background-color: #EEF9F5 !important;
+        border-bottom: 1px solid #D2DDDB !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 h3 {
+        font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        color: #222;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 .bg-\[\#56F4CF\]\/10 p,
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 .bg-\[\#56F4CF\]\/10 .mt-3 {
+        color: #5C5C5C !important;
+    }
+    /* section labels */
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 h4 {
+        color: #5C5C5C !important;
+        letter-spacing: 0.06em;
+        font-family: 'Manrope', sans-serif;
+    }
+    /* rows */
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 a.hover\:bg-gray-50:hover {
+        background-color: #EEF9F5 !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 a .bg-gray-100 {
+        background-color: #EEF9F5 !important;
+        border: 1px solid #B7E3D6 !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 a .bg-gray-100 svg {
+        color: #016950 !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 a p.text-gray-900 {
+        color: #222 !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 a p.text-gray-500 {
+        color: #5C5C5C !important;
+    }
+    /* footer + sign out */
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 .border-t.border-gray-200 {
+        border-top-color: #D2DDDB !important;
+    }
+    .relative > .absolute.right-0.mt-3.bg-white.rounded-xl.shadow-2xl.w-80 button.bg-red-50 {
+        border-radius: 30px !important;
+        border: 1px solid #EFC7CB !important;
+        font-weight: 600 !important;
+    }
+    </style>
 </head>
 
 <body>
