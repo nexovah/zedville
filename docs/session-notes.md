@@ -52,3 +52,21 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
 - Verify each page visually after `npm run build` / cache-bust (`?ver=` is random per load).
 - Hero heading on EFD library modal ("Financial Literacy") still renders dark
   (global `h1{color:#222}` vs `text-white`) — left out of scope.
+
+## Home / Dashboard (new)
+- `app/Http/Controllers/DashboardController.php` — NEW. Server-renders the student
+  home. Pulls from existing models only (CalendarEvent, BankAccount, Transaction1,
+  StudentBadgeRecord, FinheroBadgeRecord, MoodLog, Mailbox); every widget has an
+  empty-state fallback and try/catch so it never fatals for a half-onboarded user.
+- `resources/views/dashboard/home.blade.php` — NEW. Ported from the AI-designed
+  HTML (`Zedville_Dashboard_v1.html`). Extends `layouts.profile`. All custom CSS
+  scoped under `.zvHome` (`.zv-card` / `.zv-quicklink`, renamed from generic
+  `.card`/`.quicklink` to avoid collisions). No global `html`/`body` overrides.
+  Uses app theme tokens + Manrope/Open Sans (not the design's Nunito/Inter).
+- `routes/web.php` — `/dashboard` closure → `DashboardController@index` (only change).
+- Button wiring: "Go to the city" + banner → `education/city-hall`; quick links →
+  city-mall / supermarket / bank.index / education.educational_finance_department;
+  mailbox → profile.mailbox; View statement → bank.bank_statement_show?month=YYYY-MM.
+- Old `resources/views/dashboard.blade.php` left orphaned (harmless), not deleted.
+- TODO: no monthly savings-goal figure exists → progress bar hidden; badge praise
+  messages are a small static map in the controller (no praise text in DB).
