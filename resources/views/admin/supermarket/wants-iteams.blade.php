@@ -264,7 +264,7 @@ function saveRow(r) {
 
     showLoader();
 
-    fetch(`/zedville/admin/education/wants-iteams-update/${id}`, {
+    fetch(`/admin/education/wants-iteams-update/${id}`, {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
         body: fd
@@ -281,7 +281,7 @@ function saveRow(r) {
     const id = btn.closest('tr').dataset.id;
     showLoader();
 
-    fetch(`/zedville/admin/education/wants-iteams-delete/${id}`, {
+    fetch(`/admin/education/wants-iteams-delete/${id}`, {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
     }).then(() => {
@@ -335,7 +335,7 @@ function deleteProduct(btn) {
 
             showLoader();
 
-            fetch(`/zedville/admin/education/wants-iteams-delete/${id}`, {
+            fetch(`/admin/education/wants-iteams-delete/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

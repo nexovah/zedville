@@ -615,14 +615,14 @@
     }*/
 
     const shopRoutes = {
- "Supermarket": "https://dev.nexovah.in/zedville/spending-activities/market-list?activity_id={!! $activityType ?? '' !!}",  
- "Tech Hub": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/tech-hub?activity_id={!! $activityType ?? '' !!}", 
- "Beats Music Store": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/beats-music-store?activity_id={!! $activityType ?? '' !!}", 
-  "BeSpirit Sport Shop": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/bespirit-sport-shop?activity_id={!! $activityType ?? '' !!}",
-   "Comfort Zone": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/comfort-zone?activity_id={!! $activityType ?? '' !!}",
-"Stationery Store": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/stationery-store?activity_id={!! $activityType ?? '' !!}",
-"BeU-BeLuxury": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/beu-beLuxury?activity_id={!! $activityType ?? '' !!}",
-"The Basics Co.": "https://dev.nexovah.in/zedville/spending-activities/spending-tracker/basicco?activity_id={!! $activityType ?? '' !!}",
+ "Supermarket": "https://zedville.nexovah.in/spending-activities/market-list?activity_id={!! $activityType ?? '' !!}",  
+ "Tech Hub": "https://zedville.nexovah.in/spending-activities/spending-tracker/tech-hub?activity_id={!! $activityType ?? '' !!}", 
+ "Beats Music Store": "https://zedville.nexovah.in/spending-activities/spending-tracker/beats-music-store?activity_id={!! $activityType ?? '' !!}", 
+  "BeSpirit Sport Shop": "https://zedville.nexovah.in/spending-activities/spending-tracker/bespirit-sport-shop?activity_id={!! $activityType ?? '' !!}",
+   "Comfort Zone": "https://zedville.nexovah.in/spending-activities/spending-tracker/comfort-zone?activity_id={!! $activityType ?? '' !!}",
+"Stationery Store": "https://zedville.nexovah.in/spending-activities/spending-tracker/stationery-store?activity_id={!! $activityType ?? '' !!}",
+"BeU-BeLuxury": "https://zedville.nexovah.in/spending-activities/spending-tracker/beu-beLuxury?activity_id={!! $activityType ?? '' !!}",
+"The Basics Co.": "https://zedville.nexovah.in/spending-activities/spending-tracker/basicco?activity_id={!! $activityType ?? '' !!}",
 
 };
 function startShopping(shop) {

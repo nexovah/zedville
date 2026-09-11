@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://dev.nexovah.in/zedville'),
+    'url' => env('APP_URL', 'https://zedville.nexovah.in'),
 
     'asset_url' => env('ASSET_URL'),
 

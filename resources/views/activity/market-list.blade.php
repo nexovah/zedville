@@ -249,10 +249,10 @@
     };
 
     const categories = {
-        omnivore:    { name: 'Omnivore',     class: 's1', url: 'https://dev.nexovah.in/zedville/activity/omnivore' },
-        pescatarian: { name: 'Pescatarian',  class: 's2', url: 'https://dev.nexovah.in/zedville/activity/pescatarian' },
-        vegetarian:  { name: 'Vegetarian',   class: 's3', url: 'https://dev.nexovah.in/zedville/activity/vegetarian' },
-        vegan:       { name: 'Vegan',        class: 's4', url: 'https://dev.nexovah.in/zedville/activity/vegan' }
+        omnivore:    { name: 'Omnivore',     class: 's1', url: 'https://zedville.nexovah.in/activity/omnivore' },
+        pescatarian: { name: 'Pescatarian',  class: 's2', url: 'https://zedville.nexovah.in/activity/pescatarian' },
+        vegetarian:  { name: 'Vegetarian',   class: 's3', url: 'https://zedville.nexovah.in/activity/vegetarian' },
+        vegan:       { name: 'Vegan',        class: 's4', url: 'https://zedville.nexovah.in/activity/vegan' }
     };
 
     function openModal(id)  { document.getElementById(id)?.classList.add('show'); }
