@@ -203,8 +203,8 @@ class BankController extends Controller
         $emmsavingsPct = config('zedville.emargency_fund_persentage', 20);
         ;
         $emmsavingsAmount = round($salaryamount * ($emmsavingsPct / 100), 2);
-
-        return view('bank.bank-my-account', compact('user', 'bankAccount', 'transactions', 'lastBalance', 'moneymarketintrest', 'emmengercyfundintrest', 'emmengercyfundtransactions', 'moneymarkettransactions', 'emmsavingsAmount'));
+        $bankUserName = $user->name;
+        return view('bank.bank-my-account', compact('user', 'bankAccount', 'transactions', 'lastBalance', 'moneymarketintrest', 'emmengercyfundintrest', 'emmengercyfundtransactions', 'moneymarkettransactions', 'emmsavingsAmount', 'bankUserName'));
     }
     public function transfer()
     {
