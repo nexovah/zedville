@@ -886,7 +886,7 @@ class BankController extends Controller
         $transactions = Transaction1::where('user_id', Auth::id())
             ->where('type', 'debit')                 // ✅ exclude 0.00 or NULL
             ->orderBy('id', 'DESC')
-            ->get();
+            ->paginate(10);
         $scheduledTransfers = Transfer::where('user_id', auth()->id())
             ->where(function ($q) {
                 $q->where('type', 'later')

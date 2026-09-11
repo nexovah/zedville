@@ -233,6 +233,11 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                                @if(method_exists($transactions, 'links'))
+                                    <div class="mt-4">
+                                        {{ $transactions->links() }}
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
