@@ -82,11 +82,12 @@ class BankController extends Controller
             ->where('description', 'Auto Transfer to Money Market Account')
             //->orderBy('transaction_date', 'desc') // latest first
             ->get();
+        $bankUserName = $user->name;
         if ($bankAccount) {
             $this->creditMonthlySalary($user->id);
             $this->ensureMonthlyBills($user);
             // If bank account exists → load welcome view
-            return view('bank.bank-account', compact('user', 'bankAccount', 'transactions', 'lastBalance', 'emmsavingsAmount', 'emmengercyfundintrest', 'emmengercyfundtransactions', 'moneymarketintrest', 'moneymarkettransactions'));
+            return view('bank.bank-account', compact('user', 'bankAccount', 'transactions', 'lastBalance', 'emmsavingsAmount', 'emmengercyfundintrest', 'emmengercyfundtransactions', 'moneymarketintrest', 'moneymarkettransactions', 'bankUserName'));
         }
         return view('bank.bank', compact('user'));
     }
