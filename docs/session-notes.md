@@ -237,3 +237,31 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   old unthemed design — same family as the earlier-discovered
   `spendingActivities/*` twins — flagged for a future full pass, not done
   here since this request was scoped to the toggle only.
+
+## City Hall subpages — color-only recolor (Wellbeing Room + Civic Chamber)
+- Scope: colors only, per explicit instruction — no text/spacing/feature/font
+  changes. Both pages are entirely driven by CSS custom properties
+  (`--gold`, `--teal`, `--green`, `--blue`, `--purple`, `--red`) plus a
+  handful of hardcoded neutral text hexes, so the whole page recolors by
+  remapping the `:root` tokens + their `rgba(...)` tint variants + the
+  neutral text hexes.
+- `education/city-hall/well-being-room.blade.php` and
+  `education/city-hall/civic-chamber.blade.php`:
+  * `--gold` (finance accent) → `#8A6D1D` (app's amber/secondary text tone)
+  * `--teal`/primary green accent → `#016950` (theme dark green)
+  * `--green` (Yes/approved) → `#00A47D` (theme bright green — Yes/positive
+    now literally uses the brand color)
+  * `--blue` (Referendums / Video tags) → `#1D4ED8` (same blue used for
+    "Total Income" chips elsewhere in the app)
+  * `--purple` (Petitions / Lifestyle tags) → `#7C3AED` (same purple used
+    for "Total Savings" / Statements chips elsewhere)
+  * `--red` (No/rejected) → `#DC2626` (theme danger red)
+  * every corresponding `rgba(r,g,b,...)` tint (`-light`/`-border` derived
+    backgrounds) updated to the new RGB triples so badges/pills/hovers stay
+    consistent with the new base colors
+  * neutral text hexes (`#1a2e28`, `#2c2010`, `#4a6a5a`, `#6b5a3a`, `#8a7a5a`,
+    `#8aaa9a`, `#a09070`, etc.) → app's neutral scale `#222222` / `#5C5C5C`
+    / `#999999`; separator chevrons → `#D2DDDB`
+- Left untouched: Lora/DM Sans fonts, all layout/spacing/radius values, all
+  text content, the `.wb-back`/`.cc-back` buttons (already fixed to the
+  black-outline pill in the earlier "Back button" pass).

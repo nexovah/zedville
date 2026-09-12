@@ -8,11 +8,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
     :root {
-      --gold: #B8860B; --gold-light: rgba(184,134,11,0.10); --gold-border: rgba(184,134,11,0.30);
-      --teal: #0F6E56; --teal-light: rgba(15,110,86,0.10); --teal-border: rgba(15,110,86,0.25);
-      --green: #3B6D11; --green-light: rgba(59,109,17,0.10); --green-border: rgba(59,109,17,0.25);
-      --blue: #185FA5; --blue-light: rgba(24,95,165,0.10); --blue-border: rgba(24,95,165,0.25);
-      --purple: #534AB7; --purple-light: rgba(83,74,183,0.10);
+      --gold: #8A6D1D; --gold-light: rgba(138,109,29,0.10); --gold-border: rgba(138,109,29,0.30);
+      --teal: #016950; --teal-light: rgba(1,105,80,0.10); --teal-border: rgba(1,105,80,0.25);
+      --green: #00A47D; --green-light: rgba(0,164,125,0.10); --green-border: rgba(0,164,125,0.25);
+      --blue: #1D4ED8; --blue-light: rgba(29,78,216,0.10); --blue-border: rgba(29,78,216,0.25);
+      --purple: #7C3AED; --purple-light: rgba(124,58,237,0.10);
       --glass: rgba(255,255,255,0.92); --shadow: 0 4px 24px rgba(0,0,0,0.09);
       --radius: 16px; --radius-sm: 10px;
     }
@@ -25,8 +25,8 @@
     }
 
     /* ── BREADCRUMB ── */
-    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #5a7a6a; }
-    .breadcrumb a { color: #5a7a6a; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #5C5C5C; }
+    .breadcrumb a { color: #5C5C5C; text-decoration: none; display: flex; align-items: center; gap: 4px; }
     .breadcrumb a:hover { color: var(--teal); }
 
     /* ── HEADER ── */
@@ -42,8 +42,8 @@
       background: var(--teal-light); border: 0.5px solid var(--teal-border);
       display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--teal);
     }
-    .wb-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: #1a2e28; }
-    .wb-subtitle { font-size: 12px; color: #6a8a7a; margin-top: 2px; }
+    .wb-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: #222222; }
+    .wb-subtitle { font-size: 12px; color: #5C5C5C; margin-top: 2px; }
     .wb-back {
       font-size: 12px; font-weight: 500; color: #000;
       background: #fff; border: 1px solid #000; box-shadow: 0 3px 0 #000;
@@ -61,7 +61,7 @@
       padding: 7px 16px; border-radius: 20px;
       font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
       border: 0.5px solid var(--teal-border); background: var(--glass);
-      color: #5a7a6a; cursor: pointer; transition: all 0.15s;
+      color: #5C5C5C; cursor: pointer; transition: all 0.15s;
     }
     .filter-btn:hover { background: var(--teal-light); color: var(--teal); }
     .filter-btn.active {
@@ -72,7 +72,7 @@
     /* ── SECTION LABEL ── */
     .sec-label {
       font-size: 11px; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 0.08em; color: #7a9a8a;
+      letter-spacing: 0.08em; color: #999999;
     }
 
     /* ── FEATURED ARTICLE (large card at top) ── */
@@ -96,7 +96,7 @@
       padding: 2px 8px; border-radius: 8px; margin-bottom: 8px;
     }
     .tag-financial { background: var(--gold-light); color: var(--gold); }
-    .tag-stress    { background: rgba(163,45,45,0.10); color: #A32D2D; }
+    .tag-stress    { background: rgba(220,38,38,0.10); color: #DC2626; }
     .tag-lifestyle { background: var(--purple-light); color: var(--purple); }
     .tag-general   { background: var(--teal-light); color: var(--teal); }
     .tag-video     { background: var(--blue-light); color: var(--blue); }
@@ -104,15 +104,15 @@
     .new-badge {
       display: inline-block; font-size: 10px; font-weight: 500;
       padding: 2px 7px; border-radius: 8px; margin-left: 6px;
-      background: rgba(15,110,86,0.12); color: var(--teal);
+      background: rgba(1,105,80,0.12); color: var(--teal);
       vertical-align: middle;
     }
     .featured-title {
       font-family: 'Lora', serif; font-size: 17px; font-weight: 600;
-      color: #1a2e28; line-height: 1.5; margin-bottom: 6px;
+      color: #222222; line-height: 1.5; margin-bottom: 6px;
     }
-    .featured-desc { font-size: 13px; color: #4a6a5a; line-height: 1.6; margin-bottom: 10px; }
-    .featured-meta { font-size: 11px; color: #8aaa9a; display: flex; align-items: center; gap: 12px; }
+    .featured-desc { font-size: 13px; color: #5C5C5C; line-height: 1.6; margin-bottom: 10px; }
+    .featured-meta { font-size: 11px; color: #999999; display: flex; align-items: center; gap: 12px; }
     .read-more {
       font-size: 12px; font-weight: 500; color: var(--teal);
       display: flex; align-items: center; gap: 4px; margin-top: 10px;
@@ -140,15 +140,15 @@
     .ai-teal   { background: var(--teal-light); color: var(--teal); }
     .ai-green  { background: var(--green-light); color: var(--green); }
     .ai-gold   { background: var(--gold-light); color: var(--gold); }
-    .ai-stress { background: rgba(163,45,45,0.10); color: #A32D2D; }
+    .ai-stress { background: rgba(220,38,38,0.10); color: #DC2626; }
     .ai-purple { background: var(--purple-light); color: var(--purple); }
 
     .article-title {
       font-family: 'Lora', serif; font-size: 13px; font-weight: 600;
-      color: #1a2e28; line-height: 1.5;
+      color: #222222; line-height: 1.5;
     }
-    .article-desc { font-size: 12px; color: #4a6a5a; line-height: 1.5; }
-    .article-meta { font-size: 11px; color: #8aaa9a; display: flex; align-items: center; gap: 8px; margin-top: auto; }
+    .article-desc { font-size: 12px; color: #5C5C5C; line-height: 1.5; }
+    .article-meta { font-size: 11px; color: #999999; display: flex; align-items: center; gap: 8px; margin-top: auto; }
 
     /* ── VIDEO CARD ── */
     .video-card {
@@ -172,9 +172,9 @@
     }
     .video-title {
       font-family: 'Lora', serif; font-size: 13px; font-weight: 600;
-      color: #1a2e28; line-height: 1.5;
+      color: #222222; line-height: 1.5;
     }
-    .video-meta { font-size: 11px; color: #8aaa9a; display: flex; align-items: center; gap: 8px; margin-top: auto; }
+    .video-meta { font-size: 11px; color: #999999; display: flex; align-items: center; gap: 8px; margin-top: auto; }
     .video-duration {
       display: inline-flex; align-items: center; gap: 3px;
       font-size: 10px; font-weight: 500;
@@ -185,7 +185,7 @@
     /* ── EMPTY STATE ── */
     .empty-state {
       text-align: center; padding: 3rem 1rem;
-      color: #8aaa9a; font-size: 13px; grid-column: 1 / -1;
+      color: #999999; font-size: 13px; grid-column: 1 / -1;
     }
     .empty-state i { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.35; }
 
@@ -209,17 +209,17 @@
       width: 32px; height: 32px; border-radius: 50%;
       background: rgba(0,0,0,0.06); border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px; color: #5a7a6a; transition: background 0.15s;
+      font-size: 16px; color: #5C5C5C; transition: background 0.15s;
     }
     .modal-close:hover { background: rgba(0,0,0,0.12); }
     .modal-tag { margin-bottom: 10px; }
     .modal-title {
       font-family: 'Lora', serif; font-size: 22px; font-weight: 600;
-      color: #1a2e28; line-height: 1.4; margin-bottom: 8px;
+      color: #222222; line-height: 1.4; margin-bottom: 8px;
     }
-    .modal-meta { font-size: 12px; color: #8aaa9a; margin-bottom: 1.25rem; display: flex; gap: 12px; }
+    .modal-meta { font-size: 12px; color: #999999; margin-bottom: 1.25rem; display: flex; gap: 12px; }
     .modal-body {
-      font-size: 14px; color: #3a5a4a; line-height: 1.8;
+      font-size: 14px; color: #5C5C5C; line-height: 1.8;
       border-top: 0.5px solid var(--teal-border); padding-top: 1.25rem;
     }
     .modal-body p { margin-bottom: 1rem; }
@@ -241,7 +241,7 @@
   <!-- BREADCRUMB -->
   <div class="breadcrumb">
     <a href="{{ route('education.main-hall') }}"><i class="ti ti-building-community" aria-hidden="true"></i> City Hall</a>
-    <span style="color:#a0c0b0;">›</span>
+    <span style="color:#D2DDDB;">›</span>
     <span>Wellbeing Room</span>
   </div>
 
