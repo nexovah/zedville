@@ -404,7 +404,7 @@
     <!-- Right Back button -->
     <button
         onclick="history.back()"
-        class="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded hover:bg-gray-100">
+        class="zvBackBtn px-4 py-2 text-sm font-semibold rounded">
         ← Back
     </button>
 </div>

@@ -335,18 +335,19 @@
   .btn-primary:active { transform: scale(0.98); }
   .btn-secondary {
     display: inline-flex; align-items: center; gap: 6px;
-    background: transparent;
-    color: var(--text-secondary);
+    background: #fff;
+    color: #000;
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
     font-weight: 500;
     padding: 0.65rem 1.1rem;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-xl);
+    border: 1px solid #000;
+    border-radius: 30px;
+    box-shadow: 0 3px 0 #000;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
+    transition: 0.2s;
   }
-  .btn-secondary:hover { border-color: var(--green-light); color: var(--green-mid); }
+  .btn-secondary:hover { background: #fff; color: #000; transform: translateY(3px); box-shadow: 0 1px 0 #000; }
 
   /* ---- Completion screen ---- */
   .completion-banner {

@@ -9,7 +9,7 @@
         <h1 class="text-xl font-bold whitespace-nowrap ">Statement Overview -  {{ \Carbon\Carbon::create($year,$month)->format('F Y') }}</h1>
         <p class="text-gray-600 text-sm mt-1">{{ $start->format('d/m/Y') }} - {{ $end->format('d/m/Y') }}</p>
     </div>
-    <a href="{{ route('bank.bank_statements') }}" class="themeBtn py-2 px-4 inline-block flex gap-2 items-center"><span class="font-bold leading-none">← </span>Back to Statements</a>
+    <a href="{{ route('bank.bank_statements') }}" class="zvBackBtn py-2 px-4 inline-block flex gap-2 items-center"><span class="font-bold leading-none">← </span>Back to Statements</a>
 </div>
 
 <div class="grid grid-cols-1 gap-5 mt-6">

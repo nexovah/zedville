@@ -220,7 +220,7 @@
 
               </div>
               <div class="flex gap-2 justify-end mt-3">
-                <button id="backBtn" class="secondaryBtn" disabled>Back</button>
+                <button id="backBtn" class="zvBackBtn" disabled>Back</button>
                 <button id="nextBtn" class="themeBtn">Next</button>
                 <button id="finishBtn" style="display: none;" onclick="closeReceptionModal()" class="secondaryBtn">
                   Finish
@@ -914,14 +914,19 @@
       margin-bottom: 14px;
       padding: 6px 14px;
       border-radius: 30px;
-      background: rgba(255, 255, 255, 0.18);
-      color: #fff;
+      background: #fff;
+      border: 1px solid #000;
+      box-shadow: 0 3px 0 #000;
+      color: #000;
       font-size: 13px;
       font-weight: 600;
-      transition: background 0.2s;
+      transition: 0.2s;
     }
     #libraryModalapp .efd-back-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: #fff;
+      color: #000;
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #000;
     }
     #libraryModalapp .efd-back-arrow {
       font-size: 16px;

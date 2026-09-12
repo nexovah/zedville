@@ -77,3 +77,24 @@ svg circle[fill="#E7FBF3"]{fill:#DFF5EC}
         scroll-behavior: auto !important;
     }
 }
+
+/* I. Universal "Back" button — one consistent look everywhere:
+   white pill, 1px black outline, black bottom shadow, black text.
+   Purely additive (color/border/shadow only) so it never changes an
+   existing button's height/padding/font-size — add this class next to
+   whatever sizing classes a given Back button already has. */
+.zvBackBtn {
+    background-color: #fff !important;
+    border: 1px solid #000 !important;
+    box-shadow: 0 3px 0 #000 !important;
+    color: #000 !important;
+    border-radius: 30px !important;
+    transition: 0.2s !important;
+}
+.zvBackBtn:hover {
+    background-color: #fff !important;
+    color: #000 !important;
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #000 !important;
+}
+.zvBackBtn:visited { color: #000 !important; }

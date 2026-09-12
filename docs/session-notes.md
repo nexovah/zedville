@@ -189,3 +189,34 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   already-"finished" spending-tracker reference too, not a regression):
   `.budget-row.total` text color and one `#636e72` inline style on a
   `#deliveryMessage` success-modal paragraph.
+
+## "Back" button consistency — one style everywhere
+- Added `.zvBackBtn` to `asset/front/css/theme_style.css`: white bg, 1px
+  black border, black bottom shadow (`0 3px 0 #000`), black text, pill
+  radius — purely additive (only background/border/box-shadow/color/radius),
+  no padding/font-size/display set, so adding it to any existing button
+  never changes that button's height — exactly as requested.
+- Applied `zvBackBtn` (added alongside existing sizing classes) to every
+  plain grey "history.back()" button: `supermarket/supermarket.blade.php`,
+  `activity/supermarket.blade.php`, `activity/spending-tracker.blade.php`,
+  `education/spending-tracker-basicco.blade.php`,
+  `spendingActivities/supermarket.blade.php`,
+  `spendingActivities/spending-tracker.blade.php`; and to every green
+  `.themeBtn` "Back to X" link: `bank/bank-recurring-payment.blade.php`,
+  `bank/bank-payment-history.blade.php`, `bank/bank-manage-payee.blade.php`,
+  `bank/bank-schedule-transfers.blade.php`, `bank/view-statement.blade.php`;
+  and to the EFD reception-modal wizard `#backBtn` (was yellow `.secondaryBtn`).
+- For the 5 pages with their own bespoke Back-button CSS, edited that CSS
+  in place (no HTML touched) to the same black-outline look, height/padding
+  untouched: `citizen-activation.blade.php` (`.btn-secondary`, used only by
+  the 4 "← Back" wizard buttons — nothing else uses that class),
+  `npos/donate.blade.php` (`.donate-back-btn`),
+  `education/educational-finance-departmentex.blade.php` (`.efd-back-btn`,
+  the library-module header back pill),
+  `education/city-hall/well-being-room.blade.php` (`.wb-back`),
+  `education/city-hall/civic-chamber.blade.php` (`.cc-back`).
+- Left untouched: `profile/partials/surveys.blade.php` and
+  `citizen-activation/layouts/surveys.blade.php` — their "Back" buttons
+  already use `.whiteBtn`, which is this exact style; and two `.themeBtn`
+  "Back to Statements" links that are dead/commented-out HTML
+  (`bank/bank-pay-bills.blade.php`, `bank/statement.blade.php`).

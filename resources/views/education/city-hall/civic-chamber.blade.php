@@ -29,8 +29,8 @@
     .cc-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--blue-light); border: 0.5px solid var(--blue-border); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--blue); }
     .cc-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: #2c2010; }
     .cc-subtitle { font-size: 12px; color: #8a7a5a; margin-top: 2px; }
-    .cc-back { font-size: 12px; font-weight: 500; color: var(--gold); background: var(--gold-light); border: 0.5px solid var(--gold-border); border-radius: 8px; padding: 6px 14px; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: background 0.15s; }
-    .cc-back:hover { background: rgba(184,134,11,0.20); }
+    .cc-back { font-size: 12px; font-weight: 500; color: #000; background: #fff; border: 1px solid #000; box-shadow: 0 3px 0 #000; border-radius: 30px; padding: 6px 14px; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+    .cc-back:hover { background: #fff; color: #000; transform: translateY(3px); box-shadow: 0 1px 0 #000; }
 
     /* TABS */
     .cc-tabs { display: flex; gap: 8px; background: var(--glass); border: 0.5px solid var(--gold-border); border-radius: var(--radius); padding: 6px; box-shadow: var(--shadow); animation: fadeUp 0.4s 0.07s ease both; }

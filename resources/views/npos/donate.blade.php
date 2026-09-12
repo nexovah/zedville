@@ -84,13 +84,20 @@
             opacity: 0.6;
         }
 
-        /* Top-right Back button → neutral pill matching the app */
+        /* Top-right Back button → same black-outline pill used everywhere */
         .donate-back-btn {
+            background-color: #fff !important;
+            border: 1px solid #000 !important;
+            color: #000 !important;
+            box-shadow: 0 3px 0 #000 !important;
             border-radius: 30px !important;
+            transition: 0.2s !important;
         }
         .donate-back-btn:hover {
-            background: #F2F2F2 !important;
-            border-color: #D2DDDB !important;
+            background-color: #fff !important;
+            color: #000 !important;
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #000 !important;
         }
     </style>
 @endpush

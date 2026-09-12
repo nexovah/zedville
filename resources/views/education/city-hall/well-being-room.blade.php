@@ -45,12 +45,12 @@
     .wb-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: #1a2e28; }
     .wb-subtitle { font-size: 12px; color: #6a8a7a; margin-top: 2px; }
     .wb-back {
-      font-size: 12px; font-weight: 500; color: var(--teal);
-      background: var(--teal-light); border: 0.5px solid var(--teal-border);
-      border-radius: 8px; padding: 6px 14px; text-decoration: none;
-      display: flex; align-items: center; gap: 5px; transition: background 0.15s;
+      font-size: 12px; font-weight: 500; color: #000;
+      background: #fff; border: 1px solid #000; box-shadow: 0 3px 0 #000;
+      border-radius: 30px; padding: 6px 14px; text-decoration: none;
+      display: flex; align-items: center; gap: 5px; transition: 0.2s;
     }
-    .wb-back:hover { background: rgba(15,110,86,0.18); }
+    .wb-back:hover { background: #fff; color: #000; transform: translateY(3px); box-shadow: 0 1px 0 #000; }
 
     /* ── FILTER BAR ── */
     .filter-bar {

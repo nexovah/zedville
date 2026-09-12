@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex flex-col items-start justify-between pb-6 space-y-4 lg:items-center lg:space-y-0 lg:flex-row">
     <h1 class="text-xl font-bold whitespace-nowrap ">Payment History</h1>
-    <a href="{{ route('bank.index') }}" class="themeBtn py-2 px-4 inline-block flex gap-2 items-center">
+    <a href="{{ route('bank.index') }}" class="zvBackBtn py-2 px-4 inline-block flex gap-2 items-center">
         <span class="font-bold leading-none">← </span>Back to Bank Account
     </a>
 </div>
