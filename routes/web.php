@@ -55,6 +55,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/order/placeActivity', [OrderController::class, 'placeOrder'])->name('order.place');
     Route::get('/toggle-view-mode', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'toggleViewMode'])->name('toggle-view-mode');
 });
+
+// Notification bell (read/unread) + Settings > Notifications preferences
+Route::middleware('auth')->group(function () {
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'readOne'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::post('/notifications/preferences', [\App\Http\Controllers\NotificationPreferenceController::class, 'update'])->name('notifications.preferences.update');
+});
 // URL when mail is clicked
 /*Route::get('/profile/mailbox/{tab}/{encryptedId}', function ($tab, $encryptedId) {
     return view('mailbox.index', compact('tab', 'encryptedId'));

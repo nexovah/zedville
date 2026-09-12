@@ -180,7 +180,9 @@
                                 <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
                                 <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                             </svg>
-                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-medium">2</span>
+                            @if(($notificationUnreadCount ?? 0) > 0)
+                                <span id="bellUnreadBadge" class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-medium">{{ $notificationUnreadCount > 9 ? '9+' : $notificationUnreadCount }}</span>
+                            @endif
                         </button>
                     </div>
                     <!-- avatar button -->
@@ -315,10 +317,12 @@
                                 <div class="p-4 border-b border-[#D2DDDB] flex items-center justify-between w-full">
                                     <div class="flex items-center space-x-3">
                                         <h2 class="text-lg font-semibold text-gray-900">Notifications</h2>
-                                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">2 new</span>
+                                        @if(($notificationUnreadCount ?? 0) > 0)
+                                            <span id="notificationUnreadPill" class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">{{ $notificationUnreadCount }} new</span>
+                                        @endif
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">Mark all read</button>
+                                        <button id="notificationMarkAllRead" class="text-xs text-blue-600 hover:text-blue-700 font-medium">Mark all read</button>
                                         <button @click="notificationDrawer = false" class="text-gray-500 hover:opacity-80 focus:outline-none transition">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <circle cx="12" cy="12" r="9" fill="#E7FBF3" />
@@ -351,546 +355,61 @@
                                         <div class="tailCard notiListsSec mt-4">
                                             <div id="notitab1" class="notitab-content active">
                                                 <div class="notificationLists divide-y divide-gray-100">
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white bg-blue-50 notificatItem noread">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 bg-blue-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card">
-                                                                    <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-                                                                    <line x1="2" x2="22" y1="10" y2="10"></line>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-900">Transaction Alert</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">ATM withdrawal of Ƶ100.00 from Main Street ATM</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">2 minutes ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-blue-600 rounded" title="Mark as read">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-                                                                                <path d="M20 6 9 17l-5-5"></path>
-                                                                            </svg></button><button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
+                                                    @forelse($notificationFeed ?? [] as $n)
+                                                        @php
+                                                            $colorMap = [
+                                                                'blue'   => ['border' => 'border-l-blue-500',   'iconBg' => 'bg-blue-100',   'iconText' => 'text-blue-600'],
+                                                                'green'  => ['border' => 'border-l-green-500',  'iconBg' => 'bg-green-100',  'iconText' => 'text-green-600'],
+                                                                'purple' => ['border' => 'border-l-purple-500', 'iconBg' => 'bg-purple-100', 'iconText' => 'text-purple-600'],
+                                                                'orange' => ['border' => 'border-l-orange-500', 'iconBg' => 'bg-orange-100', 'iconText' => 'text-orange-600'],
+                                                                'amber'  => ['border' => 'border-l-amber-500',  'iconBg' => 'bg-amber-100',  'iconText' => 'text-amber-600'],
+                                                                'red'    => ['border' => 'border-l-red-500',    'iconBg' => 'bg-red-100',    'iconText' => 'text-red-600'],
+                                                            ];
+                                                            $c = $colorMap[$n->color] ?? $colorMap['blue'];
+                                                            $isUnread = is_null($n->read_at);
+                                                        @endphp
+                                                        <div id="notification-{{ $n->id }}"
+                                                             class="p-4 border-l-4 hover:bg-gray-50 transition-colors {{ $c['border'] }} bg-white notificatItem {{ $isUnread ? 'noread' : '' }}">
+                                                            <div class="flex items-start space-x-3">
+                                                                <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ $c['iconText'] }} {{ $c['iconBg'] }}">
+                                                                    @include('partials.notification-icon', ['icon' => $n->icon])
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-red-500 bg-red-50 bg-blue-50 notificatItem noread">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-red-600 bg-red-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield">
-                                                                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-900">New Device Login</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your account was accessed from a new device (iPhone). If this wasn't you, please secure your account.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">1 hour ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-blue-600 rounded" title="Mark as read">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-                                                                                <path d="M20 6 9 17l-5-5"></path>
-                                                                            </svg>
-                                                                        </button>
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 mt-2">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert text-red-500">
-                                                                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-                                                                        <path d="M12 9v4"></path>
-                                                                        <path d="M12 17h.01"></path>
-                                                                    </svg>
-                                                                    <span class="text-xs text-red-600 font-medium">High Priority</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white  notificatItem">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-green-600 bg-green-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-right">
-                                                                    <path d="M8 3 4 7l4 4"></path>
-                                                                    <path d="M4 7h16"></path>
-                                                                    <path d="m16 21 4-4-4-4"></path>
-                                                                    <path d="M20 17H4"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Transfer Completed</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your transfer of Ƶ500.00 to Sarah Wilson has been completed successfully.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">3 hours ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
+                                                                <div class="flex-1 min-w-0">
+                                                                    <div class="flex items-start justify-between">
+                                                                        <div class="flex-1">
+                                                                            <h3 class="text-sm font-medium {{ $isUnread ? 'text-gray-900' : 'text-gray-700' }}">{{ $n->title }}</h3>
+                                                                            @if($n->body)
+                                                                                <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ $n->body }}</p>
+                                                                            @endif
+                                                                            <p class="text-xs text-gray-500 mt-2">{{ $n->created_at->diffForHumans() }}</p>
+                                                                        </div>
+                                                                        <div class="flex items-center space-x-1 ml-2">
+                                                                            @if($isUnread)
+                                                                                <button type="button" class="notificationMarkRead p-1 text-gray-400 hover:text-blue-600 rounded" data-id="{{ $n->id }}" title="Mark as read">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
+                                                                                        <path d="M20 6 9 17l-5-5"></path>
+                                                                                    </svg>
+                                                                                </button>
+                                                                            @endif
+                                                                            <button type="button" class="notificationDelete p-1 text-gray-400 hover:text-red-600 rounded" data-id="{{ $n->id }}" title="Delete notification">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
+                                                                                    <path d="M3 6h18"></path>
+                                                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                                                                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                                                                                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                                                                                </svg>
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-gray-400 bg-gray-50 notificatItem">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-purple-600 bg-purple-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign">
-                                                                    <line x1="12" x2="12" y1="2" y2="22"></line>
-                                                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Monthly Statement Ready</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your July 2025 account statement is now available for download.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">1 day ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                    @empty
+                                                        <div class="p-8 text-center text-sm text-gray-400">
+                                                            No notifications yet. Real activity from your account will show up here.
                                                         </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white notificatItem">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-orange-600 bg-orange-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield">
-                                                                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Password Changed</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your account password was successfully updated on August 14, 2025.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">2 days ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white notificatItem">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 bg-blue-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card">
-                                                                    <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-                                                                    <line x1="2" x2="22" y1="10" y2="10"></line>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Large Transaction Alert</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">A transaction of Ƶ1,200.00 was processed for rent payment.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">3 days ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white notificatItem">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-green-600 bg-green-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign">
-                                                                    <line x1="12" x2="12" y1="2" y2="22"></line>
-                                                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Direct Deposit Received</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">Salary deposit of Ƶ3,000.00 has been added to your account.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">5 days ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-gray-400 bg-gray-50 ">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 bg-blue-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar">
-                                                                    <path d="M8 2v4"></path>
-                                                                    <path d="M16 2v4"></path>
-                                                                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                                                                    <path d="M3 10h18"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Scheduled Transfer Reminder</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your recurring transfer to Mom is scheduled for tomorrow (Ƶ300.00).</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">1 week ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="notitab2" class="notitab-content">
-                                                <div class="notificationLists divide-y divide-gray-100">
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white bg-blue-50 notificatItem noread">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 bg-blue-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card">
-                                                                    <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-                                                                    <line x1="2" x2="22" y1="10" y2="10"></line>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-900">Transaction Alert</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">ATM withdrawal of Ƶ100.00 from Main Street ATM</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">2 minutes ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-blue-600 rounded" title="Mark as read">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-                                                                                <path d="M20 6 9 17l-5-5"></path>
-                                                                            </svg></button><button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Notification Lists -->
-                                                    <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white notificatItem">
-                                                        <div class="flex items-start space-x-3">
-                                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 bg-blue-100">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card">
-                                                                    <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-                                                                    <line x1="2" x2="22" y1="10" y2="10"></line>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="flex items-start justify-between">
-                                                                    <div class="flex-1">
-                                                                        <h3 class="text-sm font-medium text-gray-700">Large Transaction Alert</h3>
-                                                                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">A transaction of Ƶ1,200.00 was processed for rent payment.</p>
-                                                                        <p class="text-xs text-gray-500 mt-2">3 days ago</p>
-                                                                    </div>
-                                                                    <div class="flex items-center space-x-1 ml-2">
-                                                                        <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                                <path d="M3 6h18"></path>
-                                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="notitab3" class="notitab-content">
-                                                <!-- Notification Lists -->
-                                                <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-red-500 bg-red-50 bg-blue-50 notificatItem noread">
-                                                    <div class="flex items-start space-x-3">
-                                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-red-600 bg-red-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield">
-                                                                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-start justify-between">
-                                                                <div class="flex-1">
-                                                                    <h3 class="text-sm font-medium text-gray-900">New Device Login</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your account was accessed from a new device (iPhone). If this wasn't you, please secure your account.</p>
-                                                                    <p class="text-xs text-gray-500 mt-2">1 hour ago</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 ml-2">
-                                                                    <button class="p-1 text-gray-400 hover:text-blue-600 rounded" title="Mark as read">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
-                                                                            <path d="M20 6 9 17l-5-5"></path>
-                                                                        </svg>
-                                                                    </button>
-                                                                    <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                            <path d="M3 6h18"></path>
-                                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div class="flex items-center space-x-1 mt-2">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert text-red-500">
-                                                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-                                                                    <path d="M12 9v4"></path>
-                                                                    <path d="M12 17h.01"></path>
-                                                                </svg>
-                                                                <span class="text-xs text-red-600 font-medium">High Priority</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Notification Lists -->
-                                                <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white notificatItem">
-                                                    <div class="flex items-start space-x-3">
-                                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-orange-600 bg-orange-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield">
-                                                                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-start justify-between">
-                                                                <div class="flex-1">
-                                                                    <h3 class="text-sm font-medium text-gray-700">Password Changed</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your account password was successfully updated on August 14, 2025.</p>
-                                                                    <p class="text-xs text-gray-500 mt-2">2 days ago</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 ml-2">
-                                                                    <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                            <path d="M3 6h18"></path>
-                                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="notitab4" class="notitab-content">
-                                                <!-- Notification Lists -->
-                                                <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white  notificatItem">
-                                                    <div class="flex items-start space-x-3">
-                                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-green-600 bg-green-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-right">
-                                                                <path d="M8 3 4 7l4 4"></path>
-                                                                <path d="M4 7h16"></path>
-                                                                <path d="m16 21 4-4-4-4"></path>
-                                                                <path d="M20 17H4"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-start justify-between">
-                                                                <div class="flex-1">
-                                                                    <h3 class="text-sm font-medium text-gray-700">Transfer Completed</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your transfer of Ƶ500.00 to Sarah Wilson has been completed successfully.</p>
-                                                                    <p class="text-xs text-gray-500 mt-2">3 hours ago</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 ml-2">
-                                                                    <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                            <path d="M3 6h18"></path>
-                                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Notification Lists -->
-                                                <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-gray-400 bg-gray-50 ">
-                                                    <div class="flex items-start space-x-3">
-                                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 bg-blue-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar">
-                                                                <path d="M8 2v4"></path>
-                                                                <path d="M16 2v4"></path>
-                                                                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                                                                <path d="M3 10h18"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-start justify-between">
-                                                                <div class="flex-1">
-                                                                    <h3 class="text-sm font-medium text-gray-700">Scheduled Transfer Reminder</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your recurring transfer to Mom is scheduled for tomorrow (Ƶ300.00).</p>
-                                                                    <p class="text-xs text-gray-500 mt-2">1 week ago</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 ml-2">
-                                                                    <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                            <path d="M3 6h18"></path>
-                                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="notitab5" class="notitab-content">
-                                                <!-- Notification Lists -->
-                                                <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-gray-400 bg-gray-50 notificatItem">
-                                                    <div class="flex items-start space-x-3">
-                                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-purple-600 bg-purple-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign">
-                                                                <line x1="12" x2="12" y1="2" y2="22"></line>
-                                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-start justify-between">
-                                                                <div class="flex-1">
-                                                                    <h3 class="text-sm font-medium text-gray-700">Monthly Statement Ready</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">Your July 2025 account statement is now available for download.</p>
-                                                                    <p class="text-xs text-gray-500 mt-2">1 day ago</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 ml-2">
-                                                                    <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                            <path d="M3 6h18"></path>
-                                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Notification Lists -->
-                                                <div class="p-4 border-l-4 hover:bg-gray-50 transition-colors border-l-blue-500 bg-white notificatItem">
-                                                    <div class="flex items-start space-x-3">
-                                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-green-600 bg-green-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign">
-                                                                <line x1="12" x2="12" y1="2" y2="22"></line>
-                                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="flex items-start justify-between">
-                                                                <div class="flex-1">
-                                                                    <h3 class="text-sm font-medium text-gray-700">Direct Deposit Received</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">Salary deposit of Ƶ3,000.00 has been added to your account.</p>
-                                                                    <p class="text-xs text-gray-500 mt-2">5 days ago</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-1 ml-2">
-                                                                    <button class="p-1 text-gray-400 hover:text-red-600 rounded" title="Delete notification">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
-                                                                            <path d="M3 6h18"></path>
-                                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    @endforelse
                                                 </div>
                                             </div>
                                         </div>
@@ -1611,6 +1130,69 @@ window.quizPopup = function () {
                 if (!el.value) el.value = 'UTC';
             });
         }
+    });
+
+    // ── Notification bell: mark read / mark all read / delete ──
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+        function post(url, method) {
+            return fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+        }
+
+        function decrementUnreadBadge() {
+            const bellBadge = document.getElementById('bellUnreadBadge');
+            const pill = document.getElementById('notificationUnreadPill');
+            [bellBadge, pill].forEach(el => {
+                if (!el) return;
+                const n = parseInt(el.textContent) || 0;
+                const next = Math.max(0, n - 1);
+                if (next === 0) { el.remove(); } else { el.textContent = el === pill ? (next + ' new') : next; }
+            });
+        }
+
+        document.body.addEventListener('click', function (e) {
+            const readBtn = e.target.closest('.notificationMarkRead');
+            if (readBtn) {
+                const id = readBtn.dataset.id;
+                post('/notifications/' + id + '/read', 'POST').then(() => {
+                    const item = document.getElementById('notification-' + id);
+                    item?.classList.remove('noread');
+                    readBtn.remove();
+                    decrementUnreadBadge();
+                });
+                return;
+            }
+
+            const delBtn = e.target.closest('.notificationDelete');
+            if (delBtn) {
+                const id = delBtn.dataset.id;
+                const item = document.getElementById('notification-' + id);
+                const wasUnread = item?.classList.contains('noread');
+                post('/notifications/' + id, 'DELETE').then(() => {
+                    item?.remove();
+                    if (wasUnread) decrementUnreadBadge();
+                });
+                return;
+            }
+
+            if (e.target.closest('#notificationMarkAllRead')) {
+                post('/notifications/read-all', 'POST').then(() => {
+                    document.querySelectorAll('.notificatItem.noread').forEach(item => {
+                        item.classList.remove('noread');
+                        item.querySelector('.notificationMarkRead')?.remove();
+                    });
+                    document.getElementById('notificationUnreadPill')?.remove();
+                    document.getElementById('bellUnreadBadge')?.remove();
+                });
+            }
+        });
     });
 </script>
 </body>

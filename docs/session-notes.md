@@ -265,3 +265,61 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
 - Left untouched: Lora/DM Sans fonts, all layout/spacing/radius values, all
   text content, the `.wb-back`/`.cc-back` buttons (already fixed to the
   black-outline pill in the earlier "Back button" pass).
+
+## Real Notification System — implemented (per approved plan)
+- New tables (migrations, not yet run in this sandbox — no DB connection here):
+  `app_notifications`, `notification_preferences`, `user_login_sessions`,
+  `users.password_changed_at`. Table named `app_notifications` (not
+  `notifications`) deliberately — `User` already uses Laravel's own
+  `Notifiable` trait, which owns the `notifications` table name/schema.
+- New models: `AppNotification`, `NotificationPreference` (CATEGORIES const:
+  Bank Account, Calendar, Mailbox, City Hall, Education Finance Department,
+  City Mood, Settings), `UserLoginSession`.
+- New `app/Services/NotificationService.php` — log/feed/unreadCount/
+  markRead/markAllRead/delete/checkNewDevice. Preference-aware: `log()`
+  no-ops if the user disabled that category.
+- New `app/Observers/*` (13 classes), registered in
+  `AppServiceProvider::boot()`: Transaction1, Transfer, BankStatement,
+  BankAccount, CalendarEvent (fires once per student in the class),
+  StudentBadgeRecord, FinheroBadgeRecord, Mailbox, Donation,
+  ReferendumVote, PetitionSignature, Petition, MoodLog. No existing
+  controller logic touched — all additive via observers.
+- `AppServiceProvider` also registers a `View::composer('layouts.profile', ...)`
+  that feeds `$notificationFeed` (latest 20) + `$notificationUnreadCount`
+  to every page using that layout — no per-controller wiring needed.
+- `Auth/PasswordController::update()` — +2 lines: sets
+  `password_changed_at`, fires "Password Changed" notification.
+- `Auth/AuthenticatedSessionController::store()` — +1 line: calls
+  `NotificationService::checkNewDevice()` (hashes ip+user-agent, fires
+  "New Device Login" only the first time a device is seen for that user).
+- `resources/views/layouts/profile.blade.php` — bell badge + drawer's
+  "N new" pill now render from real unread count; the previously-static
+  notification list (5 duplicate dead `notitab1..5` panes, only `notitab1`
+  ever reachable since the tab-switcher UI was already commented out)
+  replaced with one dynamic `@forelse` loop over `$notificationFeed`,
+  same card markup/classes/icon-color scheme as before. Added inline JS
+  (mark-one-read / mark-all-read / delete) hitting the 3 new routes.
+- New `resources/views/partials/notification-icon.blade.php` — inline SVG
+  icon switch (no lucide.js runtime exists in this app; the "lucide"
+  classes elsewhere are just leftover naming on hand-copied inline SVGs,
+  so a `data-lucide` attribute would have silently rendered nothing —
+  caught and fixed before shipping).
+- New Settings > Notifications tab (`resources/views/profile/consumer-profile-survey.blade.php`,
+  +1 tab button/pane, same pattern as existing Closet/Badges/My Mood
+  placeholders) + new partial `profile/partials/notification-settings.blade.php`
+  (checkbox per category, posts to `NotificationPreferenceController@update`).
+- New routes (all under existing `auth` middleware group):
+  POST /notifications/{id}/read, POST /notifications/read-all,
+  DELETE /notifications/{id}, POST /notifications/preferences.
+- `NotificationController`, `NotificationPreferenceController` — new,
+  thin, only talk to `NotificationService`/`NotificationPreference`.
+
+## Not yet done / next steps
+- **Migrations have not been run** — this sandbox has no DB connection
+  (`Connection refused` on `php artisan migrate:status`). Run
+  `php artisan migrate` on the real server to create the 3 tables + column.
+- End-to-end verification (create a real Transaction1 row, confirm a
+  notification appears, mark-read/delete round trip, preference toggle
+  suppresses new rows, new-device-login fires once) still needs to happen
+  against a live DB — see the Verification section of the plan file at
+  `/Users/partha/.claude/plans/yes-you-need-to-magical-ripple.md`.

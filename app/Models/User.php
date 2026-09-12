@@ -31,6 +31,7 @@ class User extends Authenticatable
         'mascot',
         'role',
         'loginTime',
+        'password_changed_at',
     ];
 
     /**

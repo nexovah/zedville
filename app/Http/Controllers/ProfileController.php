@@ -509,6 +509,14 @@ public function findClosestMood($energy, $pleasantness)
 
         $selectedAvatar = $avatar->firstWhere('id', $user->avatar);
         $hasBankAccount = BankAccount::where('student_id', $user->id)->exists();
+
+        // Settings > Notifications tab: existing prefs, defaulting to
+        // enabled for any category the user hasn't touched yet.
+        $savedPrefs = \App\Models\NotificationPreference::where('user_id', $user->id)
+            ->pluck('enabled', 'category');
+        $notificationPreferences = collect(\App\Models\NotificationPreference::CATEGORIES)
+            ->mapWithKeys(fn ($category) => [$category => $savedPrefs->get($category, true)]);
+
         return view('profile.consumer-profile-survey', [
             'user' => $user,
             'mascots' => $mascots,
@@ -517,6 +525,7 @@ public function findClosestMood($energy, $pleasantness)
             'grades' => $grades,
             'itemNames' => $itemNames,
             'hasBankAccount' => $hasBankAccount,
+            'notificationPreferences' => $notificationPreferences,
         ]);
     }
 

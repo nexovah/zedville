@@ -20,6 +20,7 @@ use App\Models\Transaction1;
 use App\Models\BankAccount;
 use App\Models\BankStatement;
 use App\Services\CitizenActivationService;
+use App\Services\NotificationService;
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -33,12 +34,16 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request, CitizenActivationService $activationService): \Illuminate\Http\RedirectResponse
+    public function store(LoginRequest $request, CitizenActivationService $activationService, NotificationService $notifications): \Illuminate\Http\RedirectResponse
     {
         $request->authenticate();
         $request->session()->regenerate();
 
         $user = Auth::user();
+
+        // Real "New Device Login" notification — hashes ip+user-agent,
+        // fires only the first time this device is seen for this user.
+        $notifications->checkNewDevice($user, $request);
 
         // ✅ Store SID in session
         session([

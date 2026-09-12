@@ -29,6 +29,9 @@
                 <button class="tabitems tab-button" data-tab="tab6">
                     My Mood
                 </button>
+                <button class="tabitems tab-button" data-tab="tab7">
+                    Notifications
+                </button>
             </div>
 
             <!-- Tabs Content -->
@@ -51,7 +54,10 @@
                 <div id="tab6" class="tab-content" data-tab="tab6">
                     <p>My Mood Not available</p>
                 </div>
-                
+                <div id="tab7" class="tab-content" data-tab="tab7">
+                    @include('profile.partials.notification-settings')
+                </div>
+
             </div>
         </div>
     </div>
