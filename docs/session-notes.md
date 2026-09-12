@@ -116,3 +116,17 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   dynamic (wasn't one of the four requested widgets).
 - No controller changes — `DashboardController` still computes everything;
   it's just unused by these 4 blocks until re-enabled.
+
+## Dashboard buttons — swapped to design-system components
+- `resources/views/dashboard/home.blade.php`:
+  * City Mall / Supermarket / Bank / Education Finance Department quicklinks:
+    bespoke `.zv-card` pill → `.whiteBtn` (same as bank's "Show Details" button).
+  * "Go to the city": bespoke inline-styled pill (+ onmouseover/out JS) → plain
+    `.themeBtn` class, JS removed.
+  * "View statement" (both the live block and the commented dynamic block):
+    outline-green pill → `.themeBtn` (matches "Go to the city").
+  * Mailbox "Open": custom yellow-outline pill → `.themeBtn` (matches bank's
+    "Pay Bill" button). Mailbox strip background stays yellow-tinted.
+  * Removed now-unused `.zv-quicklink` hover CSS (replaced by `.whiteBtn`'s
+    own hover); `.zv-quicklink` now just supplies `inline-flex` layout for
+    the emoji + label.

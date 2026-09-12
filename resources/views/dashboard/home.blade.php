@@ -21,12 +21,9 @@
         border-radius: 12px;
     }
     .zvHome .zv-quicklink {
-        transition: background .15s ease, border-color .15s ease, color .15s ease;
-    }
-    .zvHome .zv-quicklink:hover {
-        background: #EEF9F5;
-        border-color: #00A47D;
-        color: #016950;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
     .zvHome .zv-section-label {
         font-size: 12px;
@@ -56,20 +53,16 @@
                 <h2 class="text-lg font-bold text-[#014A38]">Enter Zedville</h2>
                 <p class="text-sm text-[#016950] mt-1">Explore the city and visit its buildings</p>
             </div>
-            <a href="{{ url('education/city-hall') }}"
-               class="inline-flex items-center justify-center gap-2 rounded-full bg-[#00A47D] border border-[#016950] text-white font-semibold text-sm px-5 py-2.5 transition-transform"
-               style="box-shadow:0 3px 0 #016950"
-               onmouseover="this.style.transform='translateY(3px)';this.style.boxShadow='0 1px 0 #016950'"
-               onmouseout="this.style.transform='none';this.style.boxShadow='0 3px 0 #016950'">
+            <a href="{{ url('education/city-hall') }}" class="themeBtn inline-flex items-center justify-center text-sm">
                 Go to the city
             </a>
         </div>
 
         <nav aria-label="Building quick links" class="flex flex-wrap gap-2 mt-3">
-            <a href="{{ url('education/city-mall') }}"                     class="zv-quicklink zv-card px-4 py-2 text-sm font-medium">🏬 City Mall</a>
-            <a href="{{ url('supermarket') }}"                            class="zv-quicklink zv-card px-4 py-2 text-sm font-medium">🛒 Supermarket</a>
-            <a href="{{ route('bank.index') }}"                           class="zv-quicklink zv-card px-4 py-2 text-sm font-medium">🏦 Bank</a>
-            <a href="{{ route('education.educational_finance_department') }}" class="zv-quicklink zv-card px-4 py-2 text-sm font-medium">🎓 Education Finance Department</a>
+            <a href="{{ url('education/city-mall') }}"                     class="whiteBtn zv-quicklink text-sm">🏬 City Mall</a>
+            <a href="{{ url('supermarket') }}"                            class="whiteBtn zv-quicklink text-sm">🛒 Supermarket</a>
+            <a href="{{ route('bank.index') }}"                           class="whiteBtn zv-quicklink text-sm">🏦 Bank</a>
+            <a href="{{ route('education.educational_finance_department') }}" class="whiteBtn zv-quicklink text-sm">🎓 Education Finance Department</a>
         </nav>
     </section>
 
@@ -168,7 +161,7 @@
                     @endforeach
                 </select>
                 <a id="zv-view-statement" href="{{ route('bank.bank_statement_show') }}"
-                   class="rounded-full border border-[#00A47D] text-[#016950] hover:bg-[#EEF9F5] text-sm font-semibold px-4 py-2 whitespace-nowrap">
+                   class="themeBtn text-sm whitespace-nowrap">
                     View statement
                 </a>
             </div>
@@ -207,7 +200,7 @@
                         @endforeach
                     </select>
                     <a id="zv-view-statement" href="{{ route('bank.bank_statement_show') }}"
-                       class="rounded-full border border-[#00A47D] text-[#016950] hover:bg-[#EEF9F5] text-sm font-semibold px-4 py-2 whitespace-nowrap">
+                       class="themeBtn text-sm whitespace-nowrap">
                         View statement
                     </a>
                 </div>
@@ -326,7 +319,7 @@
                     Mailbox · no new messages
                 @endif
             </p>
-            <a href="{{ route('profile.mailbox') }}" class="rounded-full border border-[#FFE48D] bg-white hover:bg-[#FFF5D4] text-sm font-medium px-4 py-1.5 text-[#7A5B12]">Open</a>
+            <a href="{{ route('profile.mailbox') }}" class="themeBtn text-sm">Open</a>
         </div>
     </section>
 
