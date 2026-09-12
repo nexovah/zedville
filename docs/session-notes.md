@@ -100,3 +100,19 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   scope for "minor".
 - `border-gray-200/300` (~58 uses) vs `#D2DDDB` — cosmetically close, left as-is.
 - Old `resources/views/dashboard.blade.php` still orphaned.
+
+## Dashboard widgets — reverted to static demo content (per request)
+- `resources/views/dashboard/home.blade.php` — the 4 content widgets
+  (Activities to do, My bank, My badges, Mood this month) now render
+  **static** content matching `Zedville_Dashboard_v1.html`'s demo values,
+  at the user's request, so the visual matches the original design exactly
+  before wiring is revisited.
+- The real dynamic Blade (driven by `$activities`/`$bank`/`$badges`/`$mood`
+  from `DashboardController`) is kept **commented out directly below each
+  static block** — swap back in next session by deleting the static block
+  and uncommenting.
+- Mailbox strip recolored green → yellow (`#FFF9E9` bg / `#FFE48D` border,
+  matches the Pay Bills tile) so the dashboard isn't all-green. Mailbox stays
+  dynamic (wasn't one of the four requested widgets).
+- No controller changes — `DashboardController` still computes everything;
+  it's just unused by these 4 blocks until re-enabled.
