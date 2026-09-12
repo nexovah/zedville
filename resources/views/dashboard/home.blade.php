@@ -319,7 +319,7 @@
                     Mailbox · no new messages
                 @endif
             </p>
-            <a href="{{ route('profile.mailbox') }}" class="themeBtn text-sm">Open</a>
+            <a href="{{ route('profile.mailbox') }}" class="secondaryBtn text-sm">Open</a>
         </div>
     </section>
 

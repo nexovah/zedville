@@ -15,6 +15,13 @@ svg circle[fill="#E7FBF3"]{fill:#DFF5EC}
 .userAdmin [class~="border-color-[#D2DDDB]"],
 .userAdmin [class~="border-color-[#d2dddb]"] { border-color: #D2DDDB !important; }
 
+/* H. .secondaryBtn's border was set to the same colour as its own
+   background (#FFF5D4), so the 1px outline was invisible — only the
+   bottom shadow (#E6D28C) showed. Give it a real outline in that same
+   dark-yellow, matching how .themeBtn/.whiteBtn/.dangerBtn already
+   pair their border with their shadow colour. */
+.secondaryBtn { border-color: #E6D28C !important; }
+
 /* G. Global smoothness layer — scoped to the user account shell only.
    Cheap GPU-friendly transitions, no JS, reduced-motion respected. */
 .userAdmin { scroll-behavior: smooth; }

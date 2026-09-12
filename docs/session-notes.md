@@ -130,3 +130,14 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   * Removed now-unused `.zv-quicklink` hover CSS (replaced by `.whiteBtn`'s
     own hover); `.zv-quicklink` now just supplies `inline-flex` layout for
     the emoji + label.
+
+## secondaryBtn border fix + mailbox button
+- `asset/front/css/theme_style.css`: `.secondaryBtn` border colour was the
+  same as its own background (`#FFF5D4`) — the 1px outline was invisible,
+  only the bottom shadow (`#E6D28C`) showed (seen on the bank dashboard's
+  "Pay Bills" button next to "Send Money"). Added `.secondaryBtn{border-color:
+  #E6D28C!important}` — global fix, matches every other button's
+  border=shadow-colour pairing. Affects all `.secondaryBtn` uses app-wide.
+- `resources/views/dashboard/home.blade.php`: mailbox "Open" button
+  `.themeBtn` (green) → `.secondaryBtn` (yellow), per request — matches the
+  bank "Pay Bills" button now that its outline is fixed.
