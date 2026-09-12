@@ -141,3 +141,21 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
 - `resources/views/dashboard/home.blade.php`: mailbox "Open" button
   `.themeBtn` (green) → `.secondaryBtn` (yellow), per request — matches the
   bank "Pay Bills" button now that its outline is fixed.
+
+## Spacing consistency: Consumer Profile + My Mood vs My Closet
+- Root cause: both pages were double-padding — their own inner wrapper added
+  extra left/right padding on top of the standard card gutter already
+  provided by `.tailCard` (Consumer Profile, 24-32px) or `<main>` (My Mood,
+  32px), while My Closet has no extra wrapper and sits flush at the single
+  standard inset. That's why Consumer Profile/My Mood looked more inset.
+- `asset/front/css/surveys.css` (appended, scoped): `.tailCard .survey-content
+  {padding:0}` (+ same in its <600px media query) — kills the extra 40px/20px
+  only when the survey (Consumer Profile results, step 9) is nested inside
+  the Account Settings `.tailCard`. The standalone Citizen Activation
+  onboarding survey (`citizen-activation/layouts/surveys.blade.php`, a
+  separate file, not nested in `.tailCard`) is untouched — it still needs
+  its own padding since nothing else provides one there.
+- `resources/views/profile/city-mood.blade.php`: `.content` padding
+  `28px 28px 64px` → `0 0 64px` (and mobile `16px 16px 48px` → `0 0 48px`).
+  Left/right now come solely from `<main>`'s `px-8`, matching My Closet.
+  `max-width:860px` left as-is (not a padding issue, out of scope).

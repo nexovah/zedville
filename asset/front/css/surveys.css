@@ -329,3 +329,21 @@
 }
 
 /*********For Survey*************/
+/* ── Settings-tab context ──────────────────────────────────────
+   Inside the Account Settings page, .survey-container/.survey-content
+   sit nested inside .tailCard, which already supplies the standard
+   card padding (px-6/8 py-6/10 — same as Bank, My Closet, etc). The
+   survey's own 40px padding was stacking on top of that, making the
+   Consumer Profile tab noticeably more inset than every other page.
+   Zero it out here so .tailCard is the only source of the gutter. */
+.tailCard .survey-container {
+    border-radius: 0;
+}
+.tailCard .survey-content {
+    padding: 0;
+}
+@media (max-width: 600px) {
+    .tailCard .survey-content {
+        padding: 0;
+    }
+}

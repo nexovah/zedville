@@ -62,7 +62,11 @@
             }
 
             .content {
-                padding: 28px 28px 64px;
+                /* Horizontal padding removed: the layout's <main> already
+                   gives every page its 32px side gutter (px-8). This page
+                   was adding its own 28px on top, making it sit noticeably
+                   more inset than My Closet / bank / other pages. */
+                padding: 0 0 64px;
                 max-width: 860px;
             }
 
@@ -628,7 +632,7 @@
                 }
 
                 .content {
-                    padding: 16px 16px 48px;
+                    padding: 0 0 48px;
                 }
 
                 .summary-card {
