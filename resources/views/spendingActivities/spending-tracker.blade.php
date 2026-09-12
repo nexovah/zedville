@@ -48,7 +48,7 @@
         .section-title { font-size: 18px; font-weight: 700; color: #2d3436; }
 
         .view-controls { display: flex; gap: 5px; background: #EEF9F5; padding: 4px; border-radius: 30px; border: 1px solid #D2DDDB; }
-        .view-btn { border: none; background: transparent; padding: 6px 10px; cursor: pointer; border-radius: 6px; color: var(--text-muted); font-size: 14px; }
+        .view-btn { border: none; background: transparent; padding: 6px 14px; cursor: pointer; border-radius: 30px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
         .view-btn.active { background: #00A47D; color: #fff; box-shadow: none; font-weight: 600; }
 
         .items-container { display: grid; gap: 15px; }

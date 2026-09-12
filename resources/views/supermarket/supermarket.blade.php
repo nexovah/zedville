@@ -156,11 +156,12 @@
         .view-btn {
             border: none;
             background: transparent;
-            padding: 6px 10px;
+            padding: 6px 14px;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 30px;
             color: var(--text-muted);
             font-size: 14px;
+            font-weight: 600;
         }
 
         .view-btn.active { background: #00A47D; color: #fff; box-shadow: none; font-weight: 600; }

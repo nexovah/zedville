@@ -220,3 +220,20 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   already use `.whiteBtn`, which is this exact style; and two `.themeBtn`
   "Back to Statements" links that are dead/commented-out HTML
   (`bank/bank-pay-bills.blade.php`, `bank/statement.blade.php`).
+
+## List/Grid toggle — rounded-pill discrepancy fixed
+- Reference (correct): `education/spending-tracker-basicco.blade.php`
+  ("Stationery Store") — `.view-btn { border-radius: 30px; padding: 6px 14px;
+  font-weight: 600 }`.
+- Found still using the old squared-off `border-radius: 6px` / `padding:
+  6px 10px`: `supermarket/supermarket.blade.php`,
+  `spendingActivities/supermarket.blade.php`,
+  `spendingActivities/spending-tracker.blade.php`. Fixed to match reference.
+- `activity/supermarket.blade.php` / `activity/spending-tracker.blade.php`
+  were untouched by any earlier pass — fixed `.view-btn` (radius/padding),
+  `.view-controls` (grey box → green-tinted pill container), and
+  `.view-btn.active` (white → solid green) to match. Note: the rest of
+  these two pages (item cards, teal vars, Poppins font, etc.) is still the
+  old unthemed design — same family as the earlier-discovered
+  `spendingActivities/*` twins — flagged for a future full pass, not done
+  here since this request was scoped to the toggle only.

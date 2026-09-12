@@ -158,25 +158,27 @@
         .view-controls {
             display: flex;
             gap: 5px;
-            background: #f1f2f6;
+            background: #EEF9F5;
             padding: 4px;
-            border-radius: 8px;
+            border-radius: 30px;
+            border: 1px solid #D2DDDB;
         }
 
         .view-btn {
             border: none;
             background: transparent;
-            padding: 6px 10px;
+            padding: 6px 14px;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 30px;
             color: var(--text-muted);
             font-size: 14px;
+            font-weight: 600;
         }
 
         .view-btn.active {
-            background: white;
-            color: var(--primary-teal);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: #00A47D;
+            color: #fff;
+            box-shadow: none;
             font-weight: 600;
         }
 
