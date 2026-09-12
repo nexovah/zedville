@@ -159,3 +159,33 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   `28px 28px 64px` → `0 0 64px` (and mobile `16px 16px 48px` → `0 0 48px`).
   Left/right now come solely from `<main>`'s `px-8`, matching My Closet.
   `max-width:860px` left as-is (not a padding issue, out of scope).
+
+## Supermarket product/cart/checkout pages — the actual live page was missed
+- Root cause: `resources/views/supermarket/supermarket.blade.php` is the real
+  view rendered at `/supermarket/{omnivore|vegetarian|pescatarian|vegan}`
+  (`SupermarketController::supermarket()`). The earlier "spendingActivities
+  twin" theming pass fixed `spendingActivities/supermarket.blade.php` (an
+  unused-by-routes duplicate) but never touched this live file, and even the
+  twin only got the surface `:root`/color-var pass, not the full structural
+  polish (pill buttons, solid item borders, item-price pill, cart-item,
+  checkout-box) that `education/spending-tracker-basicco.blade.php`
+  (Tech Hub / "Stationery Store") already had. That's why the diet-category
+  pages still looked like the old teal/dashed design.
+- Brought BOTH `resources/views/supermarket/supermarket.blade.php` (live) and
+  `resources/views/spendingActivities/supermarket.blade.php` (twin) up to the
+  exact same finished state as `spending-tracker-basicco.blade.php` /
+  `spendingActivities/spending-tracker.blade.php`:
+  tokens (`:root`), Open Sans + Manrope headings, `.section-card` 12px,
+  `.section-header` 1px border, `.view-controls`/`.view-btn.active` pill,
+  `.item-card` solid 1px border + green hover glow, `.item-price` green pill,
+  `.cart-item` colors, `.checkout-box` radius/border, `.form-control`
+  transition + focus ring, `.btn-pay` pill w/ pressed-edge hover,
+  `.user-widget`/`.user-avatar`/`.nav-link:hover`/`.balance-card` recolored.
+- Caught and fixed a bad regex hit mid-pass: a first attempt at automating the
+  `.item-card`/`.item-price` fix matched the wrong (compound-selector) rule
+  in both files, clobbering `.items-container.grid-view .item-card`'s layout
+  properties. Corrected immediately — verified via grep before/after.
+- Two very minor leftovers intentionally left alone (present in the
+  already-"finished" spending-tracker reference too, not a regression):
+  `.budget-row.total` text color and one `#636e72` inline style on a
+  `#deliveryMessage` success-modal paragraph.
