@@ -348,3 +348,31 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
 
 No DB/migration change this time — pure view/JS. Deploy = pull + 
 `php artisan view:clear` (no `migrate` needed).
+
+## Notifications tab — moved to the real Settings page
+- Root cause: last session's Notifications tab went into
+  `profile/consumer-profile-survey.blade.php` — a real, separately-reachable
+  page (linked from 2 other places), but **not** the one the left sidebar
+  "Settings" menu opens. The sidebar's Settings link (and the dropdown, and
+  the profile-name click target — all 3 in `layouts/profile-sidebar.blade.php`)
+  go to `route('profile.edit')` → `resources/views/profile/edit.blade.php`,
+  a different Blade file with the real Profile/Password/Consumer
+  Profile/Closet/Badges/My Mood tabs.
+- Added the same 7th "Notifications" tab + pane to `profile/edit.blade.php`,
+  wired to the same `profile.partials.notification-settings` partial.
+- `ProfileController::edit()` — added the same `notificationPreferences`
+  data-loading (+7 lines, additive) that `consumerProfileSurvey()` already had.
+- Fixed a real timing bug while wiring the `#tab7` deep link: this page's
+  tabs rely on `themeScript.js`'s generic script, which force-clicks the
+  *first* tab on `DOMContentLoaded`. A same-event hash-check would race
+  and lose. Added a small `window.load` listener instead (fires strictly
+  after `DOMContentLoaded`) that re-opens the correct tab if the URL has
+  a `#tabN` fragment.
+- Drawer's footer Settings gear (`layouts/profile.blade.php`) now points
+  at `route('profile.edit')#tab7` — the real page — instead of
+  `consumer-profile-survey`.
+- Left the tab in `consumer-profile-survey.blade.php` in place too (already
+  fixed last round) since that page is real and independently reachable —
+  no harm having Notification settings available from both entry points.
+
+No DB change. Deploy = pull + `php artisan view:clear`.

@@ -143,7 +143,16 @@ class ProfileController extends Controller
             ->distinct()
             ->pluck('product_name');
         //Durable goods / Non Durable goods
+
+        // Settings > Notifications tab: existing prefs, defaulting to
+        // enabled for any category the user hasn't touched yet.
+        $savedNotificationPrefs = \App\Models\NotificationPreference::where('user_id', $user->id)
+            ->pluck('enabled', 'category');
+        $notificationPreferences = collect(\App\Models\NotificationPreference::CATEGORIES)
+            ->mapWithKeys(fn ($category) => [$category => $savedNotificationPrefs->get($category, true)]);
+
         return view('profile.edit', [
+            'notificationPreferences' => $notificationPreferences,
             'user' => $user,
             'mascots' => $mascots,
             'avatar' => $avatar,

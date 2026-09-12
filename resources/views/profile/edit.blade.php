@@ -29,6 +29,9 @@
                 <button class="tabitems tab-button" data-tab="tab6">
                     My Mood
                 </button>
+                <button class="tabitems tab-button" data-tab="tab7">
+                    Notifications
+                </button>
             </div>
 
             <!-- Tabs Content -->
@@ -55,11 +58,24 @@
                 <div id="tab6" class="tab-content">
                     @include('profile.partials.my-mood')
                 </div>
+                <div id="tab7" class="tab-content">
+                    @include('profile.partials.notification-settings')
+                </div>
 
-                
             </div>
         </div>
     </div>
 </div>
-
+<script>
+    // themeScript.js auto-opens the first tab on load — if the URL has a
+    // #tabN (e.g. the notification bell's Settings shortcut → #tab7),
+    // re-open that one right after. Runs on window "load" so it fires
+    // after themeScript's own DOMContentLoaded handler, not before it.
+    window.addEventListener("load", function () {
+        const hashTab = window.location.hash.replace('#', '');
+        if (!hashTab) return;
+        const target = document.querySelector('[data-tab="' + hashTab + '"]');
+        target?.click();
+    });
+</script>
 @endsection
