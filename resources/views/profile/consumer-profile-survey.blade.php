@@ -64,7 +64,11 @@
 </div>
 <script>
 window.addEventListener("DOMContentLoaded", function () {
-    document.querySelector('[data-tab="tab3"]').click();
+    // Respect a #tabN link (e.g. the notification bell's Settings shortcut
+    // opens straight to #tab7) — otherwise default to Consumer Profile.
+    const hashTab = window.location.hash.replace('#', '');
+    const target = document.querySelector('[data-tab="' + hashTab + '"]') || document.querySelector('[data-tab="tab3"]');
+    target.click();
 });
 </script>
 @endsection

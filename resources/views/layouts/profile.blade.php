@@ -304,14 +304,29 @@
                 <!-- Notification drawer -->
                 <div
                     x-show="notificationDrawer"
-                    x-transition.opacity
                     class="fixed w-full h-full z-10 overflow-y-auto top-0 left-0 overflow-x-hidden themeModal"
                     @keydown.escape.window="notificationDrawer = false" style="display: none;">
-                    <!-- Backdrop -->
-                    <div class="fixed inset-0 bg-black bg-opacity-50" @click="notificationDrawer = false"></div>
+                    <!-- Backdrop: fades in/out -->
+                    <div
+                        x-show="notificationDrawer"
+                        x-transition:enter="transition-opacity ease-out duration-300"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition-opacity ease-in duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="fixed inset-0 bg-black bg-opacity-50" @click="notificationDrawer = false"></div>
 
-                    <!-- Modal Box -->
-                    <div class="modalDilog fullHeight rightside max-w-[600px]">
+                    <!-- Modal Box: slides in from the right -->
+                    <div
+                        x-show="notificationDrawer"
+                        x-transition:enter="transition transform ease-out duration-300"
+                        x-transition:enter-start="translate-x-full"
+                        x-transition:enter-end="translate-x-0"
+                        x-transition:leave="transition transform ease-in duration-200"
+                        x-transition:leave-start="translate-x-0"
+                        x-transition:leave-end="translate-x-full"
+                        class="modalDilog fullHeight rightside max-w-[600px]">
                         <div class="modalContent h-full bg-white rounded-lg z-100">
                             <div class="flex justify-between items-center w-full">
                                 <div class="p-4 border-b border-[#D2DDDB] flex items-center justify-between w-full">
@@ -369,7 +384,7 @@
                                                             $isUnread = is_null($n->read_at);
                                                         @endphp
                                                         <div id="notification-{{ $n->id }}"
-                                                             class="p-4 border-l-4 hover:bg-gray-50 transition-colors {{ $c['border'] }} bg-white notificatItem {{ $isUnread ? 'noread' : '' }}">
+                                                             class="p-4 border-l-4 transition-colors {{ $c['border'] }} notificatItem {{ $isUnread ? 'noread bg-red-50 hover:bg-red-100' : 'bg-white hover:bg-gray-50' }}">
                                                             <div class="flex items-start space-x-3">
                                                                 <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ $c['iconText'] }} {{ $c['iconBg'] }}">
                                                                     @include('partials.notification-icon', ['icon' => $n->icon])
@@ -426,7 +441,7 @@
                                             <div class="w-2 h-2 bg-red-500 rounded-full"></div><span>Unread</span>
                                         </div>
                                     </div>
-                                    <a href="{{ route('profile.edit') }}" class="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                    <a href="{{ route('consumer-profile-survey') }}#tab7" class="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-medium">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings">
                                             <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
@@ -1157,13 +1172,19 @@ window.quizPopup = function () {
             });
         }
 
+        function markItemRead(item) {
+            if (!item) return;
+            item.classList.remove('noread', 'bg-red-50', 'hover:bg-red-100');
+            item.classList.add('bg-white', 'hover:bg-gray-50');
+            item.querySelector('h3')?.classList.replace('text-gray-900', 'text-gray-700');
+        }
+
         document.body.addEventListener('click', function (e) {
             const readBtn = e.target.closest('.notificationMarkRead');
             if (readBtn) {
                 const id = readBtn.dataset.id;
                 post('/notifications/' + id + '/read', 'POST').then(() => {
-                    const item = document.getElementById('notification-' + id);
-                    item?.classList.remove('noread');
+                    markItemRead(document.getElementById('notification-' + id));
                     readBtn.remove();
                     decrementUnreadBadge();
                 });
@@ -1185,7 +1206,7 @@ window.quizPopup = function () {
             if (e.target.closest('#notificationMarkAllRead')) {
                 post('/notifications/read-all', 'POST').then(() => {
                     document.querySelectorAll('.notificatItem.noread').forEach(item => {
-                        item.classList.remove('noread');
+                        markItemRead(item);
                         item.querySelector('.notificationMarkRead')?.remove();
                     });
                     document.getElementById('notificationUnreadPill')?.remove();

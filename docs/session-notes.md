@@ -323,3 +323,28 @@ Rule followed: no PHP, minimal HTML — changes live in `<style>` blocks / CSS f
   suppresses new rows, new-device-login fires once) still needs to happen
   against a live DB — see the Verification section of the plan file at
   `/Users/partha/.claude/plans/yes-you-need-to-magical-ripple.md`.
+
+## Notification drawer polish + real bug fix (Settings link)
+- `resources/views/layouts/profile.blade.php`:
+  * Drawer now slides in from the right (Alpine `x-transition` on the
+    panel: `translate-x-full` → `translate-x-0`), backdrop fades
+    separately (`opacity-0` → `opacity-100`) — was a flat opacity-only
+    fade on the whole thing before.
+  * Unread rows now get `bg-red-50`/`hover:bg-red-100` (matches the
+    footer's own "Unread = red" legend); read rows `bg-white`. JS
+    mark-read/mark-all-read swap these classes live (new `markItemRead()`
+    helper) instead of just removing the `noread` marker class with no
+    visual effect.
+  * **Real bug found**: the drawer footer's "Settings" gear linked to
+    `route('profile.edit')` — an unrelated/legacy page — never to
+    `consumer-profile-survey` (the actual tabbed Account Settings page
+    where the Notifications tab lives). That's why the tab looked
+    "not implemented" last time; it existed, just unreachable from this
+    button. Fixed to `route('consumer-profile-survey') . '#tab7'`.
+- `resources/views/profile/consumer-profile-survey.blade.php`: the
+  page's own boot script always force-clicked tab3 regardless of URL —
+  fixed to open whichever `#tabN` hash is present (falls back to tab3),
+  so the footer's Settings shortcut now actually lands on Notifications.
+
+No DB/migration change this time — pure view/JS. Deploy = pull + 
+`php artisan view:clear` (no `migrate` needed).
